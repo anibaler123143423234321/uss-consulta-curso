@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Programación de Horarios Oficiales | Centro de Informática USS</title>
+    <meta name="description"
+        content="Consulta los horarios detallados, docentes y aulas virtuales de los cursos oficiales del Centro de Informática USS." />
+    <meta name="theme-color" content="#073299" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <!-- Tipografía oficial USS: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=7" />
+</head>
+
+<body>
+    <!-- Header institucional limpio con botón para volver a elegir carrera -->
+    <header class="bg-white border-bottom border-slate-200 sticky-top z-3 py-2 px-3 shadow-xs">
+        <div class="container-fluid max-w-7xl mx-auto d-flex align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <a href="index.html" class="btn-volver-inicio" id="btn-volver-atras" title="Volver a la selección de carrera y ciclo">
+                    <span>←</span>
+                    <span class="d-none d-sm-inline">Cambiar carrera / ciclo</span>
+                </a>
+                <a href="./" class="d-flex align-items-center gap-2 text-decoration-none">
+                    <img src="assets/img/logo-uss.png" alt="Logo USS" height="32" class="d-block" />
+                    <div class="border-start border-slate-200 ps-2 ms-1 d-none d-md-block">
+                        <span class="d-block text-xs font-bold text-primary lh-1">Centro de Informática</span>
+                        <span class="text-muted text-xs" style="font-size:11px;">Programación de Horarios</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3" href="https://informatica-uss.vercel.app/"
+                    target="_blank" rel="noopener noreferrer">
+                    <span>Portal CINF</span>
+                    <span>↗</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="hoja-contenedor py-3">
+        <!-- Banner informativo de la Carrera y Ruta seleccionada -->
+        <div class="banner-carrera-horarios" id="banner-carrera">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2.5">
+                    <span style="font-size: 24px;" aria-hidden="true">🎓</span>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="text-xs text-muted font-bold text-uppercase">Carrera:</span>
+                            <strong class="fs-6 text-dark" id="txt-carrera-nombre">Psicología</strong>
+                            <span class="badge bg-primary text-white" id="txt-ruta-badge">Ruta 2</span>
+                            <span class="text-xs text-primary fw-bold" id="txt-ruta-nombre">(Sociales y Leyes)</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1" id="txt-ruta-cursos"></div>
+                    </div>
+                </div>
+                <a href="index.html" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3">
+                    Elegir otra carrera ✕
+                </a>
+            </div>
+        </div>
+
+        <!-- Cinta de Navegación entre Ciclos y Filtros -->
+        <div class="cinta-horarios">
+            <!-- Pestañas de meses para cambiar de ciclo directamente -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2 mb-2 border-bottom border-slate-100">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-dark text-xs text-uppercase" style="letter-spacing:0.04em;">Ciclo:</span>
+                    <div class="pestanas-ciclos" id="pestanas-meses" role="tablist"></div>
+                </div>
+                <div class="text-muted text-xs fw-bold" id="conteo-secciones">
+                    Cargando horarios...
+                </div>
+            </div>
+
+            <!-- Filtros de búsqueda y turno -->
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-7 col-lg-8">
+                    <div class="position-relative">
+                        <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">🔍</span>
+                        <input type="text" class="form-control form-control-sm rounded-8 ps-5" id="filtro-texto"
+                            placeholder="Buscar por nombre de curso, docente, código o sección..." />
+                    </div>
+                </div>
+                <div class="col-12 col-md-5 col-lg-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="filtro-turno" class="form-label mb-0 text-xs fw-bold text-muted text-nowrap">Turno:</label>
+                        <select class="form-select form-select-sm rounded-8" id="filtro-turno">
+                            <option value="">Todos los turnos</option>
+                            <option value="Mañana">Mañana</option>
+                            <option value="Tarde">Tarde</option>
+                            <option value="Noche">Noche</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla ejecutiva de Horarios -->
+        <div class="tabla-horarios-wrap">
+            <div class="table-responsive" style="max-height: calc(100vh - 280px); overflow-y: auto;">
+                <table class="table tabla-horarios table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 40px;">#</th>
+                            <th scope="col">Curso Oficial</th>
+                            <th scope="col" style="width: 60px;">Sec.</th>
+                            <th scope="col">Inicio</th>
+                            <th scope="col">Fin</th>
+                            <th scope="col">Turno</th>
+                            <th scope="col">Días</th>
+                            <th scope="col">Horario</th>
+                            <th scope="col">Aula</th>
+                            <th scope="col">Docente Asignado</th>
+                            <th scope="col" class="text-center" style="width: 130px;">Acceso</th>
+                        </tr>
+                    </thead>
+                    <tbody id="filas-horarios"></tbody>
+                </table>
+            </div>
+
+            <!-- Estado vacío si ningún horario coincide con la búsqueda -->
+            <div class="p-5 text-center" id="sin-horarios" hidden>
+                <div style="font-size: 36px; margin-bottom: 8px;">📋</div>
+                <h3 class="fs-6 fw-bold text-dark mb-1">No se encontraron horarios para los filtros seleccionados</h3>
+                <p class="text-muted text-xs mb-3">Intenta cambiando el turno o borrando el texto de búsqueda.</p>
+                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" id="btn-reset-filtros">
+                    Restablecer filtros
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-uss">
+        Universidad Señor de Sipán · Centro de Informática CINF · Acreditación PROTECH XP © 2026
+    </footer>
+
+    <!-- Scripts de Datos y Lógica de Horarios -->
+    <script src="assets/js/datos.js"></script>
+    <script src="assets/js/horarios.js"></script>
+</body>
+
+</html>
+

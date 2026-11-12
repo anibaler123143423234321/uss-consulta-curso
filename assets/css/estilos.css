@@ -1,0 +1,876 @@
+/* ===================================================
+   USS Consulta de Cursos - Estilos Oficiales CINF
+   Archivo: assets/css/estilos.css
+   Diseño institucional: Universidad Señor de Sipán
+   Tipografía: Plus Jakarta Sans
+   =================================================== */
+
+:root {
+    --uss-azul: #073299;
+    --uss-azul-dark: #041d5f;
+    --uss-azul-light: #eff6ff;
+    --uss-azul-hover: #0a44cc;
+    --uss-sky: #0284c7;
+    --uss-oro: #ffc53d;
+    --uss-border: #e2e8f0;
+    --uss-border-light: #f1f5f9;
+    --uss-bg: #f8fafc;
+    --uss-text-main: #0f172a;
+    --uss-text-muted: #64748b;
+    --uss-text-subtle: #94a3b8;
+    --uss-sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --uss-sombra-md: 0 4px 14px -2px rgba(7, 50, 153, 0.08);
+    --uss-sombra-lg: 0 20px 38px -10px rgba(7, 50, 153, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--uss-bg);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13.5px;
+    color: var(--uss-text-main);
+    -webkit-font-smoothing: antialiased;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+:focus-visible {
+    outline: 2px solid var(--uss-azul);
+    outline-offset: 2px;
+}
+
+/* ===================================================
+   1. Portada institucional (Dimensiones idénticas a uss-gex)
+   =================================================== */
+.portada-uss {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #041d5f 0%, #073299 50%, #1450d8 100%);
+    color: #ffffff;
+    padding-top: 16px;
+    padding-bottom: 74px; /* pb-16 sm:pb-20 de uss-gex para que la tarjeta flote con holgura */
+    box-shadow: 0 4px 24px -2px rgba(4, 29, 95, 0.25);
+}
+
+.portada-uss__luz {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+}
+
+.portada-uss__luz--1 {
+    width: 320px;
+    height: 320px;
+    background: rgba(56, 189, 248, 0.25);
+    filter: blur(75px);
+    top: -90px;
+    left: -70px;
+}
+
+.portada-uss__luz--2 {
+    width: 380px;
+    height: 380px;
+    background: rgba(129, 140, 248, 0.2);
+    filter: blur(85px);
+    bottom: -110px;
+    right: -70px;
+}
+
+.hero-illustration {
+    position: absolute;
+    right: -2rem;
+    bottom: 0.5rem;
+    width: 22rem;
+    color: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .hero-illustration {
+        width: 14rem;
+        right: -1rem;
+        opacity: 0.6;
+    }
+}
+
+.portada-uss__logo {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.15s ease;
+}
+
+.portada-uss__logo:hover {
+    transform: scale(1.02);
+}
+
+.portada-uss__logo img {
+    display: block;
+    height: 30px;
+    width: auto;
+}
+
+.btn-portal-cinf {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.btn-portal-cinf:hover {
+    background: #ffffff;
+    color: var(--uss-azul);
+    border-color: #ffffff;
+}
+
+.insignia-uss {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #e0e7ff;
+}
+
+.portada-uss__titulo {
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin-bottom: 6px;
+}
+
+@media (min-width: 768px) {
+    .portada-uss__titulo {
+        font-size: 2.5rem;
+    }
+}
+
+.texto-oro {
+    color: var(--uss-oro);
+}
+
+.portada-uss__subtitulo {
+    font-size: 14px;
+    color: rgba(224, 231, 255, 0.9);
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.45;
+}
+
+/* ===================================================
+   2. Contenedor y Tarjeta Elevada de Carrera (Paso 1)
+   =================================================== */
+.hoja-contenedor {
+    flex: 1;
+    max-width: 960px; /* Ancho idéntico al buscador max-w-4xl de uss-gex */
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px 28px;
+    position: relative;
+    z-index: 10;
+}
+
+.tarjeta-carrera-elevada {
+    margin-top: -32px; /* -mt-8 idéntico a uss-gex */
+    position: relative;
+    z-index: 20;
+    background: #ffffff;
+    border: 1px solid var(--uss-border);
+    border-radius: 18px;
+    padding: 20px 24px;
+    box-shadow: var(--uss-sombra-lg);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.tarjeta-carrera-elevada.requiere-atencion {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18), 0 16px 36px -8px rgba(239, 68, 68, 0.2) !important;
+    animation: shakeMatSelect 0.45s ease-in-out;
+}
+
+@keyframes shakeMatSelect {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+.tarjeta-carrera__paso {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    background: var(--uss-azul);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.tarjeta-carrera__titulo {
+    font-size: 15.5px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--uss-text-main);
+    margin: 0;
+}
+
+.tarjeta-carrera__desc {
+    font-size: 12px;
+    color: var(--uss-text-muted);
+}
+
+/* ===================================================
+   3. Combobox de Carrera (Escritura Directa en el Input)
+   =================================================== */
+.carrera-combobox {
+    position: relative;
+    width: 100%;
+}
+
+.carrera-combobox__wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0 14px 0 16px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.18s ease;
+}
+
+.carrera-combobox__wrap:focus-within {
+    border-color: var(--uss-azul);
+    box-shadow: 0 0 0 3px rgba(7, 50, 153, 0.12);
+    background: #ffffff;
+}
+
+.carrera-combobox__icono {
+    font-size: 20px;
+    line-height: 1;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.carrera-combobox__input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14.5px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--uss-text-main);
+}
+
+.carrera-combobox__input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.carrera-combobox__acciones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.carrera-combobox__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.15s ease;
+}
+
+.carrera-combobox__clear:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.carrera-combobox__chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 6px;
+    transition: transform 0.2s ease, background 0.15s ease;
+}
+
+.carrera-combobox__chevron:hover {
+    background: #f1f5f9;
+    color: var(--uss-azul);
+}
+
+.carrera-combobox__wrap.abierto .carrera-combobox__chevron {
+    transform: rotate(180deg);
+}
+
+/* Dropdown flotante directamente debajo */
+.carrera-combobox__dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 18px 40px -4px rgba(7, 50, 153, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-height: 270px;
+    overflow-y: auto;
+    padding: 6px;
+    animation: matSelectFadeIn 0.16s ease-out;
+}
+
+@keyframes matSelectFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.carrera-combobox__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.carrera-combobox__item:hover,
+.carrera-combobox__item.activo {
+    background: var(--uss-azul-light);
+}
+
+.carrera-combobox__item.seleccionado {
+    background: #e0e7ff;
+    font-weight: 700;
+}
+
+.carrera-combobox__item-nombre {
+    font-size: 13.5px;
+    color: var(--uss-text-main);
+}
+
+.carrera-combobox__item-ruta {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--uss-azul);
+    background: rgba(7, 50, 153, 0.08);
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.carrera-combobox__highlight {
+    background: #fef08a;
+    color: #854d0e;
+    font-weight: 700;
+    padding: 0 1px;
+    border-radius: 2px;
+}
+
+.carrera-combobox__empty {
+    padding: 16px 12px;
+    text-align: center;
+    font-size: 12.5px;
+    color: #64748b;
+}
+
+/* Ficha de Ruta Oficial */
+.ficha-ruta-activa {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0edff 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 10px 14px;
+    animation: matSelectFadeIn 0.2s ease-out;
+}
+
+.ficha-ruta__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ficha-ruta__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--uss-azul);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.ficha-ruta__nombre {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--uss-azul-dark);
+}
+
+.ficha-ruta__carrera {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e3a8a;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.ficha-ruta__cursos {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.ficha-ruta__cursos-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.ficha-ruta__curso-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Alerta de carrera requerida */
+.alerta-carrera-requerida {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 10px;
+    animation: matSelectFadeIn 0.2s ease-out;
+}
+
+/* ===================================================
+   4. Paso 2: Ciclos de Apertura (Grid de Ciclos)
+   =================================================== */
+.seccion-ciclos-wrap {
+    margin-top: 18px;
+}
+
+.titulo-seccion-mini {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--uss-text-main);
+    letter-spacing: -0.01em;
+}
+
+.subtitulo-seccion-mini {
+    font-size: 12px;
+    color: var(--uss-text-muted);
+}
+
+.grid-ciclos-compacto {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+}
+
+@media (max-width: 991px) {
+    .grid-ciclos-compacto {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 575px) {
+    .grid-ciclos-compacto {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ciclo-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 76px;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1.5px solid var(--uss-border);
+    border-radius: 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: var(--uss-sombra-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.ciclo-btn:hover {
+    border-color: var(--uss-azul);
+    transform: translateY(-2px);
+    box-shadow: var(--uss-sombra-md);
+}
+
+.ciclo-btn:active {
+    transform: translateY(0);
+}
+
+.ciclo-btn__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.ciclo-btn__mes {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--uss-text-main);
+}
+
+.ciclo-btn__duracion {
+    font-size: 11px;
+    color: var(--uss-text-muted);
+}
+
+.ciclo-btn__icono {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.ciclo-btn__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.ciclo-btn__badge {
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ciclo-btn__badge--disponible {
+    color: #0369a1;
+}
+
+.ciclo-btn__badge--vacio {
+    color: #94a3b8;
+}
+
+.ciclo-btn__accion {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--uss-azul);
+}
+
+.ciclo-btn--destacado {
+    border-color: #93c5fd;
+    background: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
+}
+
+.ciclo-btn--destacado:hover {
+    border-color: var(--uss-azul);
+}
+
+/* Tarjeta informativa de ayuda */
+.ciclo-btn--ayuda {
+    background: #f8fafc;
+    border: 1.5px dashed #cbd5e1;
+    cursor: default;
+}
+
+.ciclo-btn--ayuda:hover {
+    transform: none;
+    border-color: #94a3b8;
+    box-shadow: none;
+}
+
+/* ===================================================
+   5. Estilos para horarios.html (El otro index)
+   =================================================== */
+.banner-carrera-horarios {
+    background: #ffffff;
+    border: 1px solid var(--uss-border);
+    border-radius: 14px;
+    padding: 12px 18px;
+    box-shadow: var(--uss-sombra-sm);
+    margin-bottom: 12px;
+}
+
+.btn-volver-inicio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.btn-volver-inicio:hover {
+    background: #f1f5f9;
+    color: var(--uss-azul);
+    border-color: #94a3b8;
+}
+
+/* Cinta de filtros */
+.cinta-horarios {
+    background: #ffffff;
+    border: 1px solid var(--uss-border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: var(--uss-sombra-sm);
+    margin-bottom: 14px;
+}
+
+.pestanas-ciclos {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.pestana-ciclo {
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.pestana-ciclo:hover {
+    background: #f1f5f9;
+    color: var(--uss-text-main);
+}
+
+.pestana-ciclo.activa {
+    background: var(--uss-azul);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(7, 50, 153, 0.2);
+}
+
+/* Tabla moderna de horarios */
+.tabla-horarios-wrap {
+    background: #ffffff;
+    border: 1px solid var(--uss-border);
+    border-radius: 14px;
+    box-shadow: var(--uss-sombra-sm);
+    overflow: hidden;
+}
+
+.tabla-horarios {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12.5px;
+}
+
+.tabla-horarios thead th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.tabla-horarios tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #1e293b;
+}
+
+.tabla-horarios tbody tr:hover td {
+    background: #f8fafc;
+}
+
+.tabla-horarios tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges de Turno */
+.badge-turno {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-turno--manana {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.badge-turno--tarde {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.badge-turno--noche {
+    background: #f3e8ff;
+    color: #6b21a8;
+    border: 1px solid #e9d5ff;
+}
+
+/* Badges de Aula y Modalidad */
+.badge-aula {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.badge-aula--zoom {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+/* Botón de Enlace Zoom / Aula */
+.btn-zoom {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--uss-azul);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-zoom:hover {
+    background: var(--uss-azul-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.docente-asignado {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.docente-pendiente {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Footer institucional */
+.footer-uss {
+    background: #ffffff;
+    border-top: 1px solid var(--uss-border);
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 11.5px;
+    color: #64748b;
+    margin-top: auto;
+}
