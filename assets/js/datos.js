@@ -236,3 +236,185 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
   const grupo = window.CONSULTA_CURSOS.especialidades.find((e) => e.patron.test(seccion || ''));
   return !grupo || grupo.carreras.includes(carrera);
 };
+
+
+/**
+ * Integración opcional con Google Sheets.
+ * La hoja debe estar publicada en la web como CSV o entregar JSON accesible por fetch.
+ * No completa fechas, cupos ni horarios ausentes con valores inventados.
+ */
+(() => {
+  const catalogo = window.CONSULTA_CURSOS;
+  if (!catalogo) return;
+
+  const normalizarCabecera = (valor) =>
+    String(valor || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  function parsearCSV(texto) {
+    const filas = [];
+    let fila = [];
+    let campo = '';
+    let entreComillas = false;
+    const input = String(texto || '').replace(/^\uFEFF/, '');
+
+    for (let i = 0; i < input.length; i += 1) {
+      const caracter = input[i];
+      const siguiente = input[i + 1];
+
+      if (caracter === '"' && entreComillas && siguiente === '"') {
+        campo += '"';
+        i += 1;
+      } else if (caracter === '"') {
+        entreComillas = !entreComillas;
+      } else if (caracter === ',' && !entreComillas) {
+        fila.push(campo.trim());
+        campo = '';
+      } else if ((caracter === '\n' || caracter === '\r') && !entreComillas) {
+        if (caracter === '\r' && siguiente === '\n') i += 1;
+        fila.push(campo.trim());
+        if (fila.some((celda) => celda !== '')) filas.push(fila);
+        fila = [];
+        campo = '';
+      } else {
+        campo += caracter;
+      }
+    }
+
+    fila.push(campo.trim());
+    if (fila.some((celda) => celda !== '')) filas.push(fila);
+    return filas;
+  }
+
+  const obtener = (objeto, nombres) => {
+    const claves = Object.keys(objeto);
+    for (const nombre of nombres) {
+      const buscada = normalizarCabecera(nombre);
+      const clave = claves.find((item) => normalizarCabecera(item) === buscada);
+      if (clave !== undefined && objeto[clave] !== undefined && objeto[clave] !== null) {
+        return String(objeto[clave]).trim();
+      }
+    }
+    return '';
+  };
+
+  function normalizarFecha(valor) {
+    const raw = String(valor || '').trim();
+    if (!raw) return '';
+    const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (iso) return `${iso[3].padStart(2, '0')}/${iso[2].padStart(2, '0')}/${iso[1]}`;
+    const local = raw.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (local) return `${local[1].padStart(2, '0')}/${local[2].padStart(2, '0')}/${local[3]}`;
+    return raw;
+  }
+
+  function normalizarCiclo(valor) {
+    const raw = normalizarCabecera(valor);
+    const equivalencias = {
+      enero: 'enero', febrero: 'febrero', abril: 'abril', mayo: 'mayo',
+      agosto: 'agosto', setiembre: 'setiembre', septiembre: 'setiembre',
+      octubre: 'octubre', noviembre: 'noviembre', diciembre: 'diciembre',
+    };
+    for (const [clave, id] of Object.entries(equivalencias)) {
+      if (raw.includes(clave)) return id;
+    }
+    return raw.replace(/\s+/g, '-');
+  }
+
+  function normalizarFilaSheets(registro, indice = 0) {
+    const curso = obtener(registro, ['Curso Oficial', 'Curso', 'Asignatura']);
+    const seccion = obtener(registro, ['Sección', 'Seccion', 'Grupo']);
+    if (!curso || !seccion) return null;
+
+    const cursoNormalizado = curso.trim();
+    const cursosTrad = catalogo.cursosTradicionales || [];
+    const esTradicional =
+      cursosTrad.some((nombre) => normalizarCabecera(nombre) === normalizarCabecera(cursoNormalizado)) ||
+      /computacion\s*(i|ii|iii|1|2|3)|taller de certificacion/i.test(cursoNormalizado);
+    const ciclo = normalizarCiclo(obtener(registro, ['Ciclo', 'Mes', 'Periodo']));
+    const cuposRaw = obtener(registro, ['Cupos', 'Vacantes', 'Capacidad']);
+    const cupos = cuposRaw === '' ? null : Number(cuposRaw.replace(/[^\d.-]/g, ''));
+
+    return {
+      id: obtener(registro, ['ID', 'Id']) || `sheets-${indice + 1}`,
+      ciclo,
+      modelo: obtener(registro, ['Modelo', 'Plan'])
+        ? (/tradicional|pac|computacion/i.test(obtener(registro, ['Modelo', 'Plan'])) ? 'tradicional' : 'protech')
+        : (esTradicional ? 'tradicional' : 'protech'),
+      curso: cursoNormalizado,
+      seccion: seccion.replace(/^PEAD-/i, 'PEAD ').trim(),
+      inicio: normalizarFecha(obtener(registro, ['Inicio', 'Fecha Inicio', 'Fecha de Inicio'])),
+      fin: normalizarFecha(obtener(registro, ['Fin', 'Fecha Fin', 'Fecha de Fin'])),
+      turno: obtener(registro, ['Turno']),
+      dias: obtener(registro, ['Días', 'Dias']),
+      horario: obtener(registro, ['Horario']),
+      aula: obtener(registro, ['Aula', 'Modalidad']),
+      cupos: Number.isFinite(cupos) ? cupos : null,
+      cuposDisponibles: null,
+      cuposTotal: Number.isFinite(cupos) ? cupos : null,
+      docente: obtener(registro, ['Docente', 'Docente asignado']),
+      linkAula: obtener(registro, ['Link Aula', 'Enlace', 'URL Aula']) || null,
+    };
+  }
+
+  function convertirDatosSheets(datos) {
+    let registros = datos;
+
+    if (typeof datos === 'string') {
+      const filas = parsearCSV(datos);
+      if (filas.length < 2) return [];
+      const cabeceras = filas[0];
+      registros = filas.slice(1).map((fila) =>
+        Object.fromEntries(cabeceras.map((cabecera, indice) => [cabecera, fila[indice] || '']))
+      );
+    } else if (!Array.isArray(datos)) {
+      const listaObjetos = [datos?.data, datos?.rows, datos?.records, datos?.results]
+        .find(Array.isArray);
+      if (listaObjetos) {
+        registros = listaObjetos;
+      } else if (Array.isArray(datos?.values) && datos.values.length > 1) {
+        if (Array.isArray(datos.values[0])) {
+          registros = datos.values.slice(1).map((fila) =>
+            Object.fromEntries(datos.values[0].map((cabecera, indice) => [cabecera, fila[indice] || '']))
+          );
+        } else {
+          registros = datos.values;
+        }
+      } else {
+        registros = [];
+      }
+    }
+
+    return registros
+      .map((registro, indice) => normalizarFilaSheets(registro, indice))
+      .filter(Boolean);
+  }
+
+  catalogo.convertirDatosSheets = convertirDatosSheets;
+  catalogo.cargarDesdeGoogleSheets = async (sheetsCsvUrl) => {
+    if (!sheetsCsvUrl) return [];
+    const respuesta = await fetch(sheetsCsvUrl, {
+      headers: { Accept: 'text/csv, application/json;q=0.9, */*;q=0.8' },
+      cache: 'no-store',
+    });
+    if (!respuesta.ok) throw new Error(`Google Sheets respondió ${respuesta.status}`);
+    const contenido = await respuesta.text();
+    const tipoJSON = /json/i.test(respuesta.headers.get('content-type') || '') ||
+      /^[\s]*[\[{]/.test(contenido);
+    let datos = contenido;
+    if (tipoJSON) {
+      try {
+        datos = JSON.parse(contenido);
+      } catch {
+        throw new Error('La respuesta de Google Sheets no contiene un JSON válido.');
+      }
+    }
+    const filas = convertirDatosSheets(datos);
+    if (!filas.length) throw new Error('Google Sheets no contiene filas válidas con Curso Oficial y Sección.');
+    return filas;
+  };
+})();

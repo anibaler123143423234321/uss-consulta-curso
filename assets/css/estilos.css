@@ -190,8 +190,7 @@ body {
    =================================================== */
 .hoja-contenedor {
     flex: 1;
-    max-width: 960px;
-    /* Ancho idéntico al buscador max-w-4xl de uss-gex */
+    max-width: 1120px;
     width: 100%;
     margin: 0 auto;
     padding: 0 16px 28px;
@@ -200,21 +199,50 @@ body {
 }
 
 .tarjeta-carrera-elevada {
-    margin-top: -32px;
-    /* -mt-8 idéntico a uss-gex */
     position: relative;
     z-index: 20;
+    margin-top: -32px;
+    padding: 20px 24px 22px;
+    border-radius: 16px;
     background: #ffffff;
     border: 1px solid var(--uss-border);
-    border-radius: 18px;
-    padding: 22px 24px;
-    box-shadow: var(--uss-sombra-lg);
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 16px 38px -20px rgba(7, 50, 153, 0.28), 0 3px 10px rgba(15, 23, 42, 0.04);
 }
 
 #vista-carrera,
 #vista-ciclos {
     animation: matSelectFadeIn 0.2s ease-out;
+}
+
+#vista-ciclos {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-areas:
+        "career career"
+        "model cycle";
+    gap: 16px 20px;
+    align-items: start;
+}
+
+.carrera-seleccionada-barra {
+    grid-area: career;
+}
+
+.paso-modelo {
+    grid-area: model;
+}
+
+.paso-ciclos {
+    grid-area: cycle;
+}
+
+.paso-modelo,
+.paso-ciclos {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #e8edf5;
+    border-radius: 14px;
+    background: #f8fafc;
 }
 
 .tarjeta-carrera__paso {
@@ -231,8 +259,16 @@ body {
     flex-shrink: 0;
 }
 
+.paso-encabezado {
+    gap: 12px !important;
+}
+
+.paso-encabezado > div {
+    min-width: 0;
+}
+
 .tarjeta-carrera__titulo {
-    font-size: 15.5px;
+    font-size: 17px;
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--uss-text-main);
@@ -240,8 +276,9 @@ body {
 }
 
 .tarjeta-carrera__desc {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--uss-text-muted);
+    line-height: 1.5;
 }
 
 /* ===================================================
@@ -256,8 +293,8 @@ body {
     display: flex;
     align-items: center;
     width: 100%;
-    height: 48px;
-    padding: 0 14px 0 16px;
+    height: 54px;
+    padding: 0 16px 0 18px;
     background: #ffffff;
     border: 1.5px solid #cbd5e1;
     border-radius: 12px;
@@ -284,7 +321,7 @@ body {
     border: none;
     outline: none;
     background: transparent;
-    font-size: 14.5px;
+    font-size: 15.5px;
     font-weight: 600;
     font-family: inherit;
     color: var(--uss-text-main);
@@ -412,15 +449,40 @@ body {
 .carrera-seleccionada-barra {
     display: flex;
     align-items: center;
+    width: 100%;
+    max-width: 100%;
     justify-content: space-between;
-    padding: 10px 16px;
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0edff 100%);
-    border: 1px solid #bfdbfe;
+    padding: 12px 16px;
+    background: #f5f9ff;
+    border: 1px solid #d5e5fb;
     border-radius: 12px;
 }
 
+.carrera-seleccionada-barra > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.carrera-seleccionada-barra > div > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.carrera-seleccionada-barra > div > div:first-child > div {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    white-space: nowrap;
+}
+
 .carrera-seleccionada-barra__tag {
-    display: block;
+    flex: 0 0 auto;
     font-size: 10.5px;
     font-weight: 700;
     text-transform: uppercase;
@@ -430,10 +492,18 @@ body {
 
 .carrera-seleccionada-barra__nombre {
     display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 1.05rem;
     line-height: 1.2;
     color: var(--uss-azul-dark);
-    margin-top: 2px;
+    white-space: nowrap;
+}
+
+.carrera-seleccionada-barra__icono,
+.btn-cambiar-carrera {
+    flex-shrink: 0;
 }
 
 .btn-cambiar-carrera {
@@ -461,27 +531,34 @@ body {
    4.1 Selector de Modelo de Acreditación (Paso 2)
    =================================================== */
 .paso-modelo {
-    padding-top: 2px;
+    padding-top: 18px;
+    margin-bottom: 0;
 }
 
 .selector-modelo-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 10px;
-    margin-top: 8px;
+    margin-top: 10px;
+}
+
+.paso-modelo > .d-flex,
+.paso-ciclos > .d-flex {
+    margin-bottom: 8px;
 }
 
 .card-modelo-opcion {
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 2px solid #e2e8f0;
+    min-height: 0;
+    padding: 14px 16px;
+    border: 1.5px solid var(--uss-border);
+    border-radius: 14px;
     background: #ffffff;
     cursor: pointer;
     user-select: none;
-    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
     outline: none;
 }
 
@@ -564,7 +641,7 @@ body {
 }
 
 .card-modelo-opcion__titulo {
-    font-size: 13.5px;
+    font-size: 15.5px;
     font-weight: 800;
     color: var(--uss-text-main);
     line-height: 1.2;
@@ -577,17 +654,39 @@ body {
 
 .card-modelo-opcion__subtitulo {
     display: block;
-    font-size: 11px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--uss-text-muted);
     margin-bottom: 4px;
 }
 
 .card-modelo-opcion__desc {
-    font-size: 11px;
-    line-height: 1.35;
+    font-size: 13px;
+    line-height: 1.5;
     color: #475569;
     margin-bottom: 0;
+}
+
+@media (max-width: 991px) {
+    #vista-ciclos {
+        display: block;
+    }
+
+    .paso-modelo,
+    .paso-ciclos {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .paso-modelo {
+        margin-bottom: 16px;
+    }
+
+    .selector-modelo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .card-modelo-opcion__desc strong {
@@ -783,9 +882,10 @@ body {
 
 .hoja-contenedor-horarios {
     width: 100%;
-    max-width: 1680px; /* en monitores anchos la tabla aprovecha el espacio */
+    max-width: 1680px;
+    /* en monitores anchos la tabla aprovecha el espacio */
     margin: 0 auto;
-    padding: 10px 18px 12px;
+    padding: 8px 18px 12px;
 }
 
 .btn-volver-inicio {
@@ -814,17 +914,17 @@ body {
 .banner-carrera {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: #ffffff;
     border: 1px solid var(--uss-border);
     border-radius: 14px;
-    padding: 8px 18px;
+    padding: 6px 14px;
     box-shadow: var(--uss-sombra-sm);
     margin-bottom: 8px;
 }
 
 .banner-carrera__icono {
-    font-size: 24px;
+    font-size: 21px;
     line-height: 1;
     flex-shrink: 0;
 }
@@ -847,7 +947,7 @@ body {
 }
 
 .banner-carrera__nombre {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
     color: var(--uss-text-main);
     line-height: 1.25;
@@ -900,12 +1000,25 @@ body {
     border: 1px solid #fde68a;
 }
 
+.banner-carrera__ciclo-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border: 1px solid #dbe3ee;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
 .banner-carrera__cambiar {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    min-height: 34px;
-    padding: 5px 14px;
+    min-height: 30px;
+    padding: 4px 12px;
     border-radius: 999px;
     border: 1px solid #cbd5e1;
     background: #ffffff;
@@ -915,6 +1028,11 @@ body {
     text-decoration: none;
     white-space: nowrap;
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.banner-carrera__cambiar-corto,
+.tab-modelo__texto--corto {
+    display: none;
 }
 
 .banner-carrera__cambiar:hover {
@@ -928,17 +1046,17 @@ body {
     background: #ffffff;
     border: 1px solid var(--uss-border);
     border-radius: 12px;
-    padding: 8px 14px 10px;
+    padding: 6px 12px 8px;
     box-shadow: var(--uss-sombra-sm);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .cinta-horarios__modelo-switch {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    gap: 8px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
     border-bottom: 1px solid #f1f5f9;
 }
 
@@ -965,7 +1083,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 7px;
     border: none;
     background: transparent;
@@ -1003,8 +1121,8 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    padding-bottom: 5px;
+    margin-bottom: 6px;
     border-bottom: 1px solid #f1f5f9;
 }
 
@@ -1034,7 +1152,7 @@ body {
     overflow-x: auto;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    padding: 2px 2px 5px;
+    padding: 1px 2px 3px;
 }
 
 /* Degradado en el borde donde aún quedan pestañas por deslizar */
@@ -1065,8 +1183,8 @@ body {
     align-items: center;
     gap: 6px;
     flex-shrink: 0;
-    min-height: 32px;
-    padding: 5px 12px;
+    min-height: 28px;
+    padding: 3px 10px;
     border-radius: 999px;
     border: 1px solid #e2e8f0;
     background: #ffffff;
@@ -1125,6 +1243,8 @@ body {
 
 .cinta-horarios__conteo {
     margin: 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f1f5f9;
     font-size: 11.5px;
     font-weight: 700;
     color: var(--uss-text-muted);
@@ -1136,13 +1256,13 @@ body {
 .filtros-horarios {
     display: grid;
     grid-template-columns: minmax(200px, 1.5fr) repeat(4, minmax(0, 1fr)) auto;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
 }
 
 .filtros-horarios .form-control,
 .filtros-horarios .form-select {
-    min-height: 36px;
+    min-height: 32px;
     border-radius: 8px;
     border-color: #cbd5e1;
     font-size: 13px;
@@ -1175,8 +1295,8 @@ body {
 }
 
 .filtros-horarios__reset {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
     background: #ffffff;
@@ -1266,7 +1386,8 @@ body {
 }
 
 .tabla-horarios tbody td {
-    padding: 6px 9px; /* filas compactas: caben más secciones sin deslizar */
+    padding: 6px 9px;
+    /* filas compactas: caben más secciones sin deslizar */
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
     color: #1e293b;
@@ -1330,15 +1451,105 @@ body {
     font-weight: 600;
 }
 
+/* ===================================================
+   Badges y Colores Temáticos por Curso Oficial
+   =================================================== */
+.badge-curso {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+.badge-curso__icono {
+    display: block;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Word: Azul Microsoft Word */
+.badge-curso--word {
+    background: #eaf2fd;
+    color: #185abd;
+    border: 1px solid #bfdbfe;
+}
+
+/* Excel: Verde Microsoft Excel */
+.badge-curso--excel {
+    background: #ebf7ee;
+    color: #107c41;
+    border: 1px solid #bbf7d0;
+}
+
+/* Canva: Cian / Turquesa */
+.badge-curso--canva {
+    background: #e0f7fa;
+    color: #00838f;
+    border: 1px solid #a5f3fc;
+}
+
+/* AutoCAD: Rojo Autodesk */
+.badge-curso--autocad {
+    background: #fee2e2;
+    color: #c4151b;
+    border: 1px solid #fecaca;
+}
+
+/* Power BI: Ámbar / Oro */
+.badge-curso--powerbi {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.badge-curso--spss {
+    background: #f0edff;
+    color: #51418f;
+    border: 1px solid #d8d0ff;
+}
+
+/* Plan Tradicional (Computación II, III): Azul USS */
+.badge-curso--tradicional {
+    background: #eff6ff;
+    color: #073299;
+    border: 1px solid #bfdbfe;
+}
+
+/* Default / Otros */
+.badge-curso--default {
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
 .badge-turno {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     padding: 2px 9px;
     border-radius: 999px;
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
+}
+
+.badge-turno__icono {
+    display: block;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    flex: 0 0 16px;
+}
+
+.badge-turno--madrugada {
+    background: #e2e8f0;
+    color: #334155;
+    border: 1px solid #cbd5e1;
 }
 
 .badge-turno--manana {
@@ -1544,6 +1755,7 @@ body {
         opacity: 0;
         transform: translateY(-4px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1646,6 +1858,7 @@ body {
 
 /* Firefox no admite las reglas anteriores */
 @supports (-moz-appearance: none) {
+
     .tabla-horarios__scroll,
     .pestanas-ciclos-scroll,
     .carrera-combobox__dropdown {
@@ -1669,76 +1882,96 @@ body {
     }
 }
 
+@media (min-width: 900px) and (max-width: 1199px) {
+    .filtros-horarios {
+        grid-template-columns: minmax(220px, 1.6fr) repeat(4, minmax(0, 1fr)) 32px;
+    }
+
+    .filtros-horarios__buscar {
+        grid-column: auto;
+    }
+}
+
 /* Celular: todo en una columna y cada sección como tarjeta */
 @media (max-width: 767px) {
     .hoja-contenedor-horarios {
         padding: 10px 10px 24px;
     }
 
-    /* Banner: nombre arriba, ruta al medio, botón abajo */
     .banner-carrera {
-        flex-wrap: wrap;
-        align-items: flex-start;
-        padding: 12px 14px;
-        gap: 8px 10px;
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+        grid-template-areas:
+            "icon nombre cambiar"
+            "icon ruta ruta";
+        align-items: center;
+        gap: 4px 8px;
+        padding: 8px 10px;
     }
 
     .banner-carrera__datos {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 3px;
+        display: contents;
+    }
+
+    .banner-carrera__icono {
+        grid-area: icon;
+        font-size: 19px;
+    }
+
+    .banner-carrera__etiqueta,
+    .banner-carrera__categoria {
+        display: none;
     }
 
     .banner-carrera__nombre {
-        font-size: 15.5px;
+        grid-area: nombre;
+        min-width: 0;
+        font-size: 14px;
+        line-height: 1.2;
     }
 
-    /* El botón baja a su propia fila para no estrechar el nombre de la carrera */
+    .banner-carrera__ruta {
+        grid-area: ruta;
+        flex-wrap: nowrap;
+        gap: 3px;
+    }
+
+    .banner-carrera__badge,
+    .banner-carrera__modelo-badge,
+    .banner-carrera__ciclo-badge {
+        padding: 2px 5px;
+        font-size: 8.5px;
+    }
+
     .banner-carrera__cambiar {
-        flex-basis: 100%;
+        grid-area: cambiar;
         justify-content: center;
-        min-height: 38px;
+        gap: 3px;
+        min-height: 28px;
+        padding: 3px 7px;
+        font-size: 10px;
     }
 
-    /* Ciclos: carril arriba y contador en su propia fila */
+    .banner-carrera__cambiar-completo {
+        display: none;
+    }
+
+    .banner-carrera__cambiar-corto,
+    .tab-modelo__texto--corto {
+        display: inline;
+    }
+
+    .tab-modelo__texto--completo {
+        display: none;
+    }
+
     .cinta-horarios {
-        padding: 10px 12px 12px;
-    }
-
-    .cinta-horarios__modelo-switch {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 6px;
-    }
-
-    .selector-modelo-tabs {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .tab-modelo {
-        justify-content: center;
-        padding: 8px 6px;
-        font-size: 11.5px;
-        white-space: normal;
-        text-align: center;
-    }
-
-    .cinta-horarios__header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 6px;
-        padding-bottom: 8px;
-        margin-bottom: 10px;
-    }
-
-    .pestana-ciclo {
-        min-height: 36px;
-        padding: 6px 13px;
+        padding: 7px 8px 8px;
     }
 
     .cinta-horarios__conteo {
+        padding-bottom: 5px;
+        margin-bottom: 6px;
         font-size: 11.5px;
         font-weight: 600;
         white-space: normal;
@@ -1765,8 +1998,8 @@ body {
 
     .filtros-horarios .form-control,
     .filtros-horarios .form-select {
-        min-height: 38px;
-        font-size: 13px;
+        min-height: 35px;
+        font-size: 12px;
     }
 
     .filtros-horarios .form-select {
@@ -1812,6 +2045,10 @@ body {
         display: block;
     }
 
+    .tabla-horarios tbody {
+        counter-reset: horario-card;
+    }
+
     .tabla-horarios tbody tr {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1822,6 +2059,7 @@ body {
         border: 1px solid var(--uss-border);
         border-radius: 14px;
         box-shadow: var(--uss-sombra-sm);
+        counter-increment: horario-card;
     }
 
     .tabla-horarios tbody td {
@@ -1870,10 +2108,30 @@ body {
     }
 
     .tabla-horarios tbody .col-curso {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         min-width: 0;
         width: auto;
         font-size: 15px;
         line-height: 1.3;
+    }
+
+    .tabla-horarios tbody .col-curso::before {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+        margin: 0;
+        border-radius: 50%;
+        background: var(--uss-azul);
+        color: #ffffff;
+        content: counter(horario-card);
+        font-size: 11px;
+        font-style: normal;
+        letter-spacing: 0;
     }
 
     .tabla-horarios tbody .col-curso strong {
@@ -1882,6 +2140,34 @@ body {
 
     .tabla-horarios tbody .col-sec {
         text-align: right;
+    }
+
+    .tabla-horarios tbody .col-sec::before {
+        display: block;
+        margin-bottom: 4px;
+        content: "Sección";
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--uss-text-subtle);
+    }
+
+    .tabla-horarios tbody tr {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .tabla-horarios tbody tr.seccion-seleccionada {
+        border-color: var(--uss-azul);
+        background: #eff6ff;
+        box-shadow: 0 0 0 2px rgba(7, 50, 153, 0.12), var(--uss-sombra-sm);
+    }
+
+    .tabla-horarios tbody tr:focus-visible {
+        outline: 2px solid var(--uss-azul);
+        outline-offset: 2px;
     }
 
     .tabla-horarios tbody .col-acceso {
@@ -1991,8 +2277,8 @@ body {
 
     .tarjeta-carrera-elevada {
         margin-top: -14px;
-        padding: 10px 10px 12px;
-        border-radius: 12px;
+        padding: 16px 14px 18px;
+        border-radius: 14px;
     }
 
     /* Barra carrera seleccionada compacta */
@@ -2008,6 +2294,10 @@ body {
 
     .carrera-seleccionada-barra__tag {
         font-size: 8.5px;
+    }
+
+    .carrera-seleccionada-barra__tag-completo {
+        display: none;
     }
 
     .carrera-seleccionada-barra__nombre {
@@ -2028,71 +2318,75 @@ body {
         font-size: 10px;
     }
 
+    .paso-encabezado {
+        gap: 8px !important;
+    }
+
     .tarjeta-carrera__titulo {
-        font-size: 12.5px;
-        line-height: 1.2;
+        font-size: 14px;
+        line-height: 1.3;
     }
 
     .tarjeta-carrera__desc {
-        font-size: 10px;
-        line-height: 1.25;
+        font-size: 11px;
+        line-height: 1.4;
     }
 
-    /* Selector de modelo en 2 columnas lado a lado en móvil: altura total ~80px */
     .selector-modelo-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-        margin-top: 5px;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 10px;
     }
 
     .card-modelo-opcion {
-        padding: 7px 8px;
-        border-radius: 9px;
-        border-width: 1.5px;
+        min-height: 0;
+        padding: 14px;
+        border-radius: 12px;
     }
 
     .card-modelo-opcion__check {
-        top: 6px;
-        right: 6px;
-        width: 14px;
-        height: 14px;
-        font-size: 8px;
+        top: 12px;
+        right: 12px;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
         border-width: 1.5px;
     }
 
     .card-modelo-opcion__top {
-        gap: 4px;
-        margin-bottom: 2px;
-        padding-right: 14px;
+        gap: 6px;
+        margin-bottom: 5px;
+        padding-right: 24px;
     }
 
     .card-modelo-opcion__icono {
-        font-size: 13.5px;
+        font-size: 16px;
     }
 
     .card-modelo-opcion__tag {
-        font-size: 8px;
-        padding: 1px 4px;
+        font-size: 9px;
+        padding: 2px 6px;
     }
 
     .card-modelo-opcion__titulo {
-        font-size: 11px;
-        line-height: 1.2;
-        margin-bottom: 1px;
-    }
-
-    .card-modelo-opcion__subtitulo {
-        font-size: 9.5px;
+        font-size: 13px;
+        line-height: 1.35;
         margin-bottom: 2px;
     }
 
+    .card-modelo-opcion__subtitulo {
+        font-size: 11px;
+        margin-bottom: 5px;
+    }
+
     .card-modelo-opcion__desc {
-        font-size: 9px;
-        line-height: 1.2;
+        font-size: 11.5px;
+        line-height: 1.45;
     }
 
     .carrera-combobox__input {
-        font-size: 16px; /* evita el zoom automático de iOS al enfocar */
+        font-size: 16px;
+        /* evita el zoom automático de iOS al enfocar */
         min-width: 0;
         padding: 8px 10px 8px 32px;
     }

@@ -10,6 +10,7 @@
  */
 document.addEventListener('DOMContentLoaded', () => {
   const { ciclos, rutas, horarios, cursosTradicionales = [], cursosParaTodos = [] } = window.CONSULTA_CURSOS;
+  let horariosDisponibles = Array.isArray(horarios) ? [...horarios] : [];
   const $ = (id) => document.getElementById(id);
 
   let carreraSeleccionada = '';
@@ -173,7 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // 3. Actualizar conteo de secciones por ciclo para esta carrera
       actualizarContadoresCiclos();
     } else {
-      // Volver a la vista de selección de carrera
+      // Al cambiar de carrera se exige volver a elegir el modelo explícitamente.
+      modeloSeleccionado = null;
+      [cardModeloProtech, cardModeloTradicional].forEach((card) => {
+        card?.classList.remove('activa');
+        card?.setAttribute('aria-checked', 'false');
+      });
+      gridCiclos.hidden = true;
+      // Volver a la vista de selección de carrera.
       vistaCiclos.hidden = true;
       vistaCarrera.hidden = false;
       elInput.value = '';
@@ -366,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const badge = $(`badge-ciclo-${ciclo.id}`);
       if (!btn || !badge) return;
 
-      const filas = (horarios || []).filter((h) => {
+      const filas = horariosDisponibles.filter((h) => {
         if ((h.ciclo || '').toLowerCase() !== ciclo.id.toLowerCase()) return false;
         // Si el horario tiene modelo definido, debe coincidir; si no, inferir por curso
         const modeloFila =
@@ -387,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const cursosDistintos = new Set(filas.map((h) => h.curso)).size;
       const anio = (filas[0].inicio || '').split('/')[2] || '';
+      btn.dataset.anio = anio;
       btn.classList.add('ciclo-btn--destacado');
       btn.querySelector('.ciclo-btn__mes').textContent = `${ciclo.nombre} ${anio}`.trim();
       btn.querySelector('.ciclo-btn__duracion').textContent = `Clases del ${filas[0].inicio} al ${filas[0].fin} · ${ciclo.duracion}`;
@@ -414,12 +423,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn && btn.disabled) return;
     const url = `horarios.html?ciclo=${encodeURIComponent(cicloId)}&carrera=${encodeURIComponent(
       carreraSeleccionada
-    )}&modelo=${encodeURIComponent(modeloSeleccionado)}`;
+    )}&modelo=${encodeURIComponent(modeloSeleccionado)}&anio=${encodeURIComponent(btn?.dataset.anio || '')}`;
     window.location.href = url;
   }
 
-  // Comprobar parámetros de URL (si regresan desde horarios.html)
-  // Sin asignación automática de modelo para que el estudiante siempre elija explícitamente
+  // Sincronización opcional de ciclos y secciones desde Google Sheets.
+  // Si la hoja falla, se conserva intacto el catálogo oficial de datos.js.
+  async function sincronizarHorariosSheets() {
+    const urlSheets = window.GOOGLE_SHEETS_URL || window.GOOGLE_SHEETS_CSV_URL || '';
+    if (!urlSheets || typeof window.CONSULTA_CURSOS.cargarDesdeGoogleSheets !== 'function') return;
+    try {
+      const filas = await window.CONSULTA_CURSOS.cargarDesdeGoogleSheets(urlSheets);
+      if (filas.length) {
+        horariosDisponibles = filas;
+        if (carreraSeleccionada) actualizarContadoresCiclos();
+      }
+    } catch (error) {
+      console.warn('Google Sheets no disponible; se mantiene el catálogo local.', error);
+    }
+  }
+  sincronizarHorariosSheets();
+
+  // Comprobar parámetros de URL (si regresan desde horarios.html).
+  // Se restaura la carrera, nunca el modelo: el estudiante debe elegirlo de nuevo.
   const params = new URLSearchParams(window.location.search);
   const carreraUrl = params.get('carrera');
   if (carreraUrl) {

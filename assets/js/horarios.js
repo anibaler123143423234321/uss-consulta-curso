@@ -5,7 +5,7 @@
  * Funcionalidad:
  * 1. Lee parámetros de URL (?ciclo=enero&carrera=Psicologia).
  * 2. Muestra banner oficial de la carrera y ruta de aprendizaje CINF.
- * 3. Permite alternar de ciclo mediante pestañas directas sin salir de la página.
+ * 3. Muestra únicamente la carrera, modelo y ciclo seleccionados en el portal.
  * 4. Consume API REST (/api/horarios) con respaldo en datos.js (Canva oficial).
  * 5. Filtra por cursos correspondientes a la carrera, turno y búsqueda en vivo.
  */
@@ -23,7 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Obtener parámetros de la URL
   const params = new URLSearchParams(window.location.search);
   const carreraParam = params.get('carrera');
-  let cicloActivo = (params.get('ciclo') || 'enero').toLowerCase();
+  const cicloSolicitado = (params.get('ciclo') || 'enero').toLowerCase();
+  let anioActivo = /^\d{4}$/.test(params.get('anio') || '') ? params.get('anio') : '';
+  let cicloActivo = ciclos.some((ciclo) => ciclo.id.toLowerCase() === cicloSolicitado)
+    ? cicloSolicitado
+    : (ciclos[0]?.id || 'enero').toLowerCase();
   const modeloRaw = (params.get('modelo') || '').toLowerCase().trim();
 
   // Configurar enlace de retorno al portal
@@ -103,6 +107,12 @@ document.addEventListener('DOMContentLoaded', () => {
   $('txt-carrera-nombre').textContent = carrera;
   $('txt-ruta-badge').textContent = `Ruta ${ruta.id}`;
   $('txt-ruta-nombre').textContent = `(${ruta.nombre.replace(/^Ruta \d+ · /, '')})`;
+  const cicloSeleccionado = ciclos.find((ciclo) => ciclo.id.toLowerCase() === cicloActivo);
+  const badgeCiclo = $('txt-ciclo-badge');
+  if (badgeCiclo && cicloSeleccionado) {
+    badgeCiclo.textContent = cicloSeleccionado.nombre;
+    badgeCiclo.title = 'Ciclo seleccionado';
+  }
 
   function actualizarBadgeModelo() {
     const badge = $('txt-modelo-badge');
@@ -116,128 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   actualizarBadgeModelo();
-
-  // Selector interactivo de Modelo (Switcher entre PROTECH XP y Plan Tradicional)
-  const tabModeloProtech = $('tab-modelo-protech');
-  const tabModeloTradicional = $('tab-modelo-tradicional');
-
-  function actualizarTabsModelo() {
-    const esProtech = modeloActivo === 'protech';
-    if (tabModeloProtech) {
-      tabModeloProtech.classList.toggle('activa', esProtech);
-      tabModeloProtech.setAttribute('aria-selected', esProtech ? 'true' : 'false');
-    }
-    if (tabModeloTradicional) {
-      tabModeloTradicional.classList.toggle('activa', !esProtech);
-      tabModeloTradicional.setAttribute('aria-selected', !esProtech ? 'true' : 'false');
-    }
-    actualizarBadgeModelo();
-    actualizarEnlaceVolver();
-  }
-
-  function cambiarModelo(nuevoModelo) {
-    const normalizado = nuevoModelo === 'tradicional' ? 'tradicional' : 'protech';
-    if (normalizado === modeloActivo) return;
-    modeloActivo = normalizado;
-
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.set('modelo', modeloActivo);
-    window.history.replaceState(null, '', newUrl);
-
-    actualizarTabsModelo();
-
-    // Si el ciclo activo no tiene secciones para el nuevo modelo, pasar al primer ciclo disponible
-    if (contarSeccionesCiclo(cicloActivo) === 0) {
-      const cicloDisponible = ciclos.find((c) => contarSeccionesCiclo(c.id) > 0);
-      if (cicloDisponible) {
-        cicloActivo = cicloDisponible.id.toLowerCase();
-        newUrl.searchParams.set('ciclo', cicloActivo);
-        window.history.replaceState(null, '', newUrl);
-      }
-    }
-
-    actualizarPestanasCiclos();
-    poblarFiltrosDinamicos();
-    pintarTabla();
-  }
-
-  tabModeloProtech?.addEventListener('click', () => cambiarModelo('protech'));
-  tabModeloTradicional?.addEventListener('click', () => cambiarModelo('tradicional'));
-
-  // 3. Control de Ciclos y Pestañas con Bloqueo de Meses sin Apertura
-  const contPestanas = $('pestanas-meses');
-
-  function contarSeccionesCiclo(cicloId) {
-    if (!horariosCargados || horariosCargados.length === 0) return 0;
-    const cNorm = (cicloId || '').toLowerCase();
-    return horariosCargados.filter(
-      (h) => (h.ciclo || '').toLowerCase() === cNorm && esDeLaCarrera(h)
-    ).length;
-  }
-
-  function actualizarPestanasCiclos() {
-    if (!contPestanas) return;
-    contPestanas.replaceChildren(
-      ...ciclos.map((ciclo) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        const cId = ciclo.id.toLowerCase();
-        const num = contarSeccionesCiclo(cId);
-        const estaActivo = cId === cicloActivo;
-
-        btn.dataset.ciclo = ciclo.id;
-
-        if (num === 0) {
-          btn.className = 'pestana-ciclo pestana-ciclo--bloqueada';
-          btn.disabled = true;
-          btn.title = `${ciclo.nombre}: Sin cursos programados para esta carrera`;
-          btn.innerHTML = `<span>${ciclo.nombre}</span> <span class="pestana-ciclo__lock" aria-hidden="true">🔒</span>`;
-        } else {
-          btn.className = `pestana-ciclo ${estaActivo ? 'activa' : ''}`;
-          btn.innerHTML = `<span>${ciclo.nombre}</span> <span class="pestana-ciclo__badge">${num}</span>`;
-          btn.addEventListener('click', () => {
-            cambiarCiclo(ciclo.id);
-          });
-        }
-        return btn;
-      })
-    );
-
-    // La pestaña activa puede quedar fuera de la vista en celular: se centra en su carril
-    const activa = contPestanas.querySelector('.pestana-ciclo.activa');
-    const carril = $('pestanas-scroll');
-    if (activa && carril) {
-      carril.scrollLeft = activa.offsetLeft - (carril.clientWidth - activa.offsetWidth) / 2;
-    }
-    actualizarSombrasCarril();
-  }
-
-  // Degradado en los bordes del carril cuando quedan pestañas por deslizar
-  function actualizarSombrasCarril() {
-    const carril = $('pestanas-scroll');
-    if (!carril) return;
-    const resto = carril.scrollWidth - carril.clientWidth - carril.scrollLeft;
-    carril.classList.toggle('hay-mas-derecha', resto > 4);
-    carril.classList.toggle('hay-mas-izquierda', carril.scrollLeft > 4);
-  }
-
-  $('pestanas-scroll')?.addEventListener('scroll', actualizarSombrasCarril, { passive: true });
-  window.addEventListener('resize', actualizarSombrasCarril);
-
-  function cambiarCiclo(nuevoCicloId) {
-    const cId = nuevoCicloId.toLowerCase();
-    if (contarSeccionesCiclo(cId) === 0) return;
-
-    cicloActivo = cId;
-    actualizarPestanasCiclos();
-
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.set('ciclo', cicloActivo);
-    window.history.replaceState(null, '', newUrl);
-
-    poblarFiltrosDinamicos();
-    pintarTabla();
-  }
 
   // 4. Fuente de datos: API REST o catálogo oficial en datos.js
   let horariosCargados = [];
@@ -283,67 +171,120 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${hStr}:${m} ${ampm}`;
   }
 
+  // 4.1 Identidad y Colores Temáticos por Curso Oficial
+  function obtenerClaseColorCurso(nombre) {
+    const n = (nombre || '').toLowerCase();
+    if (n.includes('word')) return 'badge-curso--word';
+    if (n.includes('excel')) return 'badge-curso--excel';
+    if (n.includes('canva')) return 'badge-curso--canva';
+    if (n.includes('autocad') || n.includes('cad') || n.includes('diseño mecánico') || n.includes('diseno mecanico')) return 'badge-curso--autocad';
+    if (n.includes('spss')) return 'badge-curso--spss';
+    if (n.includes('power bi')) return 'badge-curso--powerbi';
+    if (n.includes('computacion') || n.includes('computación')) return 'badge-curso--tradicional';
+    return 'badge-curso--default';
+  }
+
+  function obtenerIconoCurso(nombre) {
+    const n = (nombre || '').toLowerCase();
+    if (n.includes('word')) return 'word';
+    if (n.includes('excel')) return 'excel';
+    if (n.includes('canva')) return 'canva';
+    if (n.includes('autocad') || n.includes('cad') || n.includes('diseño mecánico') || n.includes('diseno mecanico')) return 'autocad';
+    if (n.includes('power bi')) return 'power-bi';
+    if (n.includes('spss')) return 'spss';
+    if (n.includes('computacion') || n.includes('computación')) return 'computacion';
+    return 'software';
+  }
+
+  // 4.2 Sincronización opcional con Google Sheets (CSV o JSON)
+  // La normalización compartida vive en datos.js para reutilizarse también en index.js.
+  const GOOGLE_SHEETS_URL = window.GOOGLE_SHEETS_URL || window.GOOGLE_SHEETS_CSV_URL || '';
+
+  async function cargarDesdeGoogleSheets(sheetsCsvUrl) {
+    const cargar = window.CONSULTA_CURSOS?.cargarDesdeGoogleSheets;
+    if (typeof cargar !== 'function') {
+      throw new Error('No se encontró el módulo de integración de Google Sheets en datos.js.');
+    }
+    return cargar(sheetsCsvUrl);
+  }
+
   async function cargarDatos() {
     try {
-      const apiBase = resolveApiBase();
-      const resp = await fetch(`${apiBase}/horarios`, {
-        headers: { Accept: 'application/json' },
-      });
-      if (resp.ok) {
-        const json = await resp.json();
-        const filas = Array.isArray(json) ? json : (json.data || []);
-        if (filas.length > 0) {
-          horariosCargados = filas.map((r) => {
-            const cLimpio = limpiarCurso(r.curso);
-            const modFila =
-              r.modelo ||
-              (window.CONSULTA_CURSOS.esCursoDeModelo(cLimpio, 'tradicional')
-                ? 'tradicional'
-                : 'protech');
-            return {
-              id: r.id,
-              ciclo: (r.ciclo || '').toLowerCase(),
-              modelo: modFila,
-              curso: cLimpio,
-              seccion: r.seccion || '',
-              inicio: formatearFecha(r.fechaInicio),
-              fin: formatearFecha(r.fechaFin),
-              turno: r.turno || '',
-              dias: r.dias || '',
-              horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
-              aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
-              cupos: r.cupos || 30,
-              cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
-              cuposTotal: r.cupos || 30,
-              docente: r.docente || '',
-              linkAula: r.linkAula || null,
-            };
-          });
-          fuenteEnVivo = true;
+      // Intento 1: Cargar desde la hoja publicada en Google Sheets (Drive) en vivo
+      if (GOOGLE_SHEETS_URL) {
+        try {
+          const filasSheets = await cargarDesdeGoogleSheets(GOOGLE_SHEETS_URL);
+          if (filasSheets && filasSheets.length > 0) {
+            horariosCargados = filasSheets;
+            fuenteEnVivo = true;
+          }
+        } catch (eSheets) {
+          console.warn('Google Sheets no disponible, probando API de Supabase...', eSheets);
+        }
+      }
+
+      // Intento 2: API REST Supabase (si Google Sheets no respondió)
+      if (horariosCargados.length === 0) {
+        const apiBase = resolveApiBase();
+        const resp = await fetch(`${apiBase}/horarios`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (resp.ok) {
+          const json = await resp.json();
+          const filas = Array.isArray(json) ? json : (json.data || []);
+          if (filas.length > 0) {
+            horariosCargados = filas.map((r) => {
+              const cLimpio = limpiarCurso(r.curso);
+              const modFila =
+                r.modelo ||
+                (window.CONSULTA_CURSOS.esCursoDeModelo(cLimpio, 'tradicional')
+                  ? 'tradicional'
+                  : 'protech');
+              return {
+                id: r.id,
+                ciclo: (r.ciclo || '').toLowerCase(),
+                modelo: modFila,
+                curso: cLimpio,
+                seccion: r.seccion || '',
+                inicio: formatearFecha(r.fechaInicio),
+                fin: formatearFecha(r.fechaFin),
+                turno: r.turno || '',
+                dias: r.dias || '',
+                horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
+                aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
+                cupos: r.cupos || 30,
+                cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
+                cuposTotal: r.cupos || 30,
+                docente: r.docente || '',
+                linkAula: r.linkAula || null,
+              };
+            });
+            fuenteEnVivo = true;
+          } else {
+            horariosCargados = horarios || [];
+          }
         } else {
           horariosCargados = horarios || [];
         }
-      } else {
-        horariosCargados = horarios || [];
       }
     } catch {
       horariosCargados = horarios || [];
     }
 
-    // Si el ciclo activo no tiene secciones para esta carrera y modelo, pasar al primer ciclo que sí tenga
-    if (contarSeccionesCiclo(cicloActivo) === 0) {
-      const cicloDisponible = ciclos.find((c) => contarSeccionesCiclo(c.id) > 0);
-      if (cicloDisponible) {
-        cicloActivo = cicloDisponible.id.toLowerCase();
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.set('ciclo', cicloActivo);
-        window.history.replaceState(null, '', newUrl);
-      }
+    const filasCicloSeleccionado = horariosCargados.filter(
+      (fila) => (fila.ciclo || '').toLowerCase() === cicloActivo && esDeLaCarrera(fila)
+    );
+    const obtenerAnio = (fila) =>
+      String(fila?.anio || fila?.inicio || '').match(/\b(20\d{2})\b/)?.[1] || '';
+    if (!anioActivo) anioActivo = obtenerAnio(filasCicloSeleccionado[0]);
+    if (badgeCiclo && cicloSeleccionado) {
+      badgeCiclo.textContent = `${cicloSeleccionado.nombre}${anioActivo ? ` ${anioActivo}` : ''}`;
+      badgeCiclo.title = anioActivo
+        ? `Ciclo seleccionado: ${cicloSeleccionado.nombre} ${anioActivo}`
+        : 'Ciclo seleccionado';
     }
 
-    actualizarTabsModelo();
     leerFiltrosDeUrl();
-    actualizarPestanasCiclos();
     poblarFiltrosDinamicos();
     pintarTabla();
   }
@@ -376,7 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const filasDelCiclo = () =>
-    horariosCargados.filter((h) => (h.ciclo || '').toLowerCase() === cicloActivo && esDeLaCarrera(h));
+    horariosCargados.filter((h) => {
+      if ((h.ciclo || '').toLowerCase() !== cicloActivo || !esDeLaCarrera(h)) return false;
+      if (!anioActivo) return true;
+      const anioFila = String(h.anio || h.inicio || '').match(/\b(20\d{2})\b/)?.[1] || '';
+      return anioFila === anioActivo;
+    });
 
   // Reescribe las opciones con su conteo y deshabilita las que no darían resultados
   function poblarFiltrosDinamicos() {
@@ -386,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const opciones = {
       curso: [...new Set(filas.map((h) => h.curso))].sort((a, b) => ordenCursos.indexOf(a) - ordenCursos.indexOf(b)).map((v) => [v, v]),
-      turno: ['Mañana', 'Tarde', 'Noche'].map((v) => [v, v]),
+      turno: ['Madrugada', 'Mañana', 'Tarde', 'Noche'].map((v) => [v, v]),
       dias: [...new Set(filas.map((h) => h.dias))].sort((a, b) => a.localeCompare(b, 'es')).map((v) => [v, v]),
       aula: [['zoom', 'Virtual · Zoom'], ['presencial', 'Presencial']],
     };
@@ -459,8 +405,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
+  const tbodyHorarios = $('filas-horarios');
+
+  function seleccionarTarjetaSeccion(fila) {
+    tbodyHorarios?.querySelectorAll('tr.seccion-seleccionada').forEach((seleccionada) => {
+      seleccionada.classList.remove('seccion-seleccionada');
+      seleccionada.setAttribute('aria-selected', 'false');
+    });
+    fila.classList.add('seccion-seleccionada');
+    fila.setAttribute('aria-selected', 'true');
+  }
+
+  tbodyHorarios?.addEventListener('click', (evento) => {
+    if (evento.target.closest('a, button, input, select, textarea')) return;
+    const fila = evento.target.closest('tr');
+    if (fila) seleccionarTarjetaSeccion(fila);
+  });
+
+  tbodyHorarios?.addEventListener('keydown', (evento) => {
+    if (!['Enter', ' '].includes(evento.key)) return;
+    const fila = evento.target.closest('tr');
+    if (!fila) return;
+    evento.preventDefault();
+    seleccionarTarjetaSeccion(fila);
+  });
+
+  const actualizarAccesoTecladoTarjetas = () => {
+    tbodyHorarios?.querySelectorAll('tr').forEach((fila) => {
+      fila.tabIndex = window.matchMedia('(max-width: 767px)').matches ? 0 : -1;
+    });
+  };
+  window.addEventListener('resize', actualizarAccesoTecladoTarjetas);
+
   function pintarTabla() {
-    const tbody = $('filas-horarios');
+    const tbody = tbodyHorarios;
     const sinHorarios = $('sin-horarios');
     const conteo = $('conteo-secciones');
 
@@ -501,21 +479,38 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.replaceChildren(
       ...filasVisibles.map((fila, index) => {
         const tr = document.createElement('tr');
+        tr.setAttribute('aria-selected', 'false');
 
         // 1. Número
         const tdNum = document.createElement('td');
         tdNum.className = 'col-num';
         tdNum.textContent = index + 1;
 
-        // 2. Curso Oficial
+        // 2. Curso Oficial con color temático institucional
         const tdCurso = document.createElement('td');
         tdCurso.className = 'col-curso';
-        tdCurso.innerHTML = `<strong>${fila.curso}</strong>`;
+        const colorClase = obtenerClaseColorCurso(fila.curso);
+        const badgeCurso = document.createElement('span');
+        badgeCurso.className = `badge-curso ${colorClase}`;
+        const iconoCurso = document.createElement('img');
+        iconoCurso.className = 'badge-curso__icono';
+        iconoCurso.src = `assets/img/cursos/${obtenerIconoCurso(fila.curso)}.svg`;
+        iconoCurso.alt = '';
+        iconoCurso.setAttribute('aria-hidden', 'true');
+        iconoCurso.width = 22;
+        iconoCurso.height = 22;
+        const nombreCurso = document.createElement('strong');
+        nombreCurso.textContent = fila.curso || 'Curso sin nombre';
+        badgeCurso.append(iconoCurso, nombreCurso);
+        tdCurso.appendChild(badgeCurso);
 
         // 3. Sección
         const tdSec = document.createElement('td');
         tdSec.className = 'col-sec';
-        tdSec.innerHTML = `<span class="badge-seccion">${fila.seccion}</span>`;
+        const badgeSeccion = document.createElement('span');
+        badgeSeccion.className = 'badge-seccion';
+        badgeSeccion.textContent = fila.seccion || '—';
+        tdSec.appendChild(badgeSeccion);
 
         // 4. Inicio
         const tdInicio = document.createElement('td');
@@ -527,10 +522,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 6. Turno
         const tdTurno = document.createElement('td');
-        let claseTurno = 'badge-turno--manana';
-        if (fila.turno === 'Tarde') claseTurno = 'badge-turno--tarde';
-        if (fila.turno === 'Noche') claseTurno = 'badge-turno--noche';
-        tdTurno.innerHTML = `<span class="badge-turno ${claseTurno}">${fila.turno || '—'}</span>`;
+        const turnoNormalizado = normalizar(fila.turno);
+        const tipoTurno = ['manana', 'tarde', 'noche', 'madrugada'].includes(turnoNormalizado)
+          ? turnoNormalizado
+          : '';
+        const badgeTurno = document.createElement('span');
+        badgeTurno.className = `badge-turno${tipoTurno ? ` badge-turno--${tipoTurno}` : ''}`;
+        if (tipoTurno) {
+          const iconoTurno = document.createElement('img');
+          iconoTurno.className = 'badge-turno__icono';
+          iconoTurno.src = `assets/img/turnos/${tipoTurno}.svg`;
+          iconoTurno.alt = '';
+          iconoTurno.setAttribute('aria-hidden', 'true');
+          iconoTurno.width = 16;
+          iconoTurno.height = 16;
+          badgeTurno.appendChild(iconoTurno);
+        }
+        badgeTurno.appendChild(document.createTextNode(fila.turno || '—'));
+        tdTurno.appendChild(badgeTurno);
 
         // 7. Días
         const tdDias = document.createElement('td');
@@ -545,14 +554,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // 9. Aula
         const tdAula = document.createElement('td');
         const esZoom = (fila.aula || '').toLowerCase().includes('zoom') || (fila.aula || '').toLowerCase().includes('virtual');
-        tdAula.innerHTML = `<span class="badge-aula ${esZoom ? 'badge-aula--zoom' : ''}">
-          ${esZoom ? '📹' : '📍'} ${fila.aula || 'Virtual'}
-        </span>`;
+        const badgeAula = document.createElement('span');
+        badgeAula.className = `badge-aula ${esZoom ? 'badge-aula--zoom' : ''}`;
+        badgeAula.textContent = `${esZoom ? '📹' : '📍'} ${fila.aula || 'No informado'}`;
+        tdAula.appendChild(badgeAula);
 
         // 10. Cupos
         const tdCupos = document.createElement('td');
         tdCupos.className = 'text-center';
-        tdCupos.innerHTML = `<span class="badge-cupos" title="Cupos referenciales programados">👥 <strong>${fila.cupos || 30}</strong> cupos</span>`;
+        const cuposTexto = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos)) ? `${Number(fila.cupos)} cupos` : 'No informado';
+        const badgeCupos = document.createElement('span');
+        badgeCupos.className = 'badge-cupos';
+        badgeCupos.title = 'Cupos publicados';
+        const cuposStrong = document.createElement('strong');
+        cuposStrong.textContent = cuposTexto;
+        badgeCupos.append('👥 ', cuposStrong);
+        tdCupos.appendChild(badgeCupos);
 
         // 11. Docente
         const tdDocente = document.createElement('td');
@@ -567,12 +584,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // 12. Acceso
         const tdAcceso = document.createElement('td');
         tdAcceso.className = 'col-acceso';
-        if (fila.linkAula) {
-          tdAcceso.innerHTML = `<a href="${fila.linkAula}" target="_blank" rel="noopener noreferrer" class="btn-zoom" title="Abrir sala Zoom">
-            <span>Ingresar</span> <span>↗</span>
-          </a>`;
+        let urlAula = null;
+        try {
+          const candidata = new URL(fila.linkAula || '');
+          if (['https:', 'http:'].includes(candidata.protocol)) urlAula = candidata.href;
+        } catch { /* Enlace vacío o inválido: se muestra acceso pendiente. */ }
+        if (urlAula) {
+          const enlace = document.createElement('a');
+          enlace.href = urlAula;
+          enlace.target = '_blank';
+          enlace.rel = 'noopener noreferrer';
+          enlace.className = 'btn-zoom';
+          enlace.title = 'Abrir sala Zoom';
+          enlace.append(document.createTextNode('Ingresar '), document.createTextNode('↗'));
+          tdAcceso.appendChild(enlace);
         } else {
-          tdAcceso.innerHTML = `<span class="badge-acceso-pendiente">Aula Virtual</span>`;
+          const pendiente = document.createElement('span');
+          pendiente.className = 'badge-acceso-pendiente';
+          pendiente.textContent = 'Aula Virtual';
+          tdAcceso.appendChild(pendiente);
         }
 
         // En celular cada fila es una tarjeta: la etiqueta de cada dato sale de data-label
@@ -601,6 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return tr;
       })
     );
+    actualizarAccesoTecladoTarjetas();
   }
 
   // 7. Ajuste de la caja de la tabla: ocupa el alto libre y avisa si se desliza de lado
@@ -663,4 +694,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Iniciar carga
   cargarDatos();
 });
-

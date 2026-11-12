@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=31" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=39" />
 </head>
 
 <body>
@@ -46,11 +46,12 @@
             <!-- Barra superior con Logo USS y botón de Portal CINF -->
             <div class="d-flex align-items-center justify-content-between gap-3 pt-1">
                 <a class="portada-uss__logo" href="./" title="Ir al inicio de Consulta de Cursos">
-                    <img src="assets/img/logo-uss.png" alt="Universidad Señor de Sipán · Centro de Informática" width="951"
-                        height="328" />
+                    <img src="assets/img/logo-uss.png" alt="Universidad Señor de Sipán · Centro de Informática"
+                        width="951" height="328" />
                 </a>
-                <div class="d-flex align-items-center gap-2">
-                    <a class="btn-portal-cinf" href="https://informatica-uss.vercel.app/" target="_blank" rel="noopener noreferrer">
+                <div class="d-flex align-items-center gap-2 paso-encabezado">
+                    <a class="btn-portal-cinf" href="https://informatica-uss.vercel.app/" target="_blank"
+                        rel="noopener noreferrer">
                         <span>Portal CINF</span>
                         <span>↗</span>
                     </a>
@@ -67,7 +68,8 @@
                     Consulta de Horarios y <span class="texto-oro">Cursos</span>
                 </h1>
                 <p class="portada-uss__subtitulo mt-1 mb-0">
-                    Selecciona tu carrera profesional para ver tu ruta de aprendizaje y consultar las secciones programadas por ciclo.
+                    Selecciona tu carrera profesional para ver tu ruta de aprendizaje y consultar las secciones
+                    programadas por ciclo.
                 </p>
             </div>
         </div>
@@ -76,7 +78,7 @@
     <main class="hoja-contenedor">
         <!-- Tarjeta Elevada Interactiva (Contiene el flujo completo paso a paso) -->
         <section class="tarjeta-carrera-elevada" id="tarjeta-carrera">
-            
+
             <!-- PASO 1: Selección de Carrera -->
             <div id="vista-carrera">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
@@ -84,7 +86,8 @@
                         <span class="tarjeta-carrera__paso">1</span>
                         <div>
                             <h2 class="tarjeta-carrera__titulo">Selecciona tu Carrera Profesional</h2>
-                            <p class="tarjeta-carrera__desc mb-0">Escribe o busca tu carrera para consultar tus horarios oficiales</p>
+                            <p class="tarjeta-carrera__desc mb-0">Escribe o busca tu carrera para consultar tus horarios
+                                oficiales</p>
                         </div>
                     </div>
                 </div>
@@ -118,11 +121,14 @@
                         <div class="d-flex align-items-center gap-2">
                             <span class="carrera-seleccionada-barra__icono" aria-hidden="true">🎓</span>
                             <div>
-                                <span class="carrera-seleccionada-barra__tag">Carrera seleccionada:</span>
-                                <strong class="carrera-seleccionada-barra__nombre" id="carrera-elegida-badge">Derecho</strong>
+                                <span class="carrera-seleccionada-barra__tag">Carrera <span
+                                        class="carrera-seleccionada-barra__tag-completo">seleccionada</span>:</span>
+                                <strong class="carrera-seleccionada-barra__nombre"
+                                    id="carrera-elegida-badge">Derecho</strong>
                             </div>
                         </div>
-                        <button type="button" class="btn-cambiar-carrera" id="btn-cambiar-carrera" title="Elegir otra carrera">
+                        <button type="button" class="btn-cambiar-carrera" id="btn-cambiar-carrera"
+                            title="Elegir otra carrera">
                             <span>Cambiar</span>
                             <span>✕</span>
                         </button>
@@ -131,35 +137,42 @@
 
                 <!-- PASO 2: Selección de Modelo de Acreditación -->
                 <div class="paso-modelo mb-2.5">
-                    <div class="d-flex align-items-center gap-1.5 mb-1.5">
+                    <div class="d-flex align-items-center gap-1.5 mb-1.5 paso-encabezado">
                         <span class="tarjeta-carrera__paso">2</span>
                         <div>
                             <h2 class="tarjeta-carrera__titulo">¿Qué modelo de acreditación cursas?</h2>
-                            <p class="tarjeta-carrera__desc mb-0">Selecciona tu situación para ver tus horarios exactos</p>
+                            <p class="tarjeta-carrera__desc mb-0">Selecciona tu situación para ver tus horarios exactos
+                            </p>
                         </div>
                     </div>
 
-                    <div class="selector-modelo-grid" role="radiogroup" aria-label="Selecciona tu modelo de acreditación">
+                    <div class="selector-modelo-grid" role="radiogroup"
+                        aria-label="Selecciona tu modelo de acreditación">
                         <!-- Opción 1: PROTECH XP -->
-                        <div class="card-modelo-opcion" id="opcion-modelo-protech" data-modelo="protech" role="radio" aria-checked="false" tabindex="0">
+                        <div class="card-modelo-opcion" id="opcion-modelo-protech" data-modelo="protech" role="radio"
+                            aria-checked="false" tabindex="0">
                             <div class="card-modelo-opcion__check" aria-hidden="true">✓</div>
                             <div class="card-modelo-opcion__top">
                                 <span class="card-modelo-opcion__icono" aria-hidden="true">🛡️</span>
-                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--recomendado">Nuevo / Ruta</span>
+                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--recomendado">Nuevo /
+                                    Ruta</span>
                             </div>
                             <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
                             <span class="card-modelo-opcion__subtitulo">Ruta por carrera</span>
                             <p class="card-modelo-opcion__desc">
-                                <strong>Nunca llevé cursos en USS</strong> o sigo mi ruta oficial (Word, Excel, Canva...).
+                                <strong>Nunca llevé cursos en USS</strong> o sigo mi ruta oficial (Word, Excel,
+                                Canva...).
                             </p>
                         </div>
 
                         <!-- Opción 2: Plan Tradicional -->
-                        <div class="card-modelo-opcion" id="opcion-modelo-tradicional" data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
+                        <div class="card-modelo-opcion" id="opcion-modelo-tradicional" data-modelo="tradicional"
+                            role="radio" aria-checked="false" tabindex="0">
                             <div class="card-modelo-opcion__check" aria-hidden="true">✓</div>
                             <div class="card-modelo-opcion__top">
                                 <span class="card-modelo-opcion__icono" aria-hidden="true">📚</span>
-                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--tradicional">Plan Anterior</span>
+                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--tradicional">Plan
+                                    Anterior</span>
                             </div>
                             <strong class="card-modelo-opcion__titulo">Plan Tradicional</strong>
                             <span class="card-modelo-opcion__subtitulo">Comp. I, II y III</span>
@@ -173,7 +186,7 @@
                 <!-- PASO 3: Selección de Ciclo -->
                 <div class="paso-ciclos">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1.5">
-                        <div class="d-flex align-items-center gap-1.5">
+                        <div class="d-flex align-items-center gap-1.5 paso-encabezado">
                             <span class="tarjeta-carrera__paso">3</span>
                             <div>
                                 <h2 class="tarjeta-carrera__titulo">Elige el ciclo de apertura</h2>
@@ -195,8 +208,9 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Selección -->
-    <script src="assets/js/datos.js?v=31"></script>
-    <script src="assets/js/index.js?v=31"></script>
+    <script src="assets/js/config.js?v=32"></script>
+    <script src="assets/js/datos.js?v=32"></script>
+    <script src="assets/js/index.js?v=33"></script>
 </body>
 
 </html>
