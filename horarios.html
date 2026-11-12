@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=12" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=14" />
 </head>
 
 <body>
@@ -60,8 +60,7 @@
                             <strong class="fs-6 text-dark" id="txt-carrera-nombre">Psicología</strong>
                             <span class="badge bg-primary text-white" id="txt-ruta-badge">Ruta 2</span>
                             <span class="text-xs text-primary fw-bold" id="txt-ruta-nombre">(Sociales y Leyes)</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1" id="txt-ruta-cursos"></div>
+                        </div>  
                     </div>
                 </div>
                 <a href="index.html" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3">
@@ -83,24 +82,43 @@
                 </div>
             </div>
 
-            <!-- Filtros de búsqueda y turno -->
+            <!-- Filtros avanzados: Búsqueda, Curso, Turno, Días y Modalidad -->
             <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-7 col-lg-8">
+                <div class="col-12 col-md-4 col-lg-3">
                     <div class="position-relative">
-                        <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">🔍</span>
+                        <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted" style="font-size:12px;">🔍</span>
                         <input type="text" class="form-control form-control-sm rounded-8 ps-5" id="filtro-texto"
-                            placeholder="Buscar por nombre de curso, docente, código o sección..." />
+                            placeholder="Buscar docente, código, sección..." />
                     </div>
                 </div>
-                <div class="col-12 col-md-5 col-lg-4">
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="filtro-turno" class="form-label mb-0 text-xs fw-bold text-muted text-nowrap">Turno:</label>
-                        <select class="form-select form-select-sm rounded-8" id="filtro-turno">
-                            <option value="">Todos los turnos</option>
-                            <option value="Mañana">Mañana</option>
-                            <option value="Tarde">Tarde</option>
-                            <option value="Noche">Noche</option>
+                <div class="col-6 col-sm-4 col-md-3 col-lg-3">
+                    <select class="form-select form-select-sm rounded-8" id="filtro-curso" aria-label="Filtrar por curso oficial">
+                        <option value="">Todos los cursos</option>
+                    </select>
+                </div>
+                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
+                    <select class="form-select form-select-sm rounded-8" id="filtro-turno" aria-label="Filtrar por turno">
+                        <option value="">Todos los turnos</option>
+                        <option value="Mañana">Mañana</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noche">Noche</option>
+                    </select>
+                </div>
+                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
+                    <select class="form-select form-select-sm rounded-8" id="filtro-dias" aria-label="Filtrar por días">
+                        <option value="">Todos los días</option>
+                    </select>
+                </div>
+                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
+                    <div class="d-flex align-items-center gap-1.5">
+                        <select class="form-select form-select-sm rounded-8" id="filtro-aula" aria-label="Filtrar por modalidad">
+                            <option value="">Todas las aulas</option>
+                            <option value="zoom">Virtual · Zoom</option>
+                            <option value="presencial">Presencial</option>
                         </select>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-8 px-2.5 py-1 text-nowrap fw-bold" id="btn-reset-filtros-top" title="Restablecer todos los filtros">
+                            ↺
+                        </button>
                     </div>
                 </div>
             </div>
@@ -147,8 +165,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Horarios -->
-    <script src="assets/js/datos.js?v=12"></script>
-    <script src="assets/js/horarios.js?v=12"></script>
+    <script src="assets/js/datos.js?v=14"></script>
+    <script src="assets/js/horarios.js?v=14"></script>
 </body>
 
 </html>

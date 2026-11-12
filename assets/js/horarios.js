@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Obtener parámetros de la URL
   const params = new URLSearchParams(window.location.search);
   const carreraParam = params.get('carrera');
-  let cicloActivo = (params.get('ciclo') || 'enero').toLowerCase();
+  let cicloActivo = (params.get('ciclo') || 'noviembre').toLowerCase();
 
   // Si no hay carrera seleccionada, redirigir al portal de selección
   if (!carreraParam) {
@@ -50,40 +50,58 @@ document.addEventListener('DOMContentLoaded', () => {
   $('txt-ruta-badge').textContent = `Ruta ${ruta.id}`;
   $('txt-ruta-nombre').textContent = `(${ruta.nombre.replace(/^Ruta \d+ · /, '')})`;
 
-  const contCursos = $('txt-ruta-cursos');
-  contCursos.replaceChildren(
-    ...Array.from(cursosPermitidos).map((c) => {
-      const span = document.createElement('span');
-      span.className = 'ficha-ruta__curso-chip';
-      span.innerHTML = `<span style="color:#0284c7">✓</span> ${c}`;
-      return span;
-    })
-  );
-
-  // 3. Pestañas de meses para cambiar de ciclo
+  // 3. Control de Ciclos y Pestañas con Bloqueo de Meses sin Apertura
   const contPestanas = $('pestanas-meses');
-  ciclos.forEach((ciclo) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `pestana-ciclo ${ciclo.id.toLowerCase() === cicloActivo ? 'activa' : ''}`;
-    btn.textContent = ciclo.nombre;
-    btn.dataset.ciclo = ciclo.id;
-    btn.addEventListener('click', () => {
-      cambiarCiclo(ciclo.id);
-    });
-    contPestanas.appendChild(btn);
-  });
+
+  function contarSeccionesCiclo(cicloId) {
+    if (!horariosCargados || horariosCargados.length === 0) return 0;
+    const cNorm = (cicloId || '').toLowerCase();
+    return horariosCargados.filter(
+      (h) => (h.ciclo || '').toLowerCase() === cNorm && cursosPermitidos.has(h.curso)
+    ).length;
+  }
+
+  function actualizarPestanasCiclos() {
+    if (!contPestanas) return;
+    contPestanas.replaceChildren(
+      ...ciclos.map((ciclo) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        const cId = ciclo.id.toLowerCase();
+        const num = contarSeccionesCiclo(cId);
+        const estaActivo = cId === cicloActivo;
+
+        btn.dataset.ciclo = ciclo.id;
+
+        if (num === 0) {
+          btn.className = 'pestana-ciclo pestana-ciclo--bloqueada';
+          btn.disabled = true;
+          btn.title = `${ciclo.nombre}: Sin cursos programados para esta carrera`;
+          btn.innerHTML = `<span>${ciclo.nombre}</span> <span class="pestana-ciclo__lock" aria-hidden="true">🔒</span>`;
+        } else {
+          btn.className = `pestana-ciclo ${estaActivo ? 'activa' : ''}`;
+          btn.innerHTML = `<span>${ciclo.nombre}</span> <span class="pestana-ciclo__badge">${num}</span>`;
+          btn.addEventListener('click', () => {
+            cambiarCiclo(ciclo.id);
+          });
+        }
+        return btn;
+      })
+    );
+  }
 
   function cambiarCiclo(nuevoCicloId) {
-    cicloActivo = nuevoCicloId.toLowerCase();
-    document.querySelectorAll('.pestana-ciclo').forEach((btn) => {
-      btn.classList.toggle('activa', btn.dataset.ciclo.toLowerCase() === cicloActivo);
-    });
+    const cId = nuevoCicloId.toLowerCase();
+    if (contarSeccionesCiclo(cId) === 0) return;
+
+    cicloActivo = cId;
+    actualizarPestanasCiclos();
 
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('ciclo', cicloActivo);
     window.history.replaceState(null, '', newUrl);
 
+    poblarFiltrosDinamicos();
     pintarTabla();
   }
 
@@ -167,16 +185,65 @@ document.addEventListener('DOMContentLoaded', () => {
       horariosCargados = horarios || [];
     }
 
+    // Si el ciclo activo no tiene secciones para esta carrera, cambiar al primer ciclo que sí tenga
+    if (contarSeccionesCiclo(cicloActivo) === 0) {
+      const cicloDisponible = ciclos.find((c) => contarSeccionesCiclo(c.id) > 0);
+      if (cicloDisponible) {
+        cicloActivo = cicloDisponible.id.toLowerCase();
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('ciclo', cicloActivo);
+        window.history.replaceState(null, '', newUrl);
+      }
+    }
+
+    actualizarPestanasCiclos();
+    poblarFiltrosDinamicos();
     pintarTabla();
   }
 
-  // 5. Renderizado de Filas de la Tabla
+  // 5. Poblado Dinámico de Filtros (Cursos y Días del ciclo activo)
+  function poblarFiltrosDinamicos() {
+    const selCurso = $('filtro-curso');
+    const selDias = $('filtro-dias');
+
+    const filasCiclo = horariosCargados.filter(
+      (h) => (h.ciclo || '').toLowerCase() === cicloActivo && cursosPermitidos.has(h.curso)
+    );
+
+    // Cursos únicos
+    if (selCurso) {
+      const valorPrevio = selCurso.value;
+      const cursosUnicos = Array.from(new Set(filasCiclo.map((h) => h.curso).filter(Boolean))).sort();
+      selCurso.innerHTML = '<option value="">Todos los cursos</option>' +
+        cursosUnicos.map((c) => `<option value="${c}">${c}</option>`).join('');
+      if (cursosUnicos.includes(valorPrevio)) {
+        selCurso.value = valorPrevio;
+      }
+    }
+
+    // Días únicos
+    if (selDias) {
+      const valorPrevio = selDias.value;
+      const diasUnicos = Array.from(new Set(filasCiclo.map((h) => h.dias).filter(Boolean))).sort();
+      selDias.innerHTML = '<option value="">Todos los días</option>' +
+        diasUnicos.map((d) => `<option value="${d}">${d}</option>`).join('');
+      if (diasUnicos.includes(valorPrevio)) {
+        selDias.value = valorPrevio;
+      }
+    }
+  }
+
+  // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   function pintarTabla() {
     const tbody = $('filas-horarios');
     const sinHorarios = $('sin-horarios');
     const conteo = $('conteo-secciones');
-    const textoFiltro = normalizar($('filtro-texto').value);
-    const turnoFiltro = $('filtro-turno').value;
+
+    const textoFiltro = normalizar($('filtro-texto')?.value);
+    const cursoFiltro = $('filtro-curso')?.value || '';
+    const turnoFiltro = $('filtro-turno')?.value || '';
+    const diasFiltro = $('filtro-dias')?.value || '';
+    const aulaFiltro = ($('filtro-aula')?.value || '').toLowerCase();
 
     const filasCiclo = horariosCargados.filter(
       (h) => (h.ciclo || '').toLowerCase() === cicloActivo
@@ -185,12 +252,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filtrar estrictamente por los cursos que le tocan a esta carrera
     const filasCarrera = filasCiclo.filter((h) => cursosPermitidos.has(h.curso));
 
-    // Filtrar por turno y texto de búsqueda
+    // Filtrar por texto, curso, turno, días y aula/modalidad
     const filasVisibles = filasCarrera.filter((fila) => {
+      if (cursoFiltro && fila.curso !== cursoFiltro) return false;
       if (turnoFiltro && fila.turno !== turnoFiltro) return false;
+      if (diasFiltro && fila.dias !== diasFiltro) return false;
+      if (aulaFiltro) {
+        const aulaNorm = (fila.aula || '').toLowerCase();
+        if (aulaFiltro === 'zoom' && !aulaNorm.includes('zoom') && !aulaNorm.includes('virtual')) return false;
+        if (aulaFiltro === 'presencial' && (aulaNorm.includes('zoom') || aulaNorm.includes('virtual'))) return false;
+      }
       if (
         textoFiltro &&
-        !normalizar(`${fila.curso} ${fila.seccion} ${fila.docente} ${fila.dias} ${fila.aula}`).includes(
+        !normalizar(`${fila.curso} ${fila.seccion} ${fila.docente} ${fila.dias} ${fila.aula} ${fila.turno}`).includes(
           textoFiltro
         )
       ) {
@@ -306,14 +380,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Eventos de filtros
-  $('filtro-texto').addEventListener('input', pintarTabla);
-  $('filtro-turno').addEventListener('change', pintarTabla);
+  $('filtro-texto')?.addEventListener('input', pintarTabla);
+  $('filtro-curso')?.addEventListener('change', pintarTabla);
+  $('filtro-turno')?.addEventListener('change', pintarTabla);
+  $('filtro-dias')?.addEventListener('change', pintarTabla);
+  $('filtro-aula')?.addEventListener('change', pintarTabla);
 
-  $('btn-reset-filtros').addEventListener('click', () => {
-    $('filtro-texto').value = '';
-    $('filtro-turno').value = '';
+  function resetearTodosLosFiltros() {
+    if ($('filtro-texto')) $('filtro-texto').value = '';
+    if ($('filtro-curso')) $('filtro-curso').value = '';
+    if ($('filtro-turno')) $('filtro-turno').value = '';
+    if ($('filtro-dias')) $('filtro-dias').value = '';
+    if ($('filtro-aula')) $('filtro-aula').value = '';
     pintarTabla();
-  });
+  }
+
+  $('btn-reset-filtros')?.addEventListener('click', resetearTodosLosFiltros);
+  $('btn-reset-filtros-top')?.addEventListener('click', resetearTodosLosFiltros);
 
   // Iniciar carga
   cargarDatos();

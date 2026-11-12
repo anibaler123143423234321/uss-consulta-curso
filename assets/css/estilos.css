@@ -605,9 +605,9 @@ body {
    =================================================== */
 .hoja-contenedor-horarios {
     width: 100%;
-    max-width: 1060px;
+    max-width: 1260px;
     margin: 0 auto;
-    padding: 14px 16px 28px;
+    padding: 14px 18px 32px;
 }
 
 .banner-carrera-horarios {
@@ -659,11 +659,14 @@ body {
 }
 
 .pestana-ciclo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 5px 12px;
     border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: #64748b;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -671,15 +674,48 @@ body {
     transition: all 0.15s ease;
 }
 
-.pestana-ciclo:hover {
+.pestana-ciclo:hover:not(:disabled) {
     background: #f1f5f9;
-    color: var(--uss-text-main);
+    color: var(--uss-azul);
+    border-color: #cbd5e1;
 }
 
 .pestana-ciclo.activa {
-    background: var(--uss-azul);
-    color: #ffffff;
+    background: var(--uss-azul) !important;
+    color: #ffffff !important;
+    border-color: var(--uss-azul) !important;
     box-shadow: 0 2px 6px rgba(7, 50, 153, 0.2);
+}
+
+.pestana-ciclo.activa .pestana-ciclo__badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.pestana-ciclo__badge {
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: var(--uss-azul);
+}
+
+/* Meses bloqueados / Sin apertura */
+.pestana-ciclo:disabled,
+.pestana-ciclo--bloqueada {
+    opacity: 0.42 !important;
+    background: #f8fafc !important;
+    color: #94a3b8 !important;
+    border: 1px dashed #cbd5e1 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    box-shadow: none !important;
+}
+
+.pestana-ciclo__lock {
+    font-size: 10px;
+    opacity: 0.75;
 }
 
 /* Tabla moderna de horarios */
