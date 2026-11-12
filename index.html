@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=30" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=31" />
 </head>
 
 <body>
@@ -57,16 +57,16 @@
                 </div>
             </div>
 
-            <!-- Título y subtítulo con dimensiones y jerarquía oficial de uss-gex -->
-            <div class="text-center mt-4 sm:mt-5 pt-2">
+            <!-- Título y subtítulo con dimensiones compactas y adaptadas a móvil -->
+            <div class="text-center mt-2 sm:mt-4 pt-1">
                 <span class="insignia-uss">
                     <span class="insignia-uss__icono">🛡️</span>
                     <span>Centro de Informática • PROTECH XP</span>
                 </span>
-                <h1 class="portada-uss__titulo mt-2">
+                <h1 class="portada-uss__titulo mt-1 sm:mt-2">
                     Consulta de Horarios y <span class="texto-oro">Cursos</span>
                 </h1>
-                <p class="portada-uss__subtitulo mt-2">
+                <p class="portada-uss__subtitulo mt-1 mb-0">
                     Selecciona tu carrera profesional para ver tu ruta de aprendizaje y consultar las secciones programadas por ciclo.
                 </p>
             </div>
@@ -113,29 +113,29 @@
             <!-- PASO 2 y 3: Aparece en la misma tarjeta cuando ya seleccionaron carrera -->
             <div id="vista-ciclos" hidden>
                 <!-- Barra superior con la carrera elegida y botón de cambiar -->
-                <div class="carrera-seleccionada-barra mb-3">
+                <div class="carrera-seleccionada-barra mb-2">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="fs-4" aria-hidden="true">🎓</span>
+                            <span class="carrera-seleccionada-barra__icono" aria-hidden="true">🎓</span>
                             <div>
                                 <span class="carrera-seleccionada-barra__tag">Carrera seleccionada:</span>
                                 <strong class="carrera-seleccionada-barra__nombre" id="carrera-elegida-badge">Derecho</strong>
                             </div>
                         </div>
                         <button type="button" class="btn-cambiar-carrera" id="btn-cambiar-carrera" title="Elegir otra carrera">
-                            <span>Cambiar carrera</span>
+                            <span>Cambiar</span>
                             <span>✕</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- PASO 2: Selección de Modelo de Acreditación -->
-                <div class="paso-modelo mb-4">
-                    <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="paso-modelo mb-2.5">
+                    <div class="d-flex align-items-center gap-1.5 mb-1.5">
                         <span class="tarjeta-carrera__paso">2</span>
                         <div>
                             <h2 class="tarjeta-carrera__titulo">¿Qué modelo de acreditación cursas?</h2>
-                            <p class="tarjeta-carrera__desc mb-0">Elige según tu situación académica para ver los horarios exactos de tu plan</p>
+                            <p class="tarjeta-carrera__desc mb-0">Selecciona tu situación para ver tus horarios exactos</p>
                         </div>
                     </div>
 
@@ -145,12 +145,12 @@
                             <div class="card-modelo-opcion__check" aria-hidden="true">✓</div>
                             <div class="card-modelo-opcion__top">
                                 <span class="card-modelo-opcion__icono" aria-hidden="true">🛡️</span>
-                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--recomendado">Recomendado / Nuevo</span>
+                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--recomendado">Nuevo / Ruta</span>
                             </div>
                             <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
-                            <span class="card-modelo-opcion__subtitulo">Rutas oficiales por carrera</span>
+                            <span class="card-modelo-opcion__subtitulo">Ruta por carrera</span>
                             <p class="card-modelo-opcion__desc">
-                                <strong>Nunca llevé cursos de computación en USS</strong> o curso la nueva ruta por competencias (Word 365, Excel 365, Canva...).
+                                <strong>Nunca llevé cursos en USS</strong> o sigo mi ruta oficial (Word, Excel, Canva...).
                             </p>
                         </div>
 
@@ -159,12 +159,12 @@
                             <div class="card-modelo-opcion__check" aria-hidden="true">✓</div>
                             <div class="card-modelo-opcion__top">
                                 <span class="card-modelo-opcion__icono" aria-hidden="true">📚</span>
-                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--tradicional">Estudiantes Anteriores</span>
+                                <span class="card-modelo-opcion__tag card-modelo-opcion__tag--tradicional">Plan Anterior</span>
                             </div>
                             <strong class="card-modelo-opcion__titulo">Plan Tradicional</strong>
-                            <span class="card-modelo-opcion__subtitulo">Computación I, II y III</span>
+                            <span class="card-modelo-opcion__subtitulo">Comp. I, II y III</span>
                             <p class="card-modelo-opcion__desc">
-                                <strong>Ya cursé Computación I o II</strong> y necesito terminar mis niveles pendientes del plan anterior (Computación II o III).
+                                <strong>Ya cursé Computación I o II</strong> y debo culminar Computación II o III.
                             </p>
                         </div>
                     </div>
@@ -172,12 +172,12 @@
 
                 <!-- PASO 3: Selección de Ciclo -->
                 <div class="paso-ciclos">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5">
-                        <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1.5">
+                        <div class="d-flex align-items-center gap-1.5">
                             <span class="tarjeta-carrera__paso">3</span>
                             <div>
                                 <h2 class="tarjeta-carrera__titulo">Elige el ciclo de apertura</h2>
-                                <p class="tarjeta-carrera__desc mb-0">Haz clic en un ciclo para abrir la programación completa de horarios</p>
+                                <p class="tarjeta-carrera__desc mb-0">Haz clic para abrir los horarios oficiales</p>
                             </div>
                         </div>
                     </div>
@@ -195,8 +195,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Selección -->
-    <script src="assets/js/datos.js?v=30"></script>
-    <script src="assets/js/index.js?v=30"></script>
+    <script src="assets/js/datos.js?v=31"></script>
+    <script src="assets/js/index.js?v=31"></script>
 </body>
 
 </html>
