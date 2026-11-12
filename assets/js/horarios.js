@@ -236,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    pintarEstadoFuente();
     leerFiltrosDeUrl();
     actualizarPestanasCiclos();
     poblarFiltrosDinamicos();
@@ -331,35 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.replaceState(null, '', url);
   }
 
-  // Fichas de los filtros activos: se quitan con un toque
-  function pintarFiltrosActivos() {
-    const zona = $('filtros-activos');
-    if (!zona) return;
-    const f = valoresFiltros();
-    const texto = $('filtro-texto')?.value.trim();
-    const activos = [];
-    if (texto) activos.push(['filtro-texto', `«${texto}»`]);
-    Object.entries(FILTROS).forEach(([clave, id]) => {
-      if (f[clave]) activos.push([id, clave === 'aula' ? (f.aula === 'zoom' ? 'Virtual · Zoom' : 'Presencial') : f[clave]]);
-    });
-
-    zona.replaceChildren(
-      ...activos.map(([id, etiqueta]) => {
-        const ficha = document.createElement('button');
-        ficha.type = 'button';
-        ficha.className = 'filtro-ficha';
-        ficha.title = 'Quitar este filtro';
-        ficha.textContent = `${etiqueta} ✕`;
-        ficha.addEventListener('click', () => {
-          $(id).value = '';
-          alCambiarFiltros();
-        });
-        return ficha;
-      })
-    );
-    zona.hidden = activos.length === 0;
-  }
-
   function alCambiarFiltros() {
     poblarFiltrosDinamicos();
     pintarTabla();
@@ -380,17 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
     destino.replaceChildren(contenido.slice(0, inicio), marca, contenido.slice(inicio + texto.length));
   }
 
-  // Indica si los horarios vienen del sistema en línea o de la copia local
-  function pintarEstadoFuente() {
-    const estado = $('estado-fuente');
-    if (!estado) return;
-    const hora = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-    estado.className = `estado-fuente ${fuenteEnVivo ? 'estado-fuente--vivo' : 'estado-fuente--copia'}`;
-    estado.textContent = fuenteEnVivo
-      ? `Sincronizado con el sistema CINF · ${hora}`
-      : 'Sin conexión con el sistema: se muestra la última copia guardada';
-  }
-
   const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
@@ -404,7 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const filasVisibles = filasCarrera.filter((fila) => cumple(fila, f));
 
     guardarFiltrosEnUrl();
-    pintarFiltrosActivos();
 
     // Orden de lectura: los cursos como en la ruta de la carrera y, dentro de cada uno, PEAD a, b… z, aa, ab…
     const ordenCursos = [...cursosPermitidos];
@@ -556,8 +514,16 @@ document.addEventListener('DOMContentLoaded', () => {
     envoltura.classList.toggle('se-desliza', caja.scrollWidth > caja.clientWidth + 1);
     const pie = document.querySelector('.footer-uss');
     const arriba = caja.getBoundingClientRect().top + window.scrollY;
-    // Se deja visible el inicio del bloque de ayuda para que el estudiante sepa que existe
-    const libre = window.innerHeight - arriba - (pie ? pie.offsetHeight : 0) - 96;
+    // La tabla llega hasta justo encima de la franja de ayuda (cerrada) y del pie: se mide lo que
+    // ocupan en vez de reservar un alto fijo, para no dejar espacio muerto
+    const franjaAyuda = document.querySelector('.ayuda-horarios__summary');
+    const contenedor = document.querySelector('.hoja-contenedor-horarios');
+    const debajo =
+      (franjaAyuda ? franjaAyuda.offsetHeight + 10 : 0) +
+      (contenedor ? parseFloat(getComputedStyle(contenedor).paddingBottom) : 0) +
+      (pie ? pie.offsetHeight : 0) +
+      4;
+    const libre = window.innerHeight - arriba - debajo;
     caja.style.setProperty('--alto-tabla', `${Math.max(libre, 220)}px`);
   }
 
@@ -574,20 +540,6 @@ document.addEventListener('DOMContentLoaded', () => {
       evento.preventDefault();
       $('filtro-texto')?.focus();
     }
-  });
-
-  // Copiar el enlace de la vista actual (carrera, ciclo y filtros)
-  $('btn-compartir')?.addEventListener('click', async () => {
-    const boton = $('btn-compartir');
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      boton.textContent = 'Enlace copiado ✓';
-    } catch {
-      boton.textContent = 'Copia la dirección del navegador';
-    }
-    setTimeout(() => {
-      boton.textContent = 'Compartir esta vista 🔗';
-    }, 2200);
   });
 
   function resetearTodosLosFiltros() {
