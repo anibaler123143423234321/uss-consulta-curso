@@ -10,33 +10,51 @@
  * 5. Filtra por cursos correspondientes a la carrera, turno y búsqueda en vivo.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const { ciclos, rutas, horarios, cursosParaTodos = [], seccionVisible } = window.CONSULTA_CURSOS;
+  const {
+    ciclos,
+    rutas,
+    horarios,
+    cursosTradicionales = [],
+    cursosParaTodos = [],
+    seccionVisible,
+  } = window.CONSULTA_CURSOS;
   const $ = (id) => document.getElementById(id);
 
   // 1. Obtener parámetros de la URL
   const params = new URLSearchParams(window.location.search);
   const carreraParam = params.get('carrera');
-  let cicloActivo = (params.get('ciclo') || 'noviembre').toLowerCase();
+  let cicloActivo = (params.get('ciclo') || 'enero').toLowerCase();
+  const modeloRaw = (params.get('modelo') || '').toLowerCase().trim();
 
-  // Si no hay carrera seleccionada, redirigir al portal de selección
+  // Configurar enlace de retorno al portal
+  const enDominioUnificado = /informatica-uss|ecosistema-uss|uss\.edu\.pe/.test(window.location.hostname);
+  const dentroDelPortal = window.location.pathname.includes('/consulta-cursos');
+  const homePath = dentroDelPortal ? './' : enDominioUnificado ? 'consulta-cursos' : 'index.html';
+
+  // Si no hay carrera seleccionada, redirigir al portal
   if (!carreraParam) {
-    window.location.href = 'index.html';
+    window.location.href = homePath;
     return;
   }
 
   const carrera = carreraParam.trim();
 
-  // Configurar enlace de retorno conservando la carrera
-  // En el dominio unificado la portada vive en /consulta-cursos. En local (Live Server) y en el
-  // despliegue propio es el index.html de esta misma carpeta.
-  const enDominioUnificado = /informatica-uss|ecosistema-uss|uss\.edu\.pe/.test(window.location.hostname);
-  const dentroDelPortal = window.location.pathname.includes('/consulta-cursos');
-  const homePath = dentroDelPortal ? './' : enDominioUnificado ? 'consulta-cursos' : 'index.html';
+  // Si no se eligió un modelo válido en la URL, redirigir al portal para que elija explícitamente
+  // (evita que PROTECH XP quede seleccionado automáticamente sin elección del estudiante)
+  if (!['protech', 'tradicional'].includes(modeloRaw)) {
+    window.location.href = `${homePath}?carrera=${encodeURIComponent(carrera)}`;
+    return;
+  }
+
+  let modeloActivo = modeloRaw;
 
   const btnVolver = $('btn-volver-atras');
-  if (btnVolver) {
-    btnVolver.href = `${homePath}?carrera=${encodeURIComponent(carrera)}`;
-  }
+  const actualizarEnlaceVolver = () => {
+    if (btnVolver) {
+      btnVolver.href = `${homePath}?carrera=${encodeURIComponent(carrera)}&modelo=${encodeURIComponent(modeloActivo)}`;
+    }
+  };
+  actualizarEnlaceVolver();
 
   const btnOtraCarrera = $('btn-elegir-otra-carrera');
   if (btnOtraCarrera) {
@@ -50,23 +68,101 @@ document.addEventListener('DOMContentLoaded', () => {
     cursos: [],
   };
 
-  const cursosPermitidos = new Set(
+  const cursosRutaCarrera = new Set(
     rutas
       .filter((r) => r.carreras.includes(carrera))
       .flatMap((r) => r.cursos)
-      .concat(cursosParaTodos)
   );
 
-  // Cursos de la ruta + Plan Tradicional; los grupos por especialidad solo para su carrera
-  const esDeLaCarrera = (h) => cursosPermitidos.has(h.curso) && seccionVisible(h.seccion, carrera);
+  const cursosTradicionalesSet = new Set(
+    cursosTradicionales.length > 0 ? cursosTradicionales : cursosParaTodos
+  );
+
+  const cursosPermitidosActivos = () =>
+    modeloActivo === 'tradicional' ? cursosTradicionalesSet : cursosRutaCarrera;
+
+  // Filtro por modelo y carrera:
+  // - En PROTECH XP: solo cursos de la ruta oficial de su carrera (NUNCA Computación II o III).
+  // - En Plan Tradicional: solo cursos tradicionales (Computación I, II, III), respetando grupos de especialidad.
+  const esDeLaCarrera = (h) => {
+    const modeloFila =
+      h.modelo ||
+      (window.CONSULTA_CURSOS.esCursoDeModelo(h.curso, 'tradicional') ? 'tradicional' : 'protech');
+    if (modeloFila !== modeloActivo) return false;
+
+    const permitidos = cursosPermitidosActivos();
+    if (!permitidos.has(h.curso)) return false;
+
+    return seccionVisible(h.seccion, carrera);
+  };
 
   // La API devuelve «Word 365 (Protech XP)»; las rutas lo llaman «Word 365»
   const limpiarCurso = (nombre) => (nombre || '').replace(/\s*\(Protech XP\)\s*/i, '').trim();
 
-  // Pintar banner de carrera
+  // Pintar banner de carrera y modelo
   $('txt-carrera-nombre').textContent = carrera;
   $('txt-ruta-badge').textContent = `Ruta ${ruta.id}`;
   $('txt-ruta-nombre').textContent = `(${ruta.nombre.replace(/^Ruta \d+ · /, '')})`;
+
+  function actualizarBadgeModelo() {
+    const badge = $('txt-modelo-badge');
+    if (!badge) return;
+    if (modeloActivo === 'tradicional') {
+      badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--tradicional';
+      badge.textContent = '📚 Plan Tradicional';
+    } else {
+      badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--protech';
+      badge.textContent = '🛡️ PROTECH XP';
+    }
+  }
+  actualizarBadgeModelo();
+
+  // Selector interactivo de Modelo (Switcher entre PROTECH XP y Plan Tradicional)
+  const tabModeloProtech = $('tab-modelo-protech');
+  const tabModeloTradicional = $('tab-modelo-tradicional');
+
+  function actualizarTabsModelo() {
+    const esProtech = modeloActivo === 'protech';
+    if (tabModeloProtech) {
+      tabModeloProtech.classList.toggle('activa', esProtech);
+      tabModeloProtech.setAttribute('aria-selected', esProtech ? 'true' : 'false');
+    }
+    if (tabModeloTradicional) {
+      tabModeloTradicional.classList.toggle('activa', !esProtech);
+      tabModeloTradicional.setAttribute('aria-selected', !esProtech ? 'true' : 'false');
+    }
+    actualizarBadgeModelo();
+    actualizarEnlaceVolver();
+  }
+
+  function cambiarModelo(nuevoModelo) {
+    const normalizado = nuevoModelo === 'tradicional' ? 'tradicional' : 'protech';
+    if (normalizado === modeloActivo) return;
+    modeloActivo = normalizado;
+
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('modelo', modeloActivo);
+    window.history.replaceState(null, '', newUrl);
+
+    actualizarTabsModelo();
+
+    // Si el ciclo activo no tiene secciones para el nuevo modelo, pasar al primer ciclo disponible
+    if (contarSeccionesCiclo(cicloActivo) === 0) {
+      const cicloDisponible = ciclos.find((c) => contarSeccionesCiclo(c.id) > 0);
+      if (cicloDisponible) {
+        cicloActivo = cicloDisponible.id.toLowerCase();
+        newUrl.searchParams.set('ciclo', cicloActivo);
+        window.history.replaceState(null, '', newUrl);
+      }
+    }
+
+    actualizarPestanasCiclos();
+    poblarFiltrosDinamicos();
+    pintarTabla();
+  }
+
+  tabModeloProtech?.addEventListener('click', () => cambiarModelo('protech'));
+  tabModeloTradicional?.addEventListener('click', () => cambiarModelo('tradicional'));
 
   // 3. Control de Ciclos y Pestañas con Bloqueo de Meses sin Apertura
   const contPestanas = $('pestanas-meses');
@@ -197,23 +293,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const json = await resp.json();
         const filas = Array.isArray(json) ? json : (json.data || []);
         if (filas.length > 0) {
-          horariosCargados = filas.map((r) => ({
-            id: r.id,
-            ciclo: (r.ciclo || '').toLowerCase(),
-            curso: limpiarCurso(r.curso),
-            seccion: r.seccion || '',
-            inicio: formatearFecha(r.fechaInicio),
-            fin: formatearFecha(r.fechaFin),
-            turno: r.turno || '',
-            dias: r.dias || '',
-            horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
-            aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
-            cupos: r.cupos || 30,
-            cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
-            cuposTotal: r.cupos || 30,
-            docente: r.docente || '',
-            linkAula: r.linkAula || null,
-          }));
+          horariosCargados = filas.map((r) => {
+            const cLimpio = limpiarCurso(r.curso);
+            const modFila =
+              r.modelo ||
+              (window.CONSULTA_CURSOS.esCursoDeModelo(cLimpio, 'tradicional')
+                ? 'tradicional'
+                : 'protech');
+            return {
+              id: r.id,
+              ciclo: (r.ciclo || '').toLowerCase(),
+              modelo: modFila,
+              curso: cLimpio,
+              seccion: r.seccion || '',
+              inicio: formatearFecha(r.fechaInicio),
+              fin: formatearFecha(r.fechaFin),
+              turno: r.turno || '',
+              dias: r.dias || '',
+              horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
+              aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
+              cupos: r.cupos || 30,
+              cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
+              cuposTotal: r.cupos || 30,
+              docente: r.docente || '',
+              linkAula: r.linkAula || null,
+            };
+          });
           fuenteEnVivo = true;
         } else {
           horariosCargados = horarios || [];
@@ -225,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
       horariosCargados = horarios || [];
     }
 
-    // Si el ciclo activo no tiene secciones para esta carrera, cambiar al primer ciclo que sí tenga
+    // Si el ciclo activo no tiene secciones para esta carrera y modelo, pasar al primer ciclo que sí tenga
     if (contarSeccionesCiclo(cicloActivo) === 0) {
       const cicloDisponible = ciclos.find((c) => contarSeccionesCiclo(c.id) > 0);
       if (cicloDisponible) {
@@ -236,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    actualizarTabsModelo();
     leerFiltrosDeUrl();
     actualizarPestanasCiclos();
     poblarFiltrosDinamicos();
@@ -276,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function poblarFiltrosDinamicos() {
     const filas = filasDelCiclo();
     const f = valoresFiltros();
-    const ordenCursos = [...cursosPermitidos];
+    const ordenCursos = [...cursosPermitidosActivos()];
 
     const opciones = {
       curso: [...new Set(filas.map((h) => h.curso))].sort((a, b) => ordenCursos.indexOf(a) - ordenCursos.indexOf(b)).map((v) => [v, v]),
@@ -365,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
     guardarFiltrosEnUrl();
 
     // Orden de lectura: los cursos como en la ruta de la carrera y, dentro de cada uno, PEAD a, b… z, aa, ab…
-    const ordenCursos = [...cursosPermitidos];
+    const ordenCursos = [...cursosPermitidosActivos()];
     const posicion = (curso) => {
       const i = ordenCursos.indexOf(curso);
       return i === -1 ? ordenCursos.length : i;

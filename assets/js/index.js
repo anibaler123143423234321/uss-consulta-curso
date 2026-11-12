@@ -9,10 +9,11 @@
  * 3. Al hacer clic en un ciclo, redirige a horarios.html con los filtros aplicados.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const { ciclos, rutas, horarios, cursosParaTodos = [] } = window.CONSULTA_CURSOS;
+  const { ciclos, rutas, horarios, cursosTradicionales = [], cursosParaTodos = [] } = window.CONSULTA_CURSOS;
   const $ = (id) => document.getElementById(id);
 
   let carreraSeleccionada = '';
+  let modeloSeleccionado = null;
   let indiceActivoTeclado = -1;
 
   const normalizar = (texto) =>
@@ -53,11 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
     a.nombre.localeCompare(b.nombre, 'es')
   );
 
-  // Obtener cursos oficiales de la carrera
-  const cursosDeCarrera = (carrera) => {
+  // Obtener cursos oficiales de la carrera según el modelo seleccionado
+  const cursosDeCarrera = (carrera, modelo = modeloSeleccionado) => {
     if (!carrera) return null;
+    if (modelo === 'tradicional') {
+      const trad = cursosTradicionales.length > 0 ? cursosTradicionales : cursosParaTodos;
+      return new Set(trad);
+    }
+    // Modelo PROTECH XP: estrictamente los cursos de la ruta oficial por carrera
     const info = mapaCarrerasMap.get(carrera);
-    return info ? new Set([...info.cursos, ...cursosParaTodos]) : null;
+    return info ? new Set(info.cursos) : null;
   };
 
   /* ==========================================================================
@@ -253,7 +259,41 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     2. GRID DE CICLOS DE APERTURA (Adentro de la Tarjeta Elevada)
+     2. SELECTOR DE MODELO DE ACREDITACIÓN (PROTECH XP vs Plan Tradicional)
+     ========================================================================== */
+  const cardModeloProtech = $('opcion-modelo-protech');
+  const cardModeloTradicional = $('opcion-modelo-tradicional');
+
+  function seleccionarModelo(nuevoModelo) {
+    if (!['protech', 'tradicional'].includes(nuevoModelo)) return;
+
+    modeloSeleccionado = nuevoModelo;
+
+    const esProtech = modeloSeleccionado === 'protech';
+
+    cardModeloProtech?.classList.toggle('activa', esProtech);
+    cardModeloProtech?.setAttribute('aria-checked', String(esProtech));
+
+    cardModeloTradicional?.classList.toggle('activa', !esProtech);
+    cardModeloTradicional?.setAttribute('aria-checked', String(!esProtech));
+
+    actualizarContadoresCiclos();
+  }
+
+  [cardModeloProtech, cardModeloTradicional].forEach((card) => {
+    if (!card) return;
+    const modelo = card.dataset.modelo;
+    card.addEventListener('click', () => seleccionarModelo(modelo));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        seleccionarModelo(modelo);
+      }
+    });
+  });
+
+  /* ==========================================================================
+     3. GRID DE CICLOS DE APERTURA (Adentro de la Tarjeta Elevada)
      ========================================================================== */
   const gridCiclos = $('grid-ciclos');
 
@@ -280,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn.append(header, footer);
 
-    // Clic en el ciclo -> Redirige a horarios.html con la carrera y ciclo
+    // Clic en el ciclo -> Redirige a horarios.html con carrera, ciclo y modelo
     btn.addEventListener('click', () => {
       abrirHorarios(ciclo.id);
     });
@@ -300,9 +340,25 @@ document.addEventListener('DOMContentLoaded', () => {
   ayuda.appendChild(enlaceWsp);
   gridCiclos.after(proximos, ayuda);
 
-  // Solo se muestran como tarjeta los ciclos con horarios para la carrera elegida
+  // Solo se muestran como tarjeta los ciclos con horarios para la carrera y modelo elegidos
   function actualizarContadoresCiclos() {
-    const permitidos = cursosDeCarrera(carreraSeleccionada);
+    // Validación: impedir mostrar ciclos mientras no exista un modelo elegido
+    if (!modeloSeleccionado) {
+      ciclos.forEach((ciclo) => {
+        const btn = $(`btn-ciclo-${ciclo.id}`);
+        if (btn) {
+          btn.hidden = true;
+          btn.disabled = true;
+        }
+      });
+      gridCiclos.hidden = true;
+      proximos.hidden = false;
+      proximos.textContent = '👆 Selecciona en el Paso 2 si cursas el Modelo PROTECH XP o el Plan Tradicional para ver los ciclos disponibles.';
+      return;
+    }
+
+    gridCiclos.hidden = false;
+    const permitidos = cursosDeCarrera(carreraSeleccionada, modeloSeleccionado);
     const sinApertura = [];
 
     ciclos.forEach((ciclo) => {
@@ -310,12 +366,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const badge = $(`badge-ciclo-${ciclo.id}`);
       if (!btn || !badge) return;
 
-      const filas = (horarios || []).filter(
-        (h) =>
-          (h.ciclo || '').toLowerCase() === ciclo.id.toLowerCase() &&
-          (!permitidos ||
-            (permitidos.has(h.curso) && window.CONSULTA_CURSOS.seccionVisible(h.seccion, carreraSeleccionada)))
-      );
+      const filas = (horarios || []).filter((h) => {
+        if ((h.ciclo || '').toLowerCase() !== ciclo.id.toLowerCase()) return false;
+        // Si el horario tiene modelo definido, debe coincidir; si no, inferir por curso
+        const modeloFila =
+          h.modelo ||
+          (window.CONSULTA_CURSOS.esCursoDeModelo(h.curso, 'tradicional') ? 'tradicional' : 'protech');
+        if (modeloFila !== modeloSeleccionado) return false;
+        if (permitidos && !permitidos.has(h.curso)) return false;
+        return window.CONSULTA_CURSOS.seccionVisible(h.seccion, carreraSeleccionada);
+      });
       const total = filas.length;
 
       btn.hidden = total === 0;
@@ -340,21 +400,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const sinNinguno = sinApertura.length === ciclos.length;
     gridCiclos.hidden = sinNinguno;
     if (sinNinguno) {
-      proximos.textContent = 'Por ahora no hay ciclos con horarios publicados para tu carrera. Vuelve a consultar pronto.';
+      proximos.textContent = 'Por ahora no hay ciclos con horarios publicados para tu carrera y modelo seleccionados. Vuelve a consultar pronto.';
     }
   }
 
   function abrirHorarios(cicloId) {
     if (!carreraSeleccionada) return;
+    if (!modeloSeleccionado) {
+      cardModeloProtech?.focus();
+      return;
+    }
     const btn = $(`btn-ciclo-${cicloId}`);
     if (btn && btn.disabled) return;
     const url = `horarios.html?ciclo=${encodeURIComponent(cicloId)}&carrera=${encodeURIComponent(
       carreraSeleccionada
-    )}`;
+    )}&modelo=${encodeURIComponent(modeloSeleccionado)}`;
     window.location.href = url;
   }
 
   // Comprobar parámetros de URL (si regresan desde horarios.html)
+  // Sin asignación automática de modelo para que el estudiante siempre elija explícitamente
   const params = new URLSearchParams(window.location.search);
   const carreraUrl = params.get('carrera');
   if (carreraUrl) {

@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=29" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=30" />
 </head>
 
 <body>
@@ -58,6 +58,7 @@
                 <div class="banner-carrera__ruta">
                     <span class="banner-carrera__badge" id="txt-ruta-badge">Ruta 2</span>
                     <span class="banner-carrera__categoria" id="txt-ruta-nombre">(Sociales y Leyes)</span>
+                    <span class="banner-carrera__modelo-badge" id="txt-modelo-badge">🛡️ PROTECH XP</span>
                 </div>
             </div>
             <a href="./" class="banner-carrera__cambiar" id="btn-elegir-otra-carrera">Elegir otra carrera ✕</a>
@@ -65,6 +66,21 @@
 
         <!-- Ciclos y filtros -->
         <section class="cinta-horarios" aria-label="Ciclos y filtros">
+            <!-- Selector de Modelo de Acreditación (Switcher interactivo) -->
+            <div class="cinta-horarios__modelo-switch">
+                <span class="cinta-horarios__modelo-label">Modelo:</span>
+                <div class="selector-modelo-tabs" role="tablist" aria-label="Seleccionar modelo de acreditación">
+                    <button type="button" class="tab-modelo activa" id="tab-modelo-protech" data-modelo="protech" role="tab" aria-selected="true">
+                        <span class="tab-modelo__icono" aria-hidden="true">🛡️</span>
+                        <span class="tab-modelo__texto">Modelo PROTECH XP</span>
+                    </button>
+                    <button type="button" class="tab-modelo" id="tab-modelo-tradicional" data-modelo="tradicional" role="tab" aria-selected="false">
+                        <span class="tab-modelo__icono" aria-hidden="true">📚</span>
+                        <span class="tab-modelo__texto">Plan Tradicional (Comp. I, II, III)</span>
+                    </button>
+                </div>
+            </div>
+
             <div class="cinta-horarios__header">
                 <div class="cinta-horarios__ciclos-wrap">
                     <span class="cinta-horarios__label">Ciclo:</span>
@@ -156,6 +172,7 @@
             </summary>
             <div class="ayuda-horarios__cuerpo">
                 <ul class="ayuda-horarios__lista">
+                    <li><strong>¿Modelo PROTECH XP o Plan Tradicional?</strong> Si nunca cursaste computación en USS, te corresponde el <em>Modelo PROTECH XP</em> con los cursos por competencias de tu carrera. Si ya cursaste Computación I o II previamente, cambia a la pestaña superior <em>Plan Tradicional</em> para ver tus secciones de Computación II y III.</li>
                     <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje; los
                         cursos de otras rutas no aparecen. Si te equivocaste de carrera, usa «Elegir otra carrera».</li>
                     <li><strong>Un mes con candado 🔒 no tiene apertura</strong> para tu carrera. Revisa el ciclo
@@ -179,8 +196,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Horarios -->
-    <script src="assets/js/datos.js?v=29"></script>
-    <script src="assets/js/horarios.js?v=29"></script>
+    <script src="assets/js/datos.js?v=30"></script>
+    <script src="assets/js/horarios.js?v=30"></script>
 </body>
 
 </html>

@@ -25,9 +25,9 @@ Portal público donde el estudiante elige su carrera, luego un ciclo de apertura
 
 | Archivo | Para qué |
 |---|---|
-| `index.html` + `assets/js/index.js` | Portada: paso 1 elegir carrera (combobox), paso 2 elegir ciclo. |
-| `horarios.html` + `assets/js/horarios.js` | Tabla de secciones del ciclo, pestañas de ciclos, filtros, ayuda. |
-| `assets/js/datos.js` | Ciclos, rutas por carrera, cursos para todos, especialidades y **copia de respaldo** de horarios. |
+| `index.html` + `assets/js/index.js` | Portada: paso 1 carrera (combobox), paso 2 modelo de acreditación (sin preselección), paso 3 ciclo. |
+| `horarios.html` + `assets/js/horarios.js` | Tabla de secciones, switcher de modelo, pestañas de ciclos, filtros, ayuda. |
+| `assets/js/datos.js` | Ciclos (Enero activo), modelos (protech vs tradicional), rutas por carrera, cursos tradicionales, especialidades y **copia de respaldo** de horarios. |
 | `assets/css/estilos.css` | Todo el diseño propio. |
 | `documentos/` | Fuentes oficiales (PDF de Canva por ciclo). |
 | `sql/` | Scripts que el usuario ejecuta en Supabase para cargar o corregir un ciclo. |
@@ -42,18 +42,20 @@ Consecuencia: al cargar o corregir un ciclo hay que actualizar **los dos lados**
 
 La API devuelve nombres como «Word 365 (Protech XP)»; `limpiarCurso()` en `horarios.js` quita el sufijo para que coincidan con las rutas.
 
-## 4. Reglas de negocio
+## 4. Reglas de negocio y Modelos de Acreditación
 
-- **Ciclos de apertura:** Noviembre y Enero (6 semanas), Febrero 2 meses, Abril 3 meses, Mayo 2 meses, Agosto 1 mes, Setiembre 3 meses, Octubre 2 meses.
+- **Modelos de acreditación (sin selección automática):**
+  - **`protech` (Modelo PROTECH XP):** Rutas oficiales por carrera (Word 365, Excel 365, Canva, AutoCAD...). Obligatorio para estudiantes que nunca llevaron cursos de computación en USS. **Nunca debe incluir Computación II ni III.**
+  - **`tradicional` (Plan Tradicional):** Para estudiantes de planes anteriores que ya cursaron Computación I o II y necesitan culminar Computación II, III o Certificación. **Nunca debe incluir cursos PROTECH XP.**
+  - **Regla crítica de no presunción:** `modeloSeleccionado` inicia en `null`. Ningún modelo queda preseleccionado por defecto. Los ciclos no se muestran hasta que el estudiante elija uno de los dos modelos en el Paso 2. Si alguien ingresa a `horarios.html` sin el parámetro `modelo`, la página redirige a `index.html?carrera=...` para obligar a elegir.
+- **Ciclos de apertura:** Enero (6 semanas, ciclo activo 2027), Febrero 2 meses, Abril 3 meses, Mayo 2 meses, Agosto 1 mes, Setiembre 3 meses, Octubre 2 meses. (Noviembre ya culminó y fue retirado).
 - **7 rutas por carrera** en `datos.js` (`rutas`). Una carrera puede estar en dos rutas (Ingeniería de Sistemas: 5 y 7; Arquitectura: 4 y 6): ve los cursos de ambas.
-- **`cursosParaTodos`:** Computación II, Computación III y Taller de Certificación Internacional se muestran a cualquier carrera.
-- **Grupos por especialidad (`especialidades`):** una sección cuya PEAD lleva la sigla o el nombre solo la ve su carrera, mediante `seccionVisible(seccion, carrera)`:
+- **Grupos por especialidad (`especialidades`):** en el Plan Tradicional, una sección cuya PEAD lleva la sigla o el nombre solo la ve su carrera, mediante `seccionVisible(seccion, carrera)`:
   - CIV / Civil → Ingeniería Civil
   - SIST / Sistemas → Ingeniería de Sistemas e Ingeniería de Software
   - MEC / Mecánica → Ingeniería Mecánica Eléctrica
   - ARQ / Arquitectura → Arquitectura y Arquitectura y Diseño de Interiores
-- **Un ciclo sin secciones para la carrera** no aparece como tarjeta en la portada (va a la línea «Próximamente») y en `horarios.html` su pestaña sale con candado.
-- **Historial:** cargar un ciclo nuevo agrega filas con su `ciclo` y `anio`. No se borran cursos ni otros ciclos.
+- **Un ciclo sin secciones para la carrera y modelo** no aparece como tarjeta en la portada (va a la línea «Próximamente») y en `horarios.html` su pestaña sale con candado.
 - **Contacto oficial:** WhatsApp 986 724 506 (`https://wa.me/51986724506`) y `centro.informatica@uss.edu.pe`.
 
 ## 5. Cargar los horarios de un ciclo nuevo
