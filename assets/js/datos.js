@@ -139,58 +139,48 @@ window.CONSULTA_CURSOS = {
     },
   ],
 
+  // Plan Tradicional: no pertenece a una ruta, así que se muestra a todas las carreras
+  cursosParaTodos: [
+    'Computación II',
+    'Computación III',
+    'Computación II - Civil',
+    'Computación II - Sistemas',
+    'Computación II - Mecánica',
+    'Computación II - Arquitectura',
+  ],
+
   // Programación real extraída de los documentos oficiales Canva CINF
   horarios: [
     /* ==========================================================================
-       CICLO ENERO 2027 (Fuente: documentos/2027-2.pdf)
-       Clases: 11/01/2027 al 20/02/2027 (06 semanas) · Modalidad: Virtual USS Zoom
+       CICLO ENERO 2027 (Fuente: hoja oficial "Horarios enero 2027" del CINF)
+       Inducción: 04/01 al 09/01 · Clases: 11/01/2027 al 20/02/2027 (06 semanas)
+       Cierre de curso: 22/02 al 27/02 · Modalidad: Virtual USS Zoom · 30 cupos por grupo
+       Secciones (PEAD) y horas según el cuadro «Facilitador tiempo parcial»: 16 grupos.
        ========================================================================== */
     // Word 365
     { ciclo: 'enero', curso: 'Word 365', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Word 365', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Word 365', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Martes, jueves y sábado',    horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
+    { ciclo: 'enero', curso: 'Word 365', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Word 365', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
     // Excel 365
-    { ciclo: 'enero', curso: 'Excel 365', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Excel 365', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Excel 365', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Martes, jueves y sábado',    horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
+    { ciclo: 'enero', curso: 'Excel 365', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Martes, jueves y sábado', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Excel 365', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Excel 365', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
     // Diseño con Canva
-    { ciclo: 'enero', curso: 'Diseño con Canva', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Martes y jueves', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Diseño con Canva', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Sábados',          horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
+    { ciclo: 'enero', curso: 'Diseño con Canva', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Diseño con Canva', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Martes, jueves y sábado', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Diseño con Canva', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Diseño con Canva', seccion: 'PEAD d', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
     // Excel Asociado
-    { ciclo: 'enero', curso: 'Excel Asociado', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Excel Asociado', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Martes y jueves',            horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Excel Asociado', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
-    // Microsoft Word Asociado
-    { ciclo: 'enero', curso: 'Microsoft Word Asociado', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes y jueves',  horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Microsoft Word Asociado', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes y miércoles', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
-    // Power BI para Análisis de Datos
-    { ciclo: 'enero', curso: 'Power BI para Análisis de Datos', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Martes y jueves',  horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Power BI para Análisis de Datos', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Lunes y miércoles', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Power BI para Análisis de Datos', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Sábados',          horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
+    { ciclo: 'enero', curso: 'Excel Asociado', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
     // AutoCAD 2D
-    { ciclo: 'enero', curso: 'AutoCAD 2D', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes y jueves',  horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'AutoCAD 2D', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes y miércoles', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
+    { ciclo: 'enero', curso: 'AutoCAD 2D', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Martes, jueves y sábado', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
     // AutoCAD 3D
-    { ciclo: 'enero', curso: 'AutoCAD 3D', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes y jueves', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'AutoCAD 3D', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
-    // Microsoft Project
-    { ciclo: 'enero', curso: 'Microsoft Project', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche',  dias: 'Lunes y miércoles', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Microsoft Project', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Sábados',          horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
-    // Software Bizagi
-    { ciclo: 'enero', curso: 'Software Bizagi', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes y jueves', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
-    // Diseño Web
-    { ciclo: 'enero', curso: 'Diseño Web', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes y miércoles', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', curso: 'Diseño Web', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes y jueves',  horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'AutoCAD 3D', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    // Computación II
+    { ciclo: 'enero', curso: 'Computación II', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    // Computación III
+    { ciclo: 'enero', curso: 'Computación III', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
+    { ciclo: 'enero', curso: 'Computación III', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
 
     /* ==========================================================================
        CICLO NOVIEMBRE 2026 (Fuente: documentos/HORARIOS NOVIEMBRE.pdf)

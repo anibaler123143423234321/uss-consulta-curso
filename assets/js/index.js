@@ -9,7 +9,7 @@
  * 3. Al hacer clic en un ciclo, redirige a horarios.html con los filtros aplicados.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const { ciclos, rutas, horarios } = window.CONSULTA_CURSOS;
+  const { ciclos, rutas, horarios, cursosParaTodos = [] } = window.CONSULTA_CURSOS;
   const $ = (id) => document.getElementById(id);
 
   let carreraSeleccionada = '';
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cursosDeCarrera = (carrera) => {
     if (!carrera) return null;
     const info = mapaCarrerasMap.get(carrera);
-    return info ? new Set(info.cursos) : null;
+    return info ? new Set([...info.cursos, ...cursosParaTodos]) : null;
   };
 
   /* ==========================================================================
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <div class="ciclo-btn__footer">
       <span class="ciclo-btn__badge" style="color:#0284c7;font-size:10.5px;">Soporte WhatsApp USS</span>
-      <a href="https://wa.me/51979391000" target="_blank" rel="noopener noreferrer" class="ciclo-btn__accion" style="text-decoration:none;">Contactar ↗</a>
+      <a href="https://wa.me/51986724506" target="_blank" rel="noopener noreferrer" class="ciclo-btn__accion" style="text-decoration:none;">Contactar ↗</a>
     </div>
   `;
   gridCiclos.appendChild(tarjetaAyuda);

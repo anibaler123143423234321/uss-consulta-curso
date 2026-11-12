@@ -10,7 +10,7 @@
  * 5. Filtra por cursos correspondientes a la carrera, turno y búsqueda en vivo.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const { ciclos, rutas, horarios } = window.CONSULTA_CURSOS;
+  const { ciclos, rutas, horarios, cursosParaTodos = [] } = window.CONSULTA_CURSOS;
   const $ = (id) => document.getElementById(id);
 
   // 1. Obtener parámetros de la URL
@@ -51,7 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
     rutas
       .filter((r) => r.carreras.includes(carrera))
       .flatMap((r) => r.cursos)
+      .concat(cursosParaTodos)
   );
+
+  // La API devuelve «Word 365 (Protech XP)»; las rutas lo llaman «Word 365»
+  const limpiarCurso = (nombre) => (nombre || '').replace(/\s*\(Protech XP\)\s*/i, '').trim();
 
   // Pintar banner de carrera
   $('txt-carrera-nombre').textContent = carrera;
@@ -96,7 +100,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return btn;
       })
     );
+
+    // La pestaña activa puede quedar fuera de la vista en celular: se centra en su carril
+    const activa = contPestanas.querySelector('.pestana-ciclo.activa');
+    const carril = $('pestanas-scroll');
+    if (activa && carril) {
+      carril.scrollLeft = activa.offsetLeft - (carril.clientWidth - activa.offsetWidth) / 2;
+    }
+    actualizarSombrasCarril();
   }
+
+  // Degradado en los bordes del carril cuando quedan pestañas por deslizar
+  function actualizarSombrasCarril() {
+    const carril = $('pestanas-scroll');
+    if (!carril) return;
+    const resto = carril.scrollWidth - carril.clientWidth - carril.scrollLeft;
+    carril.classList.toggle('hay-mas-derecha', resto > 4);
+    carril.classList.toggle('hay-mas-izquierda', carril.scrollLeft > 4);
+  }
+
+  $('pestanas-scroll')?.addEventListener('scroll', actualizarSombrasCarril, { passive: true });
+  window.addEventListener('resize', actualizarSombrasCarril);
 
   function cambiarCiclo(nuevoCicloId) {
     const cId = nuevoCicloId.toLowerCase();
@@ -169,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
           horariosCargados = filas.map((r) => ({
             id: r.id,
             ciclo: (r.ciclo || '').toLowerCase(),
-            curso: r.curso || '',
+            curso: limpiarCurso(r.curso),
             seccion: r.seccion || '',
             inicio: formatearFecha(r.fechaInicio),
             fin: formatearFecha(r.fechaFin),
@@ -241,6 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
+
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   function pintarTabla() {
     const tbody = $('filas-horarios');
@@ -282,6 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     conteo.textContent = `Mostrando ${filasVisibles.length} de ${filasCarrera.length} secciones programadas`;
+    requestAnimationFrame(ajustarCajaTabla);
 
     if (filasVisibles.length === 0) {
       tbody.replaceChildren();
@@ -297,16 +324,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Número
         const tdNum = document.createElement('td');
-        tdNum.className = 'text-muted fw-bold text-center';
+        tdNum.className = 'col-num';
         tdNum.textContent = index + 1;
 
         // 2. Curso Oficial
         const tdCurso = document.createElement('td');
-        tdCurso.innerHTML = `<strong class="text-dark d-block">${fila.curso}</strong>`;
+        tdCurso.className = 'col-curso';
+        tdCurso.innerHTML = `<strong>${fila.curso}</strong>`;
 
         // 3. Sección
         const tdSec = document.createElement('td');
-        tdSec.innerHTML = `<span class="badge bg-light text-dark border">${fila.seccion}</span>`;
+        tdSec.className = 'col-sec';
+        tdSec.innerHTML = `<span class="badge-seccion">${fila.seccion}</span>`;
 
         // 4. Inicio
         const tdInicio = document.createElement('td');
@@ -330,8 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 8. Horario
         const tdHorario = document.createElement('td');
-        tdHorario.className = 'font-monospace text-nowrap';
-        tdHorario.style.fontSize = '12px';
+        tdHorario.className = 'celda-horario';
         tdHorario.textContent = fila.horario;
 
         // 9. Aula
@@ -358,14 +386,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 12. Acceso
         const tdAcceso = document.createElement('td');
-        tdAcceso.className = 'text-center';
+        tdAcceso.className = 'col-acceso';
         if (fila.linkAula) {
           tdAcceso.innerHTML = `<a href="${fila.linkAula}" target="_blank" rel="noopener noreferrer" class="btn-zoom" title="Abrir sala Zoom">
             <span>Ingresar</span> <span>↗</span>
           </a>`;
         } else {
-          tdAcceso.innerHTML = `<span class="badge bg-light text-muted border" style="font-size:10.5px;">Aula Virtual</span>`;
+          tdAcceso.innerHTML = `<span class="badge-acceso-pendiente">Aula Virtual</span>`;
         }
+
+        // En celular cada fila es una tarjeta: la etiqueta de cada dato sale de data-label
+        const celdas = [tdNum, tdCurso, tdSec, tdInicio, tdFin, tdTurno, tdDias, tdHorario, tdAula, tdCupos, tdDocente, tdAcceso];
+        celdas.forEach((td, i) => {
+          td.dataset.label = ETIQUETAS_CELDA[i];
+        });
 
         tr.append(
           tdNum,
@@ -386,6 +420,30 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     );
   }
+
+  // 7. Ajuste de la caja de la tabla: ocupa el alto libre y avisa si se desliza de lado
+  function ajustarCajaTabla() {
+    const caja = document.querySelector('.tabla-horarios__scroll');
+    const envoltura = document.querySelector('.tabla-horarios-wrap');
+    if (!caja || !envoltura) return;
+
+    // En celular las filas son tarjetas y la página hace el scroll
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      caja.style.removeProperty('--alto-tabla');
+      envoltura.classList.remove('se-desliza');
+      return;
+    }
+
+    // Primero el aviso (ocupa una fila encima de la caja) y después se mide el alto libre
+    envoltura.classList.toggle('se-desliza', caja.scrollWidth > caja.clientWidth + 1);
+    const pie = document.querySelector('.footer-uss');
+    const arriba = caja.getBoundingClientRect().top + window.scrollY;
+    // Se deja visible el inicio del bloque de ayuda para que el estudiante sepa que existe
+    const libre = window.innerHeight - arriba - (pie ? pie.offsetHeight : 0) - 96;
+    caja.style.setProperty('--alto-tabla', `${Math.max(libre, 220)}px`);
+  }
+
+  window.addEventListener('resize', ajustarCajaTabla);
 
   // Eventos de filtros
   $('filtro-texto')?.addEventListener('input', pintarTabla);

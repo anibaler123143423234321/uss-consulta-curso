@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=14" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=20" />
 </head>
 
 <body>
@@ -32,8 +32,8 @@
                 <a href="./" class="d-flex align-items-center gap-2 text-decoration-none">
                     <img src="assets/img/logo-uss.png" alt="Logo USS" height="32" class="d-block" />
                     <div class="border-start border-slate-200 ps-2 ms-1 d-none d-md-block">
-                        <span class="d-block text-xs font-bold text-primary lh-1">Centro de Informática</span>
-                        <span class="text-muted text-xs" style="font-size:11px;">Programación de Horarios</span>
+                        <span class="header-horarios__titulo">Centro de Informática</span>
+                        <span class="header-horarios__sub">Programación de Horarios</span>
                     </div>
                 </a>
             </div>
@@ -48,122 +48,130 @@
         </div>
     </header>
 
-    <main class="hoja-contenedor-horarios py-3">
-        <!-- Banner informativo de la Carrera y Ruta seleccionada -->
-        <div class="banner-carrera-horarios" id="banner-carrera">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div class="d-flex align-items-center gap-2.5">
-                    <span style="font-size: 24px;" aria-hidden="true">🎓</span>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <span class="text-xs text-muted font-bold text-uppercase">Carrera:</span>
-                            <strong class="fs-6 text-dark" id="txt-carrera-nombre">Psicología</strong>
-                            <span class="badge bg-primary text-white" id="txt-ruta-badge">Ruta 2</span>
-                            <span class="text-xs text-primary fw-bold" id="txt-ruta-nombre">(Sociales y Leyes)</span>
-                        </div>  
-                    </div>
+    <main class="hoja-contenedor-horarios">
+        <!-- Carrera y ruta seleccionadas -->
+        <section class="banner-carrera" id="banner-carrera" aria-label="Carrera seleccionada">
+            <span class="banner-carrera__icono" aria-hidden="true">🎓</span>
+            <div class="banner-carrera__datos">
+                <span class="banner-carrera__etiqueta">Carrera</span>
+                <strong class="banner-carrera__nombre" id="txt-carrera-nombre">Psicología</strong>
+                <div class="banner-carrera__ruta">
+                    <span class="banner-carrera__badge" id="txt-ruta-badge">Ruta 2</span>
+                    <span class="banner-carrera__categoria" id="txt-ruta-nombre">(Sociales y Leyes)</span>
                 </div>
-                <a href="./" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" id="btn-elegir-otra-carrera">
-                    Elegir otra carrera ✕
-                </a>
             </div>
-        </div>
+            <a href="./" class="banner-carrera__cambiar" id="btn-elegir-otra-carrera">Elegir otra carrera ✕</a>
+        </section>
 
-        <!-- Cinta de Navegación entre Ciclos y Filtros -->
-        <div class="cinta-horarios">
-            <!-- Pestañas de meses para cambiar de ciclo directamente -->
+        <!-- Ciclos y filtros -->
+        <section class="cinta-horarios" aria-label="Ciclos y filtros">
             <div class="cinta-horarios__header">
                 <div class="cinta-horarios__ciclos-wrap">
                     <span class="cinta-horarios__label">Ciclo:</span>
-                    <div class="pestanas-ciclos-scroll">
-                        <div class="pestanas-ciclos" id="pestanas-meses" role="tablist"></div>
+                    <div class="pestanas-ciclos-scroll" id="pestanas-scroll">
+                        <div class="pestanas-ciclos" id="pestanas-meses" role="tablist" aria-label="Ciclos de apertura"></div>
                     </div>
                 </div>
-                <div class="cinta-horarios__conteo" id="conteo-secciones">
-                    Cargando horarios...
-                </div>
+                <p class="cinta-horarios__conteo" id="conteo-secciones" aria-live="polite">Cargando horarios...</p>
             </div>
 
-            <!-- Filtros avanzados: Búsqueda, Curso, Turno, Días y Modalidad -->
-            <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-4 col-lg-3">
-                    <div class="position-relative">
-                        <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted" style="font-size:12px;">🔍</span>
-                        <input type="text" class="form-control form-control-sm rounded-8 ps-5" id="filtro-texto"
-                            placeholder="Buscar docente, código, sección..." />
-                    </div>
-                </div>
-                <div class="col-6 col-sm-4 col-md-3 col-lg-3">
-                    <select class="form-select form-select-sm rounded-8" id="filtro-curso" aria-label="Filtrar por curso oficial">
-                        <option value="">Todos los cursos</option>
-                    </select>
-                </div>
-                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
-                    <select class="form-select form-select-sm rounded-8" id="filtro-turno" aria-label="Filtrar por turno">
-                        <option value="">Todos los turnos</option>
-                        <option value="Mañana">Mañana</option>
-                        <option value="Tarde">Tarde</option>
-                        <option value="Noche">Noche</option>
-                    </select>
-                </div>
-                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
-                    <select class="form-select form-select-sm rounded-8" id="filtro-dias" aria-label="Filtrar por días">
-                        <option value="">Todos los días</option>
-                    </select>
-                </div>
-                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
-                    <div class="d-flex align-items-center gap-1.5">
-                        <select class="form-select form-select-sm rounded-8" id="filtro-aula" aria-label="Filtrar por modalidad">
-                            <option value="">Todas las aulas</option>
-                            <option value="zoom">Virtual · Zoom</option>
-                            <option value="presencial">Presencial</option>
-                        </select>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-8 px-2.5 py-1 text-nowrap fw-bold" id="btn-reset-filtros-top" title="Restablecer todos los filtros">
-                            ↺
-                        </button>
-                    </div>
-                </div>
+            <div class="filtros-horarios">
+                <label class="filtros-horarios__buscar">
+                    <span class="visually-hidden">Buscar docente, curso o sección</span>
+                    <span class="filtros-horarios__lupa" aria-hidden="true">🔍</span>
+                    <input type="search" class="form-control" id="filtro-texto"
+                        placeholder="Buscar docente, curso, sección..." autocomplete="off" />
+                </label>
+                <select class="form-select" id="filtro-curso" aria-label="Filtrar por curso">
+                    <option value="">Todos los cursos</option>
+                </select>
+                <select class="form-select" id="filtro-turno" aria-label="Filtrar por turno">
+                    <option value="">Todos los turnos</option>
+                    <option value="Mañana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noche">Noche</option>
+                </select>
+                <select class="form-select" id="filtro-dias" aria-label="Filtrar por días">
+                    <option value="">Todos los días</option>
+                </select>
+                <select class="form-select" id="filtro-aula" aria-label="Filtrar por modalidad">
+                    <option value="">Todas las aulas</option>
+                    <option value="zoom">Virtual · Zoom</option>
+                    <option value="presencial">Presencial</option>
+                </select>
+                <button type="button" class="filtros-horarios__reset" id="btn-reset-filtros-top"
+                    title="Restablecer todos los filtros" aria-label="Restablecer todos los filtros">↺</button>
             </div>
-        </div>
+        </section>
 
-        <!-- Tabla ejecutiva de Horarios (Ancho amplio con columna de Cupos) -->
-        <div class="tabla-horarios-wrap">
-            <div class="d-flex d-md-none align-items-center justify-content-between px-3 py-1.5 bg-slate-50 border-bottom border-slate-100 text-muted" style="font-size:11px;">
+        <!-- Horarios: tabla en escritorio, tarjetas en celular -->
+        <section class="tabla-horarios-wrap" aria-label="Secciones programadas">
+            <p class="tabla-horarios__aviso">
                 <span>👉 Desliza la tabla para ver turnos, horarios y cupos</span>
-                <span class="fw-bold">⇄</span>
-            </div>
-            <div class="table-responsive" style="max-height: calc(100vh - 280px); overflow-y: auto;">
+                <span aria-hidden="true">⇄</span>
+            </p>
+            <div class="tabla-horarios__scroll">
                 <table class="table tabla-horarios table-hover align-middle">
                     <thead>
                         <tr>
-                            <th scope="col" style="width: 35px;" class="text-center">#</th>
-                            <th scope="col" style="min-width: 160px;">Curso Oficial</th>
-                            <th scope="col" style="width: 55px;" class="text-center">Sec.</th>
-                            <th scope="col" style="min-width: 85px;">Inicio</th>
-                            <th scope="col" style="min-width: 85px;">Fin</th>
-                            <th scope="col" style="min-width: 75px;">Turno</th>
-                            <th scope="col" style="min-width: 115px;">Días</th>
-                            <th scope="col" style="min-width: 140px;">Horario</th>
-                            <th scope="col" style="min-width: 105px;">Aula</th>
-                            <th scope="col" style="min-width: 90px;" class="text-center">Cupos</th>
-                            <th scope="col" style="min-width: 145px;">Docente Asignado</th>
-                            <th scope="col" class="text-center" style="width: 95px;">Acceso</th>
+                            <th scope="col" class="col-num">#</th>
+                            <th scope="col">Curso oficial</th>
+                            <th scope="col" class="col-sec">Sec.</th>
+                            <th scope="col">Inicio</th>
+                            <th scope="col">Fin</th>
+                            <th scope="col">Turno</th>
+                            <th scope="col">Días</th>
+                            <th scope="col">Horario</th>
+                            <th scope="col">Aula</th>
+                            <th scope="col" class="text-center">Cupos</th>
+                            <th scope="col">Docente asignado</th>
+                            <th scope="col" class="text-center">Acceso</th>
                         </tr>
                     </thead>
                     <tbody id="filas-horarios"></tbody>
                 </table>
             </div>
 
-            <!-- Estado vacío si ningún horario coincide con la búsqueda -->
-            <div class="p-5 text-center" id="sin-horarios" hidden>
-                <div style="font-size: 36px; margin-bottom: 8px;">📋</div>
-                <h3 class="fs-6 fw-bold text-dark mb-1">No se encontraron horarios para los filtros seleccionados</h3>
-                <p class="text-muted text-xs mb-3">Intenta cambiando el turno o borrando el texto de búsqueda.</p>
+            <div class="tabla-horarios__vacio" id="sin-horarios" hidden>
+                <div class="tabla-horarios__vacio-icono" aria-hidden="true">📋</div>
+                <h3>No se encontraron horarios para los filtros seleccionados</h3>
+                <p>Intenta cambiando el turno o borrando el texto de búsqueda.</p>
                 <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" id="btn-reset-filtros">
                     Restablecer filtros
                 </button>
             </div>
-        </div>
+        </section>
+
+        <!-- Ayuda desplegable: lo que el estudiante suele preguntar antes de matricularse -->
+        <details class="ayuda-horarios" id="seccion-ayuda">
+            <summary class="ayuda-horarios__summary">
+                <div class="ayuda-horarios__summary-left">
+                    <span class="ayuda-horarios__icono" aria-hidden="true">💡</span>
+                    <h2 class="ayuda-horarios__titulo" id="titulo-ayuda">¿No encuentras tu curso o tu horario?</h2>
+                </div>
+                <div class="ayuda-horarios__summary-right">
+                    <span class="ayuda-horarios__badge-toggle">Preguntas frecuentes</span>
+                    <span class="ayuda-horarios__chevron" aria-hidden="true">▾</span>
+                </div>
+            </summary>
+            <div class="ayuda-horarios__cuerpo">
+                <ul class="ayuda-horarios__lista">
+                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje; los
+                        cursos de otras rutas no aparecen. Si te equivocaste de carrera, usa «Elegir otra carrera».</li>
+                    <li><strong>Un mes con candado 🔒 no tiene apertura</strong> para tu carrera. Revisa el ciclo
+                        siguiente.</li>
+                    <li><strong>«Sec.» es tu sección (PEAD).</strong> Es la que eliges al matricularte en el Campus
+                        Virtual: anótala junto con el turno y los días.</li>
+                    <li><strong>«Docente por asignar»</strong> significa que el horario ya está confirmado y solo falta
+                        publicar el nombre del docente.</li>
+                </ul>
+                <div class="ayuda-horarios__acciones">
+                    <a class="ayuda-horarios__whatsapp" href="https://wa.me/51986724506" target="_blank"
+                        rel="noopener noreferrer">Escribir al WhatsApp 986 724 506</a>
+                    <a class="ayuda-horarios__correo" href="mailto:centro.informatica@uss.edu.pe">centro.informatica@uss.edu.pe</a>
+                </div>
+            </div>
+        </details>
     </main>
 
     <footer class="footer-uss">
@@ -171,8 +179,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Horarios -->
-    <script src="assets/js/datos.js?v=14"></script>
-    <script src="assets/js/horarios.js?v=14"></script>
+    <script src="assets/js/datos.js?v=20"></script>
+    <script src="assets/js/horarios.js?v=20"></script>
 </body>
 
 </html>
