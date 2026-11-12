@@ -72,12 +72,14 @@
         <!-- Cinta de Navegación entre Ciclos y Filtros -->
         <div class="cinta-horarios">
             <!-- Pestañas de meses para cambiar de ciclo directamente -->
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2 mb-2 border-bottom border-slate-100">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="fw-bold text-dark text-xs text-uppercase" style="letter-spacing:0.04em;">Ciclo:</span>
-                    <div class="pestanas-ciclos" id="pestanas-meses" role="tablist"></div>
+            <div class="cinta-horarios__header">
+                <div class="cinta-horarios__ciclos-wrap">
+                    <span class="cinta-horarios__label">Ciclo:</span>
+                    <div class="pestanas-ciclos-scroll">
+                        <div class="pestanas-ciclos" id="pestanas-meses" role="tablist"></div>
+                    </div>
                 </div>
-                <div class="text-muted text-xs fw-bold" id="conteo-secciones">
+                <div class="cinta-horarios__conteo" id="conteo-secciones">
                     Cargando horarios...
                 </div>
             </div>
@@ -126,6 +128,10 @@
 
         <!-- Tabla ejecutiva de Horarios (Ancho amplio con columna de Cupos) -->
         <div class="tabla-horarios-wrap">
+            <div class="d-flex d-md-none align-items-center justify-content-between px-3 py-1.5 bg-slate-50 border-bottom border-slate-100 text-muted" style="font-size:11px;">
+                <span>👉 Desliza la tabla para ver turnos, horarios y cupos</span>
+                <span class="fw-bold">⇄</span>
+            </div>
             <div class="table-responsive" style="max-height: calc(100vh - 280px); overflow-y: auto;">
                 <table class="table tabla-horarios table-hover align-middle">
                     <thead>

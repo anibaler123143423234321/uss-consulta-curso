@@ -650,12 +650,68 @@ body {
     margin-bottom: 14px;
 }
 
-.pestanas-ciclos {
+.cinta-horarios__header {
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.cinta-horarios__ciclos-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+
+.cinta-horarios__label {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pestanas-ciclos-scroll {
+    display: flex;
+    align-items: center;
     overflow-x: auto;
-    padding-bottom: 2px;
+    min-width: 0;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+    padding: 2px 2px 4px 2px;
+}
+
+.pestanas-ciclos-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+
+.pestanas-ciclos-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.pestanas-ciclos {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.cinta-horarios__conteo {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .pestana-ciclo {
@@ -872,4 +928,77 @@ body {
     font-size: 11.5px;
     color: #64748b;
     margin-top: auto;
+}
+
+/* ===================================================
+   7. Responsividad Móvil Avanzada (horarios.html)
+   =================================================== */
+@media (max-width: 768px) {
+    .hoja-contenedor-horarios {
+        padding: 10px 10px 24px;
+    }
+
+    .banner-carrera-horarios {
+        padding: 12px 14px;
+    }
+
+    .banner-carrera-horarios > .d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    #btn-elegir-otra-carrera {
+        align-self: flex-start;
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    .cinta-horarios {
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+
+    .cinta-horarios__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+    }
+
+    .cinta-horarios__ciclos-wrap {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .cinta-horarios__conteo {
+        font-size: 11px;
+        color: #64748b;
+        padding-left: 2px;
+    }
+
+    .pestana-ciclo {
+        padding: 5px 10px;
+        font-size: 11.5px;
+        border-radius: 6px;
+    }
+
+    .pestana-ciclo__badge {
+        font-size: 10px;
+        padding: 0 5px;
+    }
+
+    .tabla-horarios {
+        font-size: 11.5px;
+    }
+
+    .tabla-horarios thead th {
+        font-size: 10.5px;
+        padding: 8px 10px;
+    }
+
+    .tabla-horarios tbody td {
+        padding: 8px 10px;
+    }
 }
