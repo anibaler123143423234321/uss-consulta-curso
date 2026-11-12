@@ -320,7 +320,9 @@ document.addEventListener('DOMContentLoaded', () => {
       );
 
       const filasFiltradas = permitidos
-        ? filasCiclo.filter((f) => permitidos.has(f.curso))
+        ? filasCiclo.filter(
+            (f) => permitidos.has(f.curso) && window.CONSULTA_CURSOS.seccionVisible(f.seccion, carreraSeleccionada)
+          )
         : filasCiclo;
 
       const total = filasFiltradas.length;

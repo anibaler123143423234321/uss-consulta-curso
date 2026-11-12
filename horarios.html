@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=20" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=25" />
 </head>
 
 <body>
@@ -80,7 +80,7 @@
                     <span class="visually-hidden">Buscar docente, curso o sección</span>
                     <span class="filtros-horarios__lupa" aria-hidden="true">🔍</span>
                     <input type="search" class="form-control" id="filtro-texto"
-                        placeholder="Buscar docente, curso, sección..." autocomplete="off" />
+                        placeholder="Buscar docente, curso, sección… (tecla /)" autocomplete="off" />
                 </label>
                 <select class="form-select" id="filtro-curso" aria-label="Filtrar por curso">
                     <option value="">Todos los cursos</option>
@@ -101,6 +101,13 @@
                 </select>
                 <button type="button" class="filtros-horarios__reset" id="btn-reset-filtros-top"
                     title="Restablecer todos los filtros" aria-label="Restablecer todos los filtros">↺</button>
+            </div>
+
+            <!-- Filtros activos (se quitan con un toque), estado de sincronización y enlace para compartir -->
+            <div class="cinta-horarios__pie">
+                <div class="filtros-activos" id="filtros-activos" aria-label="Filtros activos" hidden></div>
+                <span class="estado-fuente" id="estado-fuente" role="status">Conectando con el sistema CINF…</span>
+                <button type="button" class="btn-compartir" id="btn-compartir">Compartir esta vista 🔗</button>
             </div>
         </section>
 
@@ -179,8 +186,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Horarios -->
-    <script src="assets/js/datos.js?v=20"></script>
-    <script src="assets/js/horarios.js?v=20"></script>
+    <script src="assets/js/datos.js?v=25"></script>
+    <script src="assets/js/horarios.js?v=25"></script>
 </body>
 
 </html>

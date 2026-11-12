@@ -10,7 +10,7 @@
  * 5. Filtra por cursos correspondientes a la carrera, turno y búsqueda en vivo.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const { ciclos, rutas, horarios, cursosParaTodos = [] } = window.CONSULTA_CURSOS;
+  const { ciclos, rutas, horarios, cursosParaTodos = [], seccionVisible } = window.CONSULTA_CURSOS;
   const $ = (id) => document.getElementById(id);
 
   // 1. Obtener parámetros de la URL
@@ -27,8 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const carrera = carreraParam.trim();
 
   // Configurar enlace de retorno conservando la carrera
-  const isDirectPortal = window.location.pathname.includes('consulta-cursos');
-  const homePath = isDirectPortal ? './' : 'consulta-cursos';
+  // En el dominio unificado la portada vive en /consulta-cursos. En local (Live Server) y en el
+  // despliegue propio es el index.html de esta misma carpeta.
+  const enDominioUnificado = /informatica-uss|ecosistema-uss|uss\.edu\.pe/.test(window.location.hostname);
+  const dentroDelPortal = window.location.pathname.includes('/consulta-cursos');
+  const homePath = dentroDelPortal ? './' : enDominioUnificado ? 'consulta-cursos' : 'index.html';
 
   const btnVolver = $('btn-volver-atras');
   if (btnVolver) {
@@ -54,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .concat(cursosParaTodos)
   );
 
+  // Cursos de la ruta + Plan Tradicional; los grupos por especialidad solo para su carrera
+  const esDeLaCarrera = (h) => cursosPermitidos.has(h.curso) && seccionVisible(h.seccion, carrera);
+
   // La API devuelve «Word 365 (Protech XP)»; las rutas lo llaman «Word 365»
   const limpiarCurso = (nombre) => (nombre || '').replace(/\s*\(Protech XP\)\s*/i, '').trim();
 
@@ -69,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!horariosCargados || horariosCargados.length === 0) return 0;
     const cNorm = (cicloId || '').toLowerCase();
     return horariosCargados.filter(
-      (h) => (h.ciclo || '').toLowerCase() === cNorm && cursosPermitidos.has(h.curso)
+      (h) => (h.ciclo || '').toLowerCase() === cNorm && esDeLaCarrera(h)
     ).length;
   }
 
@@ -139,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 4. Fuente de datos: API REST o catálogo oficial en datos.js
   let horariosCargados = [];
+  let fuenteEnVivo = false;
 
   const resolveApiBase = () => {
     if (window.API_BASE_URL) return window.API_BASE_URL.replace(/\/+$/, '');
@@ -207,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             docente: r.docente || '',
             linkAula: r.linkAula || null,
           }));
+          fuenteEnVivo = true;
         } else {
           horariosCargados = horarios || [];
         }
@@ -228,41 +236,159 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    pintarEstadoFuente();
+    leerFiltrosDeUrl();
     actualizarPestanasCiclos();
     poblarFiltrosDinamicos();
     pintarTabla();
   }
 
-  // 5. Poblado Dinámico de Filtros (Cursos y Días del ciclo activo)
+  // 5. Filtros inteligentes
+  const FILTROS = { curso: 'filtro-curso', turno: 'filtro-turno', dias: 'filtro-dias', aula: 'filtro-aula' };
+  const esVirtual = (fila) => /zoom|virtual/i.test(fila.aula || '');
+
+  const valoresFiltros = () => ({
+    texto: normalizar($('filtro-texto')?.value),
+    curso: $('filtro-curso')?.value || '',
+    turno: $('filtro-turno')?.value || '',
+    dias: $('filtro-dias')?.value || '',
+    aula: $('filtro-aula')?.value || '',
+  });
+
+  // Aplica todos los filtros menos el indicado: así cada desplegable sabe cuántas filas daría cada opción
+  function cumple(fila, f, omitir) {
+    if (omitir !== 'curso' && f.curso && fila.curso !== f.curso) return false;
+    if (omitir !== 'turno' && f.turno && fila.turno !== f.turno) return false;
+    if (omitir !== 'dias' && f.dias && fila.dias !== f.dias) return false;
+    if (omitir !== 'aula' && f.aula && (f.aula === 'zoom') !== esVirtual(fila)) return false;
+    if (
+      f.texto &&
+      !normalizar(`${fila.curso} ${fila.seccion} ${fila.docente} ${fila.dias} ${fila.aula} ${fila.turno} ${fila.horario}`).includes(f.texto)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  const filasDelCiclo = () =>
+    horariosCargados.filter((h) => (h.ciclo || '').toLowerCase() === cicloActivo && esDeLaCarrera(h));
+
+  // Reescribe las opciones con su conteo y deshabilita las que no darían resultados
   function poblarFiltrosDinamicos() {
-    const selCurso = $('filtro-curso');
-    const selDias = $('filtro-dias');
+    const filas = filasDelCiclo();
+    const f = valoresFiltros();
+    const ordenCursos = [...cursosPermitidos];
 
-    const filasCiclo = horariosCargados.filter(
-      (h) => (h.ciclo || '').toLowerCase() === cicloActivo && cursosPermitidos.has(h.curso)
+    const opciones = {
+      curso: [...new Set(filas.map((h) => h.curso))].sort((a, b) => ordenCursos.indexOf(a) - ordenCursos.indexOf(b)).map((v) => [v, v]),
+      turno: ['Mañana', 'Tarde', 'Noche'].map((v) => [v, v]),
+      dias: [...new Set(filas.map((h) => h.dias))].sort((a, b) => a.localeCompare(b, 'es')).map((v) => [v, v]),
+      aula: [['zoom', 'Virtual · Zoom'], ['presencial', 'Presencial']],
+    };
+    const todos = { curso: 'Todos los cursos', turno: 'Todos los turnos', dias: 'Todos los días', aula: 'Todas las aulas' };
+
+    Object.entries(FILTROS).forEach(([clave, id]) => {
+      const select = $(id);
+      if (!select) return;
+      const actual = select.value;
+      const base = filas.filter((fila) => cumple(fila, f, clave));
+      const contar = (valor) =>
+        base.filter((fila) =>
+          clave === 'aula' ? (valor === 'zoom') === esVirtual(fila) : fila[clave] === valor
+        ).length;
+
+      select.replaceChildren(new Option(`${todos[clave]} (${base.length})`, ''));
+      opciones[clave].forEach(([valor, etiqueta]) => {
+        const n = contar(valor);
+        if (n === 0 && valor !== actual && clave !== 'turno' && clave !== 'aula') return;
+        const opcion = new Option(`${etiqueta} (${n})`, valor);
+        opcion.disabled = n === 0 && valor !== actual;
+        select.appendChild(opcion);
+      });
+      select.value = [...select.options].some((o) => o.value === actual) ? actual : '';
+      select.classList.toggle('filtro-activo', select.value !== '');
+    });
+  }
+
+  // Los filtros viajan en la dirección: el enlace que se comparte abre la misma vista
+  function leerFiltrosDeUrl() {
+    const p = new URLSearchParams(window.location.search);
+    if ($('filtro-texto')) $('filtro-texto').value = p.get('q') || '';
+    Object.entries(FILTROS).forEach(([clave, id]) => {
+      const valor = p.get(clave);
+      if (valor && $(id)) {
+        if (![...$(id).options].some((o) => o.value === valor)) $(id).appendChild(new Option(valor, valor));
+        $(id).value = valor;
+      }
+    });
+  }
+
+  function guardarFiltrosEnUrl() {
+    const url = new URL(window.location);
+    const f = valoresFiltros();
+    const pares = { q: $('filtro-texto')?.value.trim() || '', curso: f.curso, turno: f.turno, dias: f.dias, aula: f.aula };
+    Object.entries(pares).forEach(([k, v]) => (v ? url.searchParams.set(k, v) : url.searchParams.delete(k)));
+    window.history.replaceState(null, '', url);
+  }
+
+  // Fichas de los filtros activos: se quitan con un toque
+  function pintarFiltrosActivos() {
+    const zona = $('filtros-activos');
+    if (!zona) return;
+    const f = valoresFiltros();
+    const texto = $('filtro-texto')?.value.trim();
+    const activos = [];
+    if (texto) activos.push(['filtro-texto', `«${texto}»`]);
+    Object.entries(FILTROS).forEach(([clave, id]) => {
+      if (f[clave]) activos.push([id, clave === 'aula' ? (f.aula === 'zoom' ? 'Virtual · Zoom' : 'Presencial') : f[clave]]);
+    });
+
+    zona.replaceChildren(
+      ...activos.map(([id, etiqueta]) => {
+        const ficha = document.createElement('button');
+        ficha.type = 'button';
+        ficha.className = 'filtro-ficha';
+        ficha.title = 'Quitar este filtro';
+        ficha.textContent = `${etiqueta} ✕`;
+        ficha.addEventListener('click', () => {
+          $(id).value = '';
+          alCambiarFiltros();
+        });
+        return ficha;
+      })
     );
+    zona.hidden = activos.length === 0;
+  }
 
-    // Cursos únicos
-    if (selCurso) {
-      const valorPrevio = selCurso.value;
-      const cursosUnicos = Array.from(new Set(filasCiclo.map((h) => h.curso).filter(Boolean))).sort();
-      selCurso.innerHTML = '<option value="">Todos los cursos</option>' +
-        cursosUnicos.map((c) => `<option value="${c}">${c}</option>`).join('');
-      if (cursosUnicos.includes(valorPrevio)) {
-        selCurso.value = valorPrevio;
-      }
-    }
+  function alCambiarFiltros() {
+    poblarFiltrosDinamicos();
+    pintarTabla();
+  }
 
-    // Días únicos
-    if (selDias) {
-      const valorPrevio = selDias.value;
-      const diasUnicos = Array.from(new Set(filasCiclo.map((h) => h.dias).filter(Boolean))).sort();
-      selDias.innerHTML = '<option value="">Todos los días</option>' +
-        diasUnicos.map((d) => `<option value="${d}">${d}</option>`).join('');
-      if (diasUnicos.includes(valorPrevio)) {
-        selDias.value = valorPrevio;
-      }
-    }
+  // Resalta en la tabla lo que el estudiante escribió en el buscador
+  function resaltar(celda, texto) {
+    if (!texto) return;
+    const contenido = celda.textContent;
+    const plano = contenido.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const inicio = plano.indexOf(texto);
+    if (inicio === -1 || plano.length !== contenido.length) return;
+    const marca = document.createElement('mark');
+    marca.className = 'resaltado';
+    marca.textContent = contenido.slice(inicio, inicio + texto.length);
+    const destino = celda.querySelector('strong, span') || celda;
+    if (destino.textContent !== contenido) return;
+    destino.replaceChildren(contenido.slice(0, inicio), marca, contenido.slice(inicio + texto.length));
+  }
+
+  // Indica si los horarios vienen del sistema en línea o de la copia local
+  function pintarEstadoFuente() {
+    const estado = $('estado-fuente');
+    if (!estado) return;
+    const hora = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+    estado.className = `estado-fuente ${fuenteEnVivo ? 'estado-fuente--vivo' : 'estado-fuente--copia'}`;
+    estado.textContent = fuenteEnVivo
+      ? `Sincronizado con el sistema CINF · ${hora}`
+      : 'Sin conexión con el sistema: se muestra la última copia guardada';
   }
 
   const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
@@ -273,42 +399,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const sinHorarios = $('sin-horarios');
     const conteo = $('conteo-secciones');
 
-    const textoFiltro = normalizar($('filtro-texto')?.value);
-    const cursoFiltro = $('filtro-curso')?.value || '';
-    const turnoFiltro = $('filtro-turno')?.value || '';
-    const diasFiltro = $('filtro-dias')?.value || '';
-    const aulaFiltro = ($('filtro-aula')?.value || '').toLowerCase();
+    const f = valoresFiltros();
+    const filasCarrera = filasDelCiclo();
+    const filasVisibles = filasCarrera.filter((fila) => cumple(fila, f));
 
-    const filasCiclo = horariosCargados.filter(
-      (h) => (h.ciclo || '').toLowerCase() === cicloActivo
+    guardarFiltrosEnUrl();
+    pintarFiltrosActivos();
+
+    // Orden de lectura: los cursos como en la ruta de la carrera y, dentro de cada uno, PEAD a, b… z, aa, ab…
+    const ordenCursos = [...cursosPermitidos];
+    const posicion = (curso) => {
+      const i = ordenCursos.indexOf(curso);
+      return i === -1 ? ordenCursos.length : i;
+    };
+    filasVisibles.sort(
+      (x, y) =>
+        posicion(x.curso) - posicion(y.curso) ||
+        x.seccion.length - y.seccion.length ||
+        x.seccion.localeCompare(y.seccion, 'es')
     );
-
-    // Filtrar estrictamente por los cursos que le tocan a esta carrera
-    const filasCarrera = filasCiclo.filter((h) => cursosPermitidos.has(h.curso));
-
-    // Filtrar por texto, curso, turno, días y aula/modalidad
-    const filasVisibles = filasCarrera.filter((fila) => {
-      if (cursoFiltro && fila.curso !== cursoFiltro) return false;
-      if (turnoFiltro && fila.turno !== turnoFiltro) return false;
-      if (diasFiltro && fila.dias !== diasFiltro) return false;
-      if (aulaFiltro) {
-        const aulaNorm = (fila.aula || '').toLowerCase();
-        if (aulaFiltro === 'zoom' && !aulaNorm.includes('zoom') && !aulaNorm.includes('virtual')) return false;
-        if (aulaFiltro === 'presencial' && (aulaNorm.includes('zoom') || aulaNorm.includes('virtual'))) return false;
-      }
-      if (
-        textoFiltro &&
-        !normalizar(`${fila.curso} ${fila.seccion} ${fila.docente} ${fila.dias} ${fila.aula} ${fila.turno}`).includes(
-          textoFiltro
-        )
-      ) {
-        return false;
-      }
-      return true;
-    });
 
     conteo.textContent = `Mostrando ${filasVisibles.length} de ${filasCarrera.length} secciones programadas`;
     requestAnimationFrame(ajustarCajaTabla);
+
+    // Sin resultados se oculta la caja de la tabla: solo queda el aviso con el botón para restablecer
+    const cajaTabla = document.querySelector('.tabla-horarios__scroll');
+    if (cajaTabla) cajaTabla.hidden = filasVisibles.length === 0;
 
     if (filasVisibles.length === 0) {
       tbody.replaceChildren();
@@ -416,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
           tdAcceso
         );
 
+        [tdCurso, tdSec, tdDias, tdDocente].forEach((td) => resaltar(td, f.texto));
+
         return tr;
       })
     );
@@ -446,11 +564,31 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', ajustarCajaTabla);
 
   // Eventos de filtros
-  $('filtro-texto')?.addEventListener('input', pintarTabla);
-  $('filtro-curso')?.addEventListener('change', pintarTabla);
-  $('filtro-turno')?.addEventListener('change', pintarTabla);
-  $('filtro-dias')?.addEventListener('change', pintarTabla);
-  $('filtro-aula')?.addEventListener('change', pintarTabla);
+  $('filtro-texto')?.addEventListener('input', alCambiarFiltros);
+  Object.values(FILTROS).forEach((id) => $(id)?.addEventListener('change', alCambiarFiltros));
+
+  // Atajo de teclado: «/» lleva al buscador
+  document.addEventListener('keydown', (evento) => {
+    const escribiendo = /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '');
+    if (evento.key === '/' && !escribiendo) {
+      evento.preventDefault();
+      $('filtro-texto')?.focus();
+    }
+  });
+
+  // Copiar el enlace de la vista actual (carrera, ciclo y filtros)
+  $('btn-compartir')?.addEventListener('click', async () => {
+    const boton = $('btn-compartir');
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      boton.textContent = 'Enlace copiado ✓';
+    } catch {
+      boton.textContent = 'Copia la dirección del navegador';
+    }
+    setTimeout(() => {
+      boton.textContent = 'Compartir esta vista 🔗';
+    }, 2200);
+  });
 
   function resetearTodosLosFiltros() {
     if ($('filtro-texto')) $('filtro-texto').value = '';
@@ -458,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if ($('filtro-turno')) $('filtro-turno').value = '';
     if ($('filtro-dias')) $('filtro-dias').value = '';
     if ($('filtro-aula')) $('filtro-aula').value = '';
-    pintarTabla();
+    alCambiarFiltros();
   }
 
   $('btn-reset-filtros')?.addEventListener('click', resetearTodosLosFiltros);
