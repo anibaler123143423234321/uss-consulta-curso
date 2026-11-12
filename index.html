@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Consulta de Cursos y Horarios | Centro de Informática USS</title>
+    <meta name="description"
+        content="Consulta los horarios y asignaturas oficiales del Centro de Informática de la Universidad Señor de Sipán según tu carrera y ciclo de apertura." />
+    <meta name="theme-color" content="#073299" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <!-- Tipografía oficial USS: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=27" />
+</head>
+
+<body>
+    <!-- Portada institucional idéntica en dimensiones y gradiente a Portal GEX USS -->
+    <header class="portada-uss">
+        <!-- Luces y efectos de fondo -->
+        <div class="portada-uss__luz portada-uss__luz--1" aria-hidden="true"></div>
+        <div class="portada-uss__luz portada-uss__luz--2" aria-hidden="true"></div>
+
+        <!-- Ilustración oficial USS (Laptop, escudo y birrete) idéntica a uss-gex -->
+        <svg viewBox="0 0 220 190" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true" class="hero-illustration">
+            <rect x="20" y="70" width="120" height="80" rx="9" fill="currentColor" fill-opacity="0.1" />
+            <path d="M6 156h148l-10 14H16z" fill="currentColor" fill-opacity="0.1" />
+            <path d="M80 88l24 9v17c0 15-11 24-24 28-13-4-24-13-24-28V97z" fill="currentColor" fill-opacity="0.12" />
+            <path d="M69 115l8 8 15-16" />
+            <path d="M156 18l44 17-44 17-44-17z" fill="currentColor" fill-opacity="0.14" />
+            <path d="M130 42v18c0 8 12 14 26 14s26-6 26-14V42" />
+            <path d="M200 35v24" />
+            <circle cx="200" cy="62" r="3.5" fill="currentColor" />
+            <circle cx="186" cy="104" r="4" />
+            <circle cx="170" cy="132" r="2.5" fill="currentColor" />
+        </svg>
+
+        <div class="container-fluid px-3 px-sm-4 max-w-4xl mx-auto position-relative">
+            <!-- Barra superior con Logo USS y botón de Portal CINF -->
+            <div class="d-flex align-items-center justify-content-between gap-3 pt-1">
+                <a class="portada-uss__logo" href="./" title="Ir al inicio de Consulta de Cursos">
+                    <img src="assets/img/logo-uss.png" alt="Universidad Señor de Sipán · Centro de Informática" width="951"
+                        height="328" />
+                </a>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn-portal-cinf" href="https://informatica-uss.vercel.app/" target="_blank" rel="noopener noreferrer">
+                        <span>Portal CINF</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Título y subtítulo con dimensiones y jerarquía oficial de uss-gex -->
+            <div class="text-center mt-4 sm:mt-5 pt-2">
+                <span class="insignia-uss">
+                    <span class="insignia-uss__icono">🛡️</span>
+                    <span>Centro de Informática • PROTECH XP</span>
+                </span>
+                <h1 class="portada-uss__titulo mt-2">
+                    Consulta de Horarios y <span class="texto-oro">Cursos</span>
+                </h1>
+                <p class="portada-uss__subtitulo mt-2">
+                    Selecciona tu carrera profesional para ver tu ruta de aprendizaje y consultar las secciones programadas por ciclo.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main class="hoja-contenedor">
+        <!-- Tarjeta Elevada Interactiva (Contiene el flujo completo paso a paso) -->
+        <section class="tarjeta-carrera-elevada" id="tarjeta-carrera">
+            
+            <!-- PASO 1: Selección de Carrera -->
+            <div id="vista-carrera">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="tarjeta-carrera__paso">1</span>
+                        <div>
+                            <h2 class="tarjeta-carrera__titulo">Selecciona tu Carrera Profesional</h2>
+                            <p class="tarjeta-carrera__desc mb-0">Escribe o busca tu carrera para consultar tus horarios oficiales</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carrera-combobox" id="carrera-combobox">
+                    <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
+                        <span class="carrera-combobox__icono" aria-hidden="true">🎓</span>
+                        <input type="text" class="carrera-combobox__input" id="input-carrera-principal"
+                            placeholder="Escribe tu carrera (ej. Psicología, Medicina, Derecho, Sistemas)..."
+                            autocomplete="off" spellcheck="false" />
+                        <div class="carrera-combobox__acciones">
+                            <button type="button" class="carrera-combobox__chevron" id="btn-toggle-carrera"
+                                title="Ver lista de carreras" aria-label="Ver lista de carreras">
+                                ▾
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown de resultados debajo del input -->
+                    <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden>
+                        <div class="carrera-combobox__options" id="lista-opciones-carreras" role="listbox"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 2: Aparece en la misma tarjeta cuando ya seleccionaron carrera -->
+            <div id="vista-ciclos" hidden>
+                <!-- Barra superior con la carrera elegida y botón de cambiar -->
+                <div class="carrera-seleccionada-barra mb-3">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="font-size: 22px;" aria-hidden="true">🎓</span>
+                            <div>
+                                <span class="text-xs text-muted font-bold text-uppercase" style="font-size:10.5px; letter-spacing:0.04em;">Carrera seleccionada:</span>
+                                <strong class="fs-6 text-dark d-block lh-1 mt-0.5" id="carrera-elegida-badge">Derecho</strong>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-cambiar-carrera" id="btn-cambiar-carrera" title="Elegir otra carrera">
+                            <span>Cambiar carrera</span>
+                            <span>✕</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="tarjeta-carrera__paso">2</span>
+                        <div>
+                            <h2 class="tarjeta-carrera__titulo">Elige el ciclo de apertura</h2>
+                            <p class="tarjeta-carrera__desc mb-0">Haz clic en un ciclo para abrir la programación completa de horarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid de ciclos directamente adentro de la misma tarjeta -->
+                <div class="grid-ciclos-compacto" id="grid-ciclos"></div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="footer-uss">
+        Universidad Señor de Sipán · Centro de Informática CINF · Acreditación PROTECH XP © 2026
+    </footer>
+
+    <!-- Scripts de Datos y Lógica de Selección -->
+    <script src="assets/js/datos.js?v=27"></script>
+    <script src="assets/js/index.js?v=27"></script>
+</body>
+
+</html>

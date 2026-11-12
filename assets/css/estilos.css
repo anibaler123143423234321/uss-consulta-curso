@@ -445,21 +445,31 @@ body {
    =================================================== */
 .grid-ciclos-compacto {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
 }
 
-@media (max-width: 991px) {
-    .grid-ciclos-compacto {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.ciclos-proximos {
+    margin: 14px 0 0;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: var(--uss-bg);
+    border: 1px dashed #cbd5e1;
+    color: var(--uss-text-muted);
+    font-size: 12.5px;
+    font-weight: 600;
 }
 
-@media (max-width: 575px) {
-    .grid-ciclos-compacto {
-        grid-template-columns: 1fr;
-    }
+.ciclos-ayuda {
+    margin: 10px 0 0;
+    font-size: 12.5px;
+    color: var(--uss-text-muted);
+}
+
+.ciclos-ayuda a {
+    color: var(--uss-azul);
+    font-weight: 700;
 }
 
 .ciclo-btn {
@@ -467,8 +477,8 @@ body {
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
-    min-height: 76px;
-    padding: 10px 12px;
+    min-height: 104px;
+    padding: 14px 16px;
     background: #ffffff;
     border: 1.5px solid var(--uss-border);
     border-radius: 12px;
@@ -498,13 +508,14 @@ body {
 }
 
 .ciclo-btn__mes {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--uss-text-main);
 }
 
 .ciclo-btn__duracion {
-    font-size: 11px;
+    margin-top: 2px;
+    font-size: 12px;
     color: var(--uss-text-muted);
 }
 
@@ -524,7 +535,7 @@ body {
 }
 
 .ciclo-btn__badge {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
@@ -540,7 +551,7 @@ body {
 }
 
 .ciclo-btn__accion {
-    font-size: 11px;
+    font-size: 12.5px;
     font-weight: 700;
     color: var(--uss-azul);
 }

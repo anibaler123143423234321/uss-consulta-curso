@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = crear('div', 'ciclo-btn__header');
     const izquierda = document.createElement('div');
     const mes = crear('span', 'ciclo-btn__mes', ciclo.nombre);
-    const duracion = crear('div', 'ciclo-btn__duracion', `⏱ ${ciclo.duracion}`);
+    const duracion = crear('div', 'ciclo-btn__duracion', ciclo.duracion);
     izquierda.append(mes, duracion);
     const icono = crear('span', 'ciclo-btn__icono', '📅');
     header.append(izquierda, icono);
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const footer = crear('div', 'ciclo-btn__footer');
     const badge = crear('span', 'ciclo-btn__badge ciclo-btn__badge--disponible');
     badge.id = `badge-ciclo-${ciclo.id}`;
-    badge.innerHTML = '<span>●</span> <span>Consultar</span>';
+    badge.textContent = 'Consultar';
 
     const accion = crear('span', 'ciclo-btn__accion', 'Ver horarios →');
     footer.append(badge, accion);
@@ -288,67 +288,60 @@ document.addEventListener('DOMContentLoaded', () => {
     gridCiclos.appendChild(btn);
   });
 
-  // Tarjeta 8 de ayuda rápida para balancear la cuadrícula 4x2
-  const tarjetaAyuda = crear('div', 'ciclo-btn ciclo-btn--ayuda');
-  tarjetaAyuda.innerHTML = `
-    <div class="ciclo-btn__header">
-      <div>
-        <span class="ciclo-btn__mes" style="font-size:12.5px;color:#1e3a8a;">Asistencia CINF</span>
-        <div class="ciclo-btn__duracion">Atención al estudiante</div>
-      </div>
-      <span class="ciclo-btn__icono">💬</span>
-    </div>
-    <div class="ciclo-btn__footer">
-      <span class="ciclo-btn__badge" style="color:#0284c7;font-size:10.5px;">Soporte WhatsApp USS</span>
-      <a href="https://wa.me/51986724506" target="_blank" rel="noopener noreferrer" class="ciclo-btn__accion" style="text-decoration:none;">Contactar ↗</a>
-    </div>
-  `;
-  gridCiclos.appendChild(tarjetaAyuda);
+  // Debajo de las tarjetas: ciclos que aún no abren y contacto
+  const proximos = crear('p', 'ciclos-proximos');
+  proximos.id = 'ciclos-proximos';
+  const ayuda = crear('p', 'ciclos-ayuda');
+  ayuda.append('¿Dudas con tu matrícula? ');
+  const enlaceWsp = crear('a', null, 'Escríbenos al WhatsApp 986 724 506');
+  enlaceWsp.href = 'https://wa.me/51986724506';
+  enlaceWsp.target = '_blank';
+  enlaceWsp.rel = 'noopener noreferrer';
+  ayuda.appendChild(enlaceWsp);
+  gridCiclos.after(proximos, ayuda);
 
+  // Solo se muestran como tarjeta los ciclos con horarios para la carrera elegida
   function actualizarContadoresCiclos() {
     const permitidos = cursosDeCarrera(carreraSeleccionada);
+    const sinApertura = [];
 
     ciclos.forEach((ciclo) => {
       const btn = $(`btn-ciclo-${ciclo.id}`);
       const badge = $(`badge-ciclo-${ciclo.id}`);
       if (!btn || !badge) return;
 
-      const accion = btn.querySelector('.ciclo-btn__accion');
-
-      const filasCiclo = (horarios || []).filter(
-        (h) => (h.ciclo || '').toLowerCase() === ciclo.id.toLowerCase()
+      const filas = (horarios || []).filter(
+        (h) =>
+          (h.ciclo || '').toLowerCase() === ciclo.id.toLowerCase() &&
+          (!permitidos ||
+            (permitidos.has(h.curso) && window.CONSULTA_CURSOS.seccionVisible(h.seccion, carreraSeleccionada)))
       );
+      const total = filas.length;
 
-      const filasFiltradas = permitidos
-        ? filasCiclo.filter(
-            (f) => permitidos.has(f.curso) && window.CONSULTA_CURSOS.seccionVisible(f.seccion, carreraSeleccionada)
-          )
-        : filasCiclo;
-
-      const total = filasFiltradas.length;
-
-      if (total > 0) {
-        btn.disabled = false;
-        btn.classList.add('ciclo-btn--destacado');
-        btn.classList.remove('ciclo-btn--deshabilitado');
-        badge.className = 'ciclo-btn__badge ciclo-btn__badge--disponible';
-        badge.innerHTML = `<span>●</span> <span>${total} secciones para tu carrera</span>`;
-        if (accion) {
-          accion.textContent = 'Ver horarios →';
-          accion.className = 'ciclo-btn__accion';
-        }
-      } else {
-        btn.disabled = true;
-        btn.classList.remove('ciclo-btn--destacado');
-        btn.classList.add('ciclo-btn--deshabilitado');
-        badge.className = 'ciclo-btn__badge ciclo-btn__badge--vacio';
-        badge.innerHTML = `<span>🔒</span> <span>Próximamente</span>`;
-        if (accion) {
-          accion.textContent = 'Sin apertura';
-          accion.className = 'ciclo-btn__accion ciclo-btn__accion--bloqueado';
-        }
+      btn.hidden = total === 0;
+      btn.disabled = total === 0;
+      if (total === 0) {
+        sinApertura.push(ciclo.nombre);
+        return;
       }
+
+      const cursosDistintos = new Set(filas.map((h) => h.curso)).size;
+      const anio = (filas[0].inicio || '').split('/')[2] || '';
+      btn.classList.add('ciclo-btn--destacado');
+      btn.querySelector('.ciclo-btn__mes').textContent = `${ciclo.nombre} ${anio}`.trim();
+      btn.querySelector('.ciclo-btn__duracion').textContent = `Clases del ${filas[0].inicio} al ${filas[0].fin} · ${ciclo.duracion}`;
+      badge.className = 'ciclo-btn__badge ciclo-btn__badge--disponible';
+      badge.textContent = `${cursosDistintos} ${cursosDistintos === 1 ? 'curso' : 'cursos'} · ${total} ${total === 1 ? 'sección' : 'secciones'}`;
     });
+
+    proximos.hidden = sinApertura.length === 0;
+    proximos.textContent = `Próximamente: ${sinApertura.join(' · ')}`;
+
+    const sinNinguno = sinApertura.length === ciclos.length;
+    gridCiclos.hidden = sinNinguno;
+    if (sinNinguno) {
+      proximos.textContent = 'Por ahora no hay ciclos con horarios publicados para tu carrera. Vuelve a consultar pronto.';
+    }
   }
 
   function abrirHorarios(cicloId) {
