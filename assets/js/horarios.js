@@ -151,6 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dias: r.dias || '',
             horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
             aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
+            cupos: r.cupos || 30,
+            cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
+            cuposTotal: r.cupos || 30,
             docente: r.docente || '',
             linkAula: r.linkAula || null,
           }));
@@ -217,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Curso Oficial
         const tdCurso = document.createElement('td');
-        tdCurso.innerHTML = `<strong class="text-dark d-block">${fila.curso}</strong><span class="text-muted" style="font-size:11px;">Plan PROTECH XP</span>`;
+        tdCurso.innerHTML = `<strong class="text-dark d-block">${fila.curso}</strong>`;
 
         // 3. Sección
         const tdSec = document.createElement('td');
@@ -256,7 +259,12 @@ document.addEventListener('DOMContentLoaded', () => {
           ${esZoom ? '📹' : '📍'} ${fila.aula || 'Virtual'}
         </span>`;
 
-        // 10. Docente
+        // 10. Cupos
+        const tdCupos = document.createElement('td');
+        tdCupos.className = 'text-center';
+        tdCupos.innerHTML = `<span class="badge-cupos" title="Cupos referenciales programados">👥 <strong>${fila.cupos || 30}</strong> cupos</span>`;
+
+        // 11. Docente
         const tdDocente = document.createElement('td');
         if (fila.docente && fila.docente !== 'Por asignar') {
           tdDocente.className = 'docente-asignado';
@@ -266,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tdDocente.textContent = 'Docente por asignar';
         }
 
-        // 11. Acceso
+        // 12. Acceso
         const tdAcceso = document.createElement('td');
         tdAcceso.className = 'text-center';
         if (fila.linkAula) {
@@ -287,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tdDias,
           tdHorario,
           tdAula,
+          tdCupos,
           tdDocente,
           tdAcceso
         );

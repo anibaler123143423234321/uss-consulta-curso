@@ -17,7 +17,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=9" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=12" />
 </head>
 
 <body>
@@ -74,81 +74,75 @@
     </header>
 
     <main class="hoja-contenedor">
-        <!-- Paso 1: Selección de Carrera con Input Autocompletable Directo -->
-        <section class="tarjeta-carrera-elevada" id="tarjeta-carrera" aria-labelledby="titulo-carrera">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="tarjeta-carrera__paso">1</span>
-                    <div>
-                        <h2 class="tarjeta-carrera__titulo" id="titulo-carrera">Selecciona tu Carrera Profesional</h2>
-                        <p class="tarjeta-carrera__desc mb-0">Escribe o busca tu carrera para activar tu Ruta Oficial de Aprendizaje</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input principal directo con autocompletado en el mismo campo -->
-            <div class="carrera-combobox" id="carrera-combobox">
-                <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
-                    <span class="carrera-combobox__icono" aria-hidden="true">🎓</span>
-                    <input type="text" class="carrera-combobox__input" id="input-carrera-principal"
-                        placeholder="Escribe tu carrera (ej. Psicología, Medicina, Derecho, Sistemas)..."
-                        autocomplete="off" spellcheck="false" />
-                    <div class="carrera-combobox__acciones">
-                        <button type="button" class="carrera-combobox__clear" id="btn-clear-carrera" title="Borrar carrera"
-                            aria-label="Borrar carrera" hidden>
-                            ✕
-                        </button>
-                        <button type="button" class="carrera-combobox__chevron" id="btn-toggle-carrera"
-                            title="Ver lista de carreras" aria-label="Ver lista de carreras">
-                            ▾
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Dropdown de resultados debajo del input -->
-                <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden>
-                    <div class="carrera-combobox__options" id="lista-opciones-carreras" role="listbox"></div>
-                </div>
-            </div>
-
-            <!-- Ficha informativa de la Ruta Oficial (Aparece al elegir una carrera) -->
-            <div class="ficha-ruta-activa mt-2.5" id="ficha-ruta" hidden>
-                <div class="ficha-ruta__cabecera">
+        <!-- Tarjeta Elevada Interactiva (Contiene el flujo completo paso a paso) -->
+        <section class="tarjeta-carrera-elevada" id="tarjeta-carrera">
+            
+            <!-- PASO 1: Selección de Carrera -->
+            <div id="vista-carrera">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="ficha-ruta__badge" id="ruta-badge">Ruta 2</span>
-                        <h3 class="ficha-ruta__nombre mb-0" id="ruta-nombre">Sociales y Leyes</h3>
+                        <span class="tarjeta-carrera__paso">1</span>
+                        <div>
+                            <h2 class="tarjeta-carrera__titulo">Selecciona tu Carrera Profesional</h2>
+                            <p class="tarjeta-carrera__desc mb-0">Escribe o busca tu carrera para consultar tus horarios oficiales</p>
+                        </div>
                     </div>
-                    <span class="ficha-ruta__carrera" id="ruta-carrera-elegida">Psicología</span>
                 </div>
-                <div class="ficha-ruta__cursos mt-1.5">
-                    <span class="ficha-ruta__cursos-label">Asignaturas de tu ruta:</span>
-                    <div class="d-flex align-items-center gap-1.5 flex-wrap" id="ruta-lista-cursos"></div>
-                </div>
-            </div>
 
-            <!-- Mensaje de advertencia si hacen clic en un ciclo sin elegir carrera -->
-            <div class="alerta-carrera-requerida" id="alerta-carrera-requerida" hidden>
-                <span>⚠️</span>
-                <span>Por favor escribe o selecciona primero tu carrera profesional para ver tus horarios y secciones oficiales.</span>
-            </div>
-        </section>
+                <div class="carrera-combobox" id="carrera-combobox">
+                    <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
+                        <span class="carrera-combobox__icono" aria-hidden="true">🎓</span>
+                        <input type="text" class="carrera-combobox__input" id="input-carrera-principal"
+                            placeholder="Escribe tu carrera (ej. Psicología, Medicina, Derecho, Sistemas)..."
+                            autocomplete="off" spellcheck="false" />
+                        <div class="carrera-combobox__acciones">
+                            <button type="button" class="carrera-combobox__chevron" id="btn-toggle-carrera"
+                                title="Ver lista de carreras" aria-label="Ver lista de carreras">
+                                ▾
+                            </button>
+                        </div>
+                    </div>
 
-        <!-- Paso 2: Selección de Ciclo de Apertura (Grid de ciclos) -->
-        <section class="seccion-ciclos-wrap" id="seccion-ciclos" aria-labelledby="titulo-ciclos">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="tarjeta-carrera__paso">2</span>
-                    <div>
-                        <h2 class="titulo-seccion-mini mb-0" id="titulo-ciclos">Elige el ciclo de apertura</h2>
-                        <p class="subtitulo-seccion-mini mb-0" id="subtitulo-ciclos">
-                            Haz clic en un ciclo para abrir la programación completa de horarios.
-                        </p>
+                    <!-- Dropdown de resultados debajo del input -->
+                    <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden>
+                        <div class="carrera-combobox__options" id="lista-opciones-carreras" role="listbox"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Grid de ciclos en 2 filas compactas y balanceadas -->
-            <div class="grid-ciclos-compacto" id="grid-ciclos"></div>
+            <!-- PASO 2: Aparece en la misma tarjeta cuando ya seleccionaron carrera -->
+            <div id="vista-ciclos" hidden>
+                <!-- Barra superior con la carrera elegida y botón de cambiar -->
+                <div class="carrera-seleccionada-barra mb-3">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="font-size: 22px;" aria-hidden="true">🎓</span>
+                            <div>
+                                <span class="text-xs text-muted font-bold text-uppercase" style="font-size:10.5px; letter-spacing:0.04em;">Carrera seleccionada:</span>
+                                <strong class="fs-6 text-dark d-block lh-1 mt-0.5" id="carrera-elegida-badge">Derecho</strong>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-cambiar-carrera" id="btn-cambiar-carrera" title="Elegir otra carrera">
+                            <span>Cambiar carrera</span>
+                            <span>✕</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="tarjeta-carrera__paso">2</span>
+                        <div>
+                            <h2 class="tarjeta-carrera__titulo">Elige el ciclo de apertura</h2>
+                            <p class="tarjeta-carrera__desc mb-0">Haz clic en un ciclo para abrir la programación completa de horarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid de ciclos directamente adentro de la misma tarjeta -->
+                <div class="grid-ciclos-compacto" id="grid-ciclos"></div>
+            </div>
+
         </section>
     </main>
 
@@ -157,8 +151,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Selección -->
-    <script src="assets/js/datos.js"></script>
-    <script src="assets/js/index.js"></script>
+    <script src="assets/js/datos.js?v=12"></script>
+    <script src="assets/js/index.js?v=12"></script>
 </body>
 
 </html>

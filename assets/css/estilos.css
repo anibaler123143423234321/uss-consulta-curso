@@ -56,7 +56,8 @@ body {
     background: linear-gradient(135deg, #041d5f 0%, #073299 50%, #1450d8 100%);
     color: #ffffff;
     padding-top: 16px;
-    padding-bottom: 74px; /* pb-16 sm:pb-20 de uss-gex para que la tarjeta flote con holgura */
+    padding-bottom: 74px;
+    /* pb-16 sm:pb-20 de uss-gex para que la tarjeta flote con holgura */
     box-shadow: 0 4px 24px -2px rgba(4, 29, 95, 0.25);
 }
 
@@ -185,11 +186,12 @@ body {
 }
 
 /* ===================================================
-   2. Contenedor y Tarjeta Elevada de Carrera (Paso 1)
+   2. Contenedor y Tarjeta Elevada de Carrera (Paso 1 y 2)
    =================================================== */
 .hoja-contenedor {
     flex: 1;
-    max-width: 960px; /* Ancho idéntico al buscador max-w-4xl de uss-gex */
+    max-width: 960px;
+    /* Ancho idéntico al buscador max-w-4xl de uss-gex */
     width: 100%;
     margin: 0 auto;
     padding: 0 16px 28px;
@@ -198,27 +200,21 @@ body {
 }
 
 .tarjeta-carrera-elevada {
-    margin-top: -32px; /* -mt-8 idéntico a uss-gex */
+    margin-top: -32px;
+    /* -mt-8 idéntico a uss-gex */
     position: relative;
     z-index: 20;
     background: #ffffff;
     border: 1px solid var(--uss-border);
     border-radius: 18px;
-    padding: 20px 24px;
+    padding: 22px 24px;
     box-shadow: var(--uss-sombra-lg);
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.tarjeta-carrera-elevada.requiere-atencion {
-    border-color: #ef4444 !important;
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18), 0 16px 36px -8px rgba(239, 68, 68, 0.2) !important;
-    animation: shakeMatSelect 0.45s ease-in-out;
-}
-
-@keyframes shakeMatSelect {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
+#vista-carrera,
+#vista-ciclos {
+    animation: matSelectFadeIn 0.2s ease-out;
 }
 
 .tarjeta-carrera__paso {
@@ -306,27 +302,6 @@ body {
     flex-shrink: 0;
 }
 
-.carrera-combobox__clear {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 9999px;
-    background: #f1f5f9;
-    color: #64748b;
-    border: none;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 700;
-    transition: all 0.15s ease;
-}
-
-.carrera-combobox__clear:hover {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
 .carrera-combobox__chevron {
     display: inline-flex;
     align-items: center;
@@ -373,6 +348,7 @@ body {
         opacity: 0;
         transform: translateY(-6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -430,111 +406,43 @@ body {
     color: #64748b;
 }
 
-/* Ficha de Ruta Oficial */
-.ficha-ruta-activa {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0edff 100%);
-    border: 1px solid #bfdbfe;
-    border-radius: 12px;
-    padding: 10px 14px;
-    animation: matSelectFadeIn 0.2s ease-out;
-}
-
-.ficha-ruta__cabecera {
+/* ===================================================
+   4. Barra de Carrera Seleccionada y Botón Cambiar
+   =================================================== */
+.carrera-seleccionada-barra {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.ficha-ruta__badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: var(--uss-azul);
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.ficha-ruta__nombre {
-    font-size: 13.5px;
-    font-weight: 800;
-    color: var(--uss-azul-dark);
-}
-
-.ficha-ruta__carrera {
-    font-size: 12px;
-    font-weight: 700;
-    color: #1e3a8a;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 2px 8px;
-    border-radius: 6px;
-}
-
-.ficha-ruta__cursos {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.ficha-ruta__cursos-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #3b82f6;
-}
-
-.ficha-ruta__curso-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 2px 7px;
-    border-radius: 5px;
-    background: #ffffff;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0edff 100%);
     border: 1px solid #bfdbfe;
-    color: #1e40af;
-    font-size: 11px;
-    font-weight: 600;
+    border-radius: 12px;
 }
 
-/* Alerta de carrera requerida */
-.alerta-carrera-requerida {
-    display: flex;
+.btn-cambiar-carrera {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
-    padding: 8px 12px;
+    gap: 6px;
+    padding: 5px 12px;
     border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 10px;
-    animation: matSelectFadeIn 0.2s ease-out;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-cambiar-carrera:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
 }
 
 /* ===================================================
-   4. Paso 2: Ciclos de Apertura (Grid de Ciclos)
+   5. Grid de Ciclos de Apertura (Adentro de la Tarjeta)
    =================================================== */
-.seccion-ciclos-wrap {
-    margin-top: 18px;
-}
-
-.titulo-seccion-mini {
-    font-size: 14.5px;
-    font-weight: 800;
-    color: var(--uss-text-main);
-    letter-spacing: -0.01em;
-}
-
-.subtitulo-seccion-mini {
-    font-size: 12px;
-    color: var(--uss-text-muted);
-}
-
 .grid-ciclos-compacto {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -646,6 +554,39 @@ body {
     border-color: var(--uss-azul);
 }
 
+/* Estado bloqueado / deshabilitado cuando dice Próximamente */
+.ciclo-btn:disabled,
+.ciclo-btn--deshabilitado {
+    opacity: 0.55;
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.ciclo-btn:disabled .ciclo-btn__mes,
+.ciclo-btn--deshabilitado .ciclo-btn__mes {
+    color: #475569;
+}
+
+.ciclo-btn:disabled .ciclo-btn__duracion,
+.ciclo-btn--deshabilitado .ciclo-btn__duracion {
+    color: #94a3b8;
+}
+
+.ciclo-btn:disabled .ciclo-btn__icono,
+.ciclo-btn--deshabilitado .ciclo-btn__icono {
+    opacity: 0.4;
+    filter: grayscale(1);
+}
+
+.ciclo-btn__accion--bloqueado {
+    color: #94a3b8 !important;
+    font-weight: 600;
+}
+
 /* Tarjeta informativa de ayuda */
 .ciclo-btn--ayuda {
     background: #f8fafc;
@@ -660,8 +601,15 @@ body {
 }
 
 /* ===================================================
-   5. Estilos para horarios.html (El otro index)
+   6. Estilos para horarios.html (El otro index)
    =================================================== */
+.hoja-contenedor-horarios {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 14px 16px 28px;
+}
+
 .banner-carrera-horarios {
     background: #ffffff;
     border: 1px solid var(--uss-border);
@@ -830,6 +778,21 @@ body {
     background: #eff6ff;
     color: #1d4ed8;
     border-color: #bfdbfe;
+}
+
+/* Badge de Cupos programados */
+.badge-cupos {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+    white-space: nowrap;
 }
 
 /* Botón de Enlace Zoom / Aula */

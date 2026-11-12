@@ -2,10 +2,11 @@
  * USS Consulta de Cursos - Portal de Selección (index.html)
  * Archivo: assets/js/index.js
  *
- * Funcionalidad:
- * 1. Combobox de Carrera con escritura y filtrado en el mismo campo principal.
- * 2. Deduplicación de carreras y presentación de la Ruta Oficial CINF.
- * 3. Validación obligatoria de carrera antes de acceder a horarios.html.
+ * Flujo:
+ * 1. El estudiante escribe y selecciona su carrera en la tarjeta principal.
+ * 2. Una vez seleccionada, esa misma tarjeta se limpia suavemente y muestra
+ *    la barra de carrera activa junto con los ciclos de apertura programados.
+ * 3. Al hacer clic en un ciclo, redirige a horarios.html con los filtros aplicados.
  */
 document.addEventListener('DOMContentLoaded', () => {
   const { ciclos, rutas, horarios } = window.CONSULTA_CURSOS;
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return el;
   };
 
-  // Construir mapa de carreras únicas (evita que 'Arquitectura' se duplique)
+  // Construir mapa de carreras únicas (evita duplicidad)
   const mapaCarrerasMap = new Map();
   rutas.forEach((ruta) => {
     ruta.carreras.forEach((carrera) => {
@@ -40,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
           cursos: [...ruta.cursos],
         });
       } else {
-        // Si la carrera pertenece a más de una ruta, combinar cursos
         const existente = mapaCarrerasMap.get(carrera);
         ruta.cursos.forEach((c) => {
           if (!existente.cursos.includes(c)) existente.cursos.push(c);
@@ -61,16 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ==========================================================================
-     1. COMBOBOX DIRECTO: ESCRITURA EN EL MISMO INPUT
+     1. VISTAS Y TRANSICIÓN ADENTRO DE LA TARJETA ELEVADA
      ========================================================================== */
+  const vistaCarrera = $('vista-carrera');
+  const vistaCiclos = $('vista-ciclos');
+  const carreraBadge = $('carrera-elegida-badge');
+  const btnCambiarCarrera = $('btn-cambiar-carrera');
+
   const elWrap = $('carrera-combobox-wrap');
   const elInput = $('input-carrera-principal');
-  const elClear = $('btn-clear-carrera');
   const elToggle = $('btn-toggle-carrera');
   const elDropdown = $('dropdown-carreras');
   const elOptions = $('lista-opciones-carreras');
-  const elAlerta = $('alerta-carrera-requerida');
-  const elTarjeta = $('tarjeta-carrera');
 
   let opcionesFiltradas = [...mapaCarreras];
 
@@ -142,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
       divItem.addEventListener('click', (e) => {
         e.stopPropagation();
         seleccionarCarrera(item.nombre);
-        cerrarDropdown();
       });
 
       elOptions.appendChild(divItem);
@@ -152,47 +153,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function seleccionarCarrera(carrera) {
-    carreraSeleccionada = carrera || '';
-    elInput.value = carreraSeleccionada;
+    carreraSeleccionada = (carrera || '').trim();
+    cerrarDropdown();
 
     if (carreraSeleccionada) {
-      elClear.hidden = false;
-      elAlerta.hidden = true;
-      elTarjeta.classList.remove('requiere-atencion');
+      // 1. Limpiar y ocultar la vista de selección de carrera
+      vistaCarrera.hidden = true;
 
-      // Mostrar ficha de ruta
-      const info = mapaCarrerasMap.get(carreraSeleccionada);
-      if (info) {
-        $('ficha-ruta').hidden = false;
-        $('ruta-badge').textContent = `Ruta ${info.rutaId}`;
-        $('ruta-nombre').textContent = info.rutaNombre.replace(/^Ruta \d+ · /, '');
-        $('ruta-carrera-elegida').textContent = carreraSeleccionada;
+      // 2. Mostrar la vista de ciclos en esa misma tarjeta
+      carreraBadge.textContent = carreraSeleccionada;
+      vistaCiclos.hidden = false;
 
-        const contCursos = $('ruta-lista-cursos');
-        contCursos.replaceChildren(
-          ...info.cursos.map((c) => {
-            const span = crear('span', 'ficha-ruta__curso-chip');
-            span.innerHTML = `<span style="color:#0284c7">✓</span> ${c}`;
-            return span;
-          })
-        );
-      }
+      // 3. Actualizar conteo de secciones por ciclo para esta carrera
+      actualizarContadoresCiclos();
     } else {
-      elClear.hidden = true;
-      $('ficha-ruta').hidden = true;
+      // Volver a la vista de selección de carrera
+      vistaCiclos.hidden = true;
+      vistaCarrera.hidden = false;
+      elInput.value = '';
     }
-
-    actualizarContadoresCiclos();
   }
 
-  function limpiarSeleccion(e) {
-    if (e) e.stopPropagation();
+  // Botón Cambiar Carrera dentro de la tarjeta
+  btnCambiarCarrera.addEventListener('click', () => {
     seleccionarCarrera('');
-    elInput.value = '';
-    renderOpciones('');
-    abrirDropdown();
-    elInput.focus();
-  }
+    setTimeout(() => {
+      elInput.focus();
+      abrirDropdown();
+    }, 50);
+  });
 
   // Eventos en el Input Principal
   elInput.addEventListener('focus', () => {
@@ -200,9 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   elInput.addEventListener('input', (e) => {
-    carreraSeleccionada = '';
-    elClear.hidden = !e.target.value;
-    $('ficha-ruta').hidden = true;
     abrirDropdown();
     renderOpciones(e.target.value);
   });
@@ -230,10 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       if (indiceActivoTeclado >= 0 && indiceActivoTeclado < opcionesFiltradas.length) {
         seleccionarCarrera(opcionesFiltradas[indiceActivoTeclado].nombre);
-        cerrarDropdown();
       } else if (opcionesFiltradas.length > 0) {
         seleccionarCarrera(opcionesFiltradas[0].nombre);
-        cerrarDropdown();
       }
     } else if (e.key === 'Escape') {
       e.preventDefault();
@@ -250,8 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  elClear.addEventListener('click', limpiarSeleccion);
 
   elToggle.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -271,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     2. PASO 2: RENDERIZADO DE CICLOS DE APERTURA (Grid de Ciclos)
+     2. GRID DE CICLOS DE APERTURA (Adentro de la Tarjeta Elevada)
      ========================================================================== */
   const gridCiclos = $('grid-ciclos');
 
@@ -298,9 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn.append(header, footer);
 
-    // Click en el ciclo -> Redirige a horarios.html
+    // Clic en el ciclo -> Redirige a horarios.html con la carrera y ciclo
     btn.addEventListener('click', () => {
-      abrirCiclo(ciclo.id);
+      abrirHorarios(ciclo.id);
     });
 
     gridCiclos.appendChild(btn);
@@ -331,6 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const badge = $(`badge-ciclo-${ciclo.id}`);
       if (!btn || !badge) return;
 
+      const accion = btn.querySelector('.ciclo-btn__accion');
+
       const filasCiclo = (horarios || []).filter(
         (h) => (h.ciclo || '').toLowerCase() === ciclo.id.toLowerCase()
       );
@@ -342,37 +326,33 @@ document.addEventListener('DOMContentLoaded', () => {
       const total = filasFiltradas.length;
 
       if (total > 0) {
+        btn.disabled = false;
         btn.classList.add('ciclo-btn--destacado');
+        btn.classList.remove('ciclo-btn--deshabilitado');
         badge.className = 'ciclo-btn__badge ciclo-btn__badge--disponible';
-        if (carreraSeleccionada) {
-          badge.innerHTML = `<span>●</span> <span>${total} secciones para tu carrera</span>`;
-        } else {
-          badge.innerHTML = `<span>●</span> <span>${total} secciones disponibles</span>`;
+        badge.innerHTML = `<span>●</span> <span>${total} secciones para tu carrera</span>`;
+        if (accion) {
+          accion.textContent = 'Ver horarios →';
+          accion.className = 'ciclo-btn__accion';
         }
       } else {
+        btn.disabled = true;
         btn.classList.remove('ciclo-btn--destacado');
+        btn.classList.add('ciclo-btn--deshabilitado');
         badge.className = 'ciclo-btn__badge ciclo-btn__badge--vacio';
-        badge.innerHTML = carreraSeleccionada && filasCiclo.length > 0
-          ? '<span>○</span> <span>Sin cupos para tu carrera</span>'
-          : '<span>○</span> <span>Próximamente</span>';
+        badge.innerHTML = `<span>🔒</span> <span>Próximamente</span>`;
+        if (accion) {
+          accion.textContent = 'Sin apertura';
+          accion.className = 'ciclo-btn__accion ciclo-btn__accion--bloqueado';
+        }
       }
     });
   }
 
-  function abrirCiclo(cicloId) {
-    if (!carreraSeleccionada) {
-      // Exigir selección de carrera
-      elAlerta.hidden = false;
-      elTarjeta.classList.remove('requiere-atencion');
-      void elTarjeta.offsetWidth; // Forzar reflow para reiniciar animación
-      elTarjeta.classList.add('requiere-atencion');
-
-      elInput.focus();
-      abrirDropdown();
-      return;
-    }
-
-    // Redirigir al otro index (horarios.html)
+  function abrirHorarios(cicloId) {
+    if (!carreraSeleccionada) return;
+    const btn = $(`btn-ciclo-${cicloId}`);
+    if (btn && btn.disabled) return;
     const url = `horarios.html?ciclo=${encodeURIComponent(cicloId)}&carrera=${encodeURIComponent(
       carreraSeleccionada
     )}`;
@@ -384,7 +364,5 @@ document.addEventListener('DOMContentLoaded', () => {
   const carreraUrl = params.get('carrera');
   if (carreraUrl) {
     seleccionarCarrera(carreraUrl);
-  } else {
-    actualizarContadoresCiclos();
   }
 });

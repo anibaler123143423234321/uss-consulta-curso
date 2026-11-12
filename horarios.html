@@ -17,13 +17,13 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=7" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=12" />
 </head>
 
 <body>
     <!-- Header institucional limpio con botón para volver a elegir carrera -->
     <header class="bg-white border-bottom border-slate-200 sticky-top z-3 py-2 px-3 shadow-xs">
-        <div class="container-fluid max-w-7xl mx-auto d-flex align-items-center justify-content-between gap-3">
+        <div class="container-fluid px-2 px-md-4 d-flex align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
                 <a href="index.html" class="btn-volver-inicio" id="btn-volver-atras" title="Volver a la selección de carrera y ciclo">
                     <span>←</span>
@@ -48,7 +48,7 @@
         </div>
     </header>
 
-    <main class="hoja-contenedor py-3">
+    <main class="hoja-contenedor-horarios py-3">
         <!-- Banner informativo de la Carrera y Ruta seleccionada -->
         <div class="banner-carrera-horarios" id="banner-carrera">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -106,23 +106,24 @@
             </div>
         </div>
 
-        <!-- Tabla ejecutiva de Horarios -->
+        <!-- Tabla ejecutiva de Horarios (Ancho amplio con columna de Cupos) -->
         <div class="tabla-horarios-wrap">
             <div class="table-responsive" style="max-height: calc(100vh - 280px); overflow-y: auto;">
                 <table class="table tabla-horarios table-hover align-middle">
                     <thead>
                         <tr>
-                            <th scope="col" style="width: 40px;">#</th>
-                            <th scope="col">Curso Oficial</th>
-                            <th scope="col" style="width: 60px;">Sec.</th>
-                            <th scope="col">Inicio</th>
-                            <th scope="col">Fin</th>
-                            <th scope="col">Turno</th>
-                            <th scope="col">Días</th>
-                            <th scope="col">Horario</th>
-                            <th scope="col">Aula</th>
-                            <th scope="col">Docente Asignado</th>
-                            <th scope="col" class="text-center" style="width: 130px;">Acceso</th>
+                            <th scope="col" style="width: 35px;" class="text-center">#</th>
+                            <th scope="col" style="min-width: 160px;">Curso Oficial</th>
+                            <th scope="col" style="width: 55px;" class="text-center">Sec.</th>
+                            <th scope="col" style="min-width: 85px;">Inicio</th>
+                            <th scope="col" style="min-width: 85px;">Fin</th>
+                            <th scope="col" style="min-width: 75px;">Turno</th>
+                            <th scope="col" style="min-width: 115px;">Días</th>
+                            <th scope="col" style="min-width: 140px;">Horario</th>
+                            <th scope="col" style="min-width: 105px;">Aula</th>
+                            <th scope="col" style="min-width: 90px;" class="text-center">Cupos</th>
+                            <th scope="col" style="min-width: 145px;">Docente Asignado</th>
+                            <th scope="col" class="text-center" style="width: 95px;">Acceso</th>
                         </tr>
                     </thead>
                     <tbody id="filas-horarios"></tbody>
@@ -146,9 +147,8 @@
     </footer>
 
     <!-- Scripts de Datos y Lógica de Horarios -->
-    <script src="assets/js/datos.js"></script>
-    <script src="assets/js/horarios.js"></script>
+    <script src="assets/js/datos.js?v=12"></script>
+    <script src="assets/js/horarios.js?v=12"></script>
 </body>
 
 </html>
-
