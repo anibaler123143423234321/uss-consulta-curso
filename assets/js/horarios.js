@@ -27,9 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const carrera = carreraParam.trim();
 
   // Configurar enlace de retorno conservando la carrera
+  const isDirectPortal = window.location.pathname.includes('consulta-cursos');
+  const homePath = isDirectPortal ? './' : 'consulta-cursos';
+
   const btnVolver = $('btn-volver-atras');
   if (btnVolver) {
-    btnVolver.href = `index.html?carrera=${encodeURIComponent(carrera)}`;
+    btnVolver.href = `${homePath}?carrera=${encodeURIComponent(carrera)}`;
+  }
+
+  const btnOtraCarrera = $('btn-elegir-otra-carrera');
+  if (btnOtraCarrera) {
+    btnOtraCarrera.href = homePath;
   }
 
   // 2. Identificar la Ruta Oficial de la Carrera
