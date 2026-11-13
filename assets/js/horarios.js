@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnVolver = $('btn-volver-atras');
   const actualizarEnlaceVolver = () => {
     if (btnVolver) {
-      btnVolver.href = `${homePath}?carrera=${encodeURIComponent(carrera)}&modelo=${encodeURIComponent(modeloActivo)}`;
+      // La portada no restaura el modelo: el estudiante lo vuelve a elegir
+      btnVolver.href = `${homePath}?carrera=${encodeURIComponent(carrera)}`;
     }
   };
   actualizarEnlaceVolver();

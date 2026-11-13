@@ -26,7 +26,7 @@ Portal público donde el estudiante elige su carrera, luego un ciclo de apertura
 | Archivo | Para qué |
 |---|---|
 | `index.html` + `assets/js/index.js` | Portada: paso 1 carrera (combobox), paso 2 modelo de acreditación (sin preselección), paso 3 ciclo. |
-| `horarios.html` + `assets/js/horarios.js` | Tabla de secciones, switcher de modelo, pestañas de ciclos, filtros, ayuda. |
+| `horarios.html` + `assets/js/horarios.js` | Tabla de secciones, insignia del modelo elegido (se cambia volviendo a la portada), pestañas de ciclos, filtros, ayuda. |
 | `assets/js/datos.js` | Ciclos (Enero activo), modelos (protech vs tradicional), rutas por carrera, cursos tradicionales, especialidades y **copia de respaldo** de horarios. |
 | `assets/css/estilos.css` | Todo el diseño propio. |
 | `documentos/` | Fuentes oficiales (PDF de Canva por ciclo). |
