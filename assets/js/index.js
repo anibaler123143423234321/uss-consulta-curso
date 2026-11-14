@@ -435,7 +435,11 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const filas = await window.CONSULTA_CURSOS.cargarDesdeGoogleSheets(urlSheets);
       if (filas.length) {
-        horariosDisponibles = filas;
+        const ciclosRemotos = new Set(filas.map((f) => (f.ciclo || '').toLowerCase()));
+        horariosDisponibles = [
+          ...filas,
+          ...(catalogo.horarios || []).filter((h) => !ciclosRemotos.has((h.ciclo || '').toLowerCase())),
+        ];
         if (carreraSeleccionada) actualizarContadoresCiclos();
       }
     } catch (error) {

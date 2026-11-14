@@ -216,7 +216,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const filasSheets = await cargarDesdeGoogleSheets(GOOGLE_SHEETS_URL);
           if (filasSheets && filasSheets.length > 0) {
-            horariosCargados = filasSheets;
+            const ciclosRemotos = new Set(filasSheets.map((f) => (f.ciclo || '').toLowerCase()));
+            horariosCargados = [
+              ...filasSheets,
+              ...(horarios || []).filter((h) => !ciclosRemotos.has((h.ciclo || '').toLowerCase())),
+            ];
             fuenteEnVivo = true;
           }
         } catch (eSheets) {

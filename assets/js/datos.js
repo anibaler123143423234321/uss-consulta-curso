@@ -12,6 +12,7 @@
 window.CONSULTA_CURSOS = {
   // Ciclos oficiales de apertura CINF y su duración (Noviembre culminó; Enero 2027 es el ciclo activo)
   ciclos: [
+    { id: 'noviembre', nombre: 'Noviembre', duracion: '6 semanas' },
     { id: 'enero', nombre: 'Enero', duracion: '6 semanas' },
     { id: 'febrero', nombre: 'Febrero', duracion: '2 meses' },
     { id: 'abril', nombre: 'Abril', duracion: '3 meses' },
