@@ -1,98 +1,168 @@
-# Prompt de Perfeccionamiento de Diseño y Responsividad — USS Consulta de Cursos
+# Prompt de Perfeccionamiento de Diseño, UX y Responsividad Móvil — USS Consulta de Cursos
 
-Copia todo el contenido a continuación de la línea divisoria y pégalo directamente en **Claude Code**.
-
----
-
-Actúa como diseñador UI/UX y arquitecto frontend senior del Centro de Informática (CINF) de la Universidad Señor de Sipán. Responde y comenta el código en español.
-
-## Estado Actual del Proyecto (¡IMPORTANTE! No reescribir backend ni BD)
-
-Todo el trabajo estructural de datos y backend **YA ESTÁ TERMINADO Y FUNCIONANDO EN PRODUCCIÓN**:
-1. **Base de Datos (Supabase):** La tabla `tbl_horarios_cursos` ya cuenta con todas sus columnas (`id`, `curso_id`, `ciclo` incluyendo `'noviembre'`, `anio`, `seccion`, `fecha_inicio`, `fecha_fin`, `turno`, `dias`, `hora_inicio`, `hora_fin`, `aula`, `cupos`, `cupos_disponibles`, `docente_id`, `link_aula`, `publicado`).
-2. **Backend API (`ecosistema-cinf/backend`):** Endpoints `/api/horarios` públicos y administrativos funcionando con DTOs y validaciones.
-3. **Panel Administrativo:** Módulo `HorariosManager.tsx` integrado en el ecosistema.
-4. **Proxies en Vercel:** Las rutas `/consulta-cursos`, `/horarios`, `/horarios.html` y todos los assets (`/assets/css/`, `/assets/js/`, `/assets/img/`) están correctamente enrutados en `ecosistema-cinf/vercel.json`.
-
-**TU ÚNICO OBJETIVO ES: Perfeccionar el diseño visual, la experiencia de usuario (UX) y la responsividad móvil en `uss-consulta-curso/`.**
+> **Instrucciones para el usuario (Dagner):**  
+> Copia todo el contenido a continuación de la línea divisoria y pégalo directamente en **Claude Code** (o en la IA que vayas a utilizar para refinar los estilos). Este documento contiene toda la arquitectura técnica, las reglas de negocio oficiales, la paleta de colores por curso y la especificación exacta de los ciclos y su duración.
 
 ---
 
-## El Problema Crítico de Diseño Detectado (Mobile Viewport)
-
-Al probar en dispositivos móviles y viewports reducidos (pantallas de 360px a 480px), se han detectado los siguientes defectos visuales:
-
-1. **Desborde y corte de pestañas de ciclos (`Febrero` cortado a la mitad):**
-   - En la cinta superior de `horarios.html`, los botones de meses (`Noviembre 35`, `Enero 16`, `Febrero 🔒`, etc.) no tienen un contenedor con scroll horizontal elástico (`min-width: 0`, `overflow-x: auto`, `-webkit-overflow-scrolling: touch`).
-   - El botón del tercer mes queda cortado bruscamente contra el borde derecho del contenedor, dando un aspecto roto y sin indicación visual de que se puede deslizar.
-2. **Falta de orden entre el selector de ciclos y el contador:**
-   - La etiqueta `CICLO:` y el texto `Mostrando 35 de 35 secciones programadas` se apretujan o caen de forma desalineada en celulares.
-3. **Cabecera de carrera rígida:**
-   - El bloque que muestra `Carrera: Administración y Emprendimiento Ruta 3 (Empresariales)` junto al botón `Elegir otra carrera ✕` se desborda en dos líneas desiguales o empuja el botón fuera de la vista cómoda.
-4. **Filtros amontonados:**
-   - La barra con los 5 filtros (Búsqueda, Curso, Turno, Días, Modalidad y Reset) ocupa demasiado espacio vertical en móvil o se quiebra de forma desordenada en pantallas estrechas.
-5. **Tabla de 12 columnas en pantallas pequeñas:**
-   - La tabla con columnas (#, Curso, Sec, Inicio, Fin, Turno, Días, Horario, Aula, Cupos, Docente, Acceso) requiere una barra de scroll horizontal suave con aviso táctil claro, o una presentación visual adaptada para no generar desborde horizontal de la página completa (`horizontal page overflow`).
+Actúa como Diseñador UI/UX y Arquitecto Frontend Senior del Centro de Informática (CINF) de la Universidad Señor de Sipán (USS). Responde y documenta todo el código en español.
 
 ---
 
-## Requerimientos de Diseño y Responsividad a Implementar
+## 1. Contexto y Estado Actual del Proyecto (¡NO TOCAR BACKEND NI LÓGICA CORE!)
 
-### 1. Pestañas de Ciclos tipo "Scrollable Pills" (Móvil y Desktop)
-- En `horarios.html` y `assets/css/estilos.css`:
-  - Envolver las pestañas en un contenedor con `min-width: 0; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;`.
-  - Ocultar scrollbar antiestético o aplicar scrollbar fino de 3px (`scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;`).
-  - Cada pestaña (`.pestana-ciclo`) debe mantener `white-space: nowrap; flex-shrink: 0;`, con tamaño táctil accesible (mínimo 36px de alto en móvil) y espaciado consistente.
-  - Los meses sin apertura (`.pestana-ciclo--bloqueada`) deben mantener su estilo atenuado con candado `🔒` y `disabled="true"`.
-  - En móvil, mostrar el contador `Mostrando X de Y secciones` en una fila dedicada y sutil debajo de las pestañas, sin apretar los botones.
+Este repositorio (`uss-consulta-curso/`) es el portal web oficial para que los estudiantes de la USS consulten sus rutas de aprendizaje, asignaturas y secciones programadas por ciclo académico.
 
-### 2. Banner de Carrera Adaptativo
-- En resoluciones móviles (< 768px):
-  - La fila del banner de carrera debe organizarse verticalmente:
-    - Arriba: ícono 🎓 + Nombre de la carrera destacado en negrita.
-    - Al medio: Badge de Ruta (ej. `Ruta 3`) y categoría `(Empresariales)` alineados con flexibilidad (`flex-wrap: wrap`).
-    - Botón `Elegir otra carrera ✕`: compacto, con borde suave y alineado a la derecha o full width en pantallas muy estrechas (< 400px).
+### Lo que YA ESTÁ IMPLEMENTADO Y FUNCIONANDO (No modificar):
+1. **Sincronización en Tiempo Real con Google Sheets (Drive):**
+   - El archivo `assets/js/config.js` contiene la URL pública CSV de Google Drive (`window.GOOGLE_SHEETS_URL`) correspondiente a la carga académica (`CINF 202602 NOVIEMBRE`).
+   - El motor en `assets/js/datos.js` (`cargarDesdeGoogleSheets` y `convertirDatosSheets`) procesa en vivo las secciones, filtra las cerradas (`ESTADO !== 'APERTURADO'`), normaliza nombres de cursos, turnos, días y cupos, y las combina (*merge*) con el catálogo local de respaldo.
+2. **Separación Estricta de Modelos de Acreditación (Paso 2):**
+   - **Modelo PROTECH XP:** Exclusivo para alumnos que inician su ruta por competencias (Word 365, Excel 365, Canva, AutoCAD, etc.). **NUNCA** debe mostrar Computación II ni III.
+   - **Plan Tradicional:** Para alumnos que convalidan o culminan niveles legacy (Computación I, II, III y Taller de Certificación Internacional). **NUNCA** debe mostrar cursos Protech XP.
+   - En `index.js`, `modeloSeleccionado = null` por defecto (sin preselección automática). Los ciclos del Paso 3 no se muestran ni permiten navegación hasta que el estudiante elija su modelo.
+   - En `horarios.js`, si no existe el parámetro `modelo` en la URL, redirige automáticamente a la portada para obligar a seleccionar.
+3. **Catálogo Oficial y Rutas:**
+   - En `assets/js/datos.js` están mapeadas las 7 rutas por carreras profesionales (Salud, Sociales y Leyes, Empresariales, etc.) y los grupos de especialidad para Computación Tradicional (Sistemas, Civil, Mecánica, Arquitectura).
 
-### 3. Barra de Filtros Inteligente y Compacta
-- En móvil:
-  - El buscador de texto debe ocupar el 100% del ancho (`col-12`) con ícono de lupa centrado.
-  - Los desplegables (Curso, Turno, Días, Aula) deben organizarse en cuadrícula de 2 columnas (`col-6`) con `font-size: 12px` a `13px` y altura táctil cómoda (`min-height: 38px`).
-  - El botón reset (`↺`) debe estar integrado armoniosamente junto a los filtros.
-
-### 4. Tabla de Horarios Responsiva
-- Contenedor `.tabla-horarios-wrap`:
-  - `overflow-x: auto; -webkit-overflow-scrolling: touch;` garantizado para que nunca rompa el ancho del `<body>` del viewport móvil.
-  - Indicador visual superior exclusivo para móvil:
-    ```html
-    <div class="d-flex d-md-none align-items-center justify-content-between px-3 py-1.5 bg-slate-50 border-bottom border-slate-100 text-muted" style="font-size:11px;">
-        <span>👉 Desliza la tabla para ver turnos, horarios y cupos</span>
-        <span class="fw-bold">⇄</span>
-    </div>
-    ```
-  - Sticky headers en el `thead` para que no se pierdan los títulos de columna al hacer scroll vertical.
-  - Badges bien dimensionados:
-    - `.badge-cupos`: fondo verde menta suave (`#ecfdf5`), texto verde oscuro (`#065f46`), ícono `👥 30 cupos`.
-    - Turnos: Mañana (dorado/ámbar suave), Tarde (azul cielo suave), Noche (púrpura tenue).
-    - Modalidad Zoom: badge azul claro con ícono de cámara o Zoom.
-
-### 5. Tarjeta de Selección en `index.html` (Mobile Polish)
-- La cuadrícula de 8 meses (`grid-ciclos-compacto`):
-  - En desktop: 4 columnas x 2 filas.
-  - En tablet (576px a 991px): 2 columnas x 4 filas.
-  - En móvil (< 575px): 1 columna fluida con padding táctil de 12px por tarjeta, texto grande y botones de acción claros.
-- Tarjetas con `disabled="true"` cuando el ciclo dice `Próximamente`: deben tener opacidad 0.5, cursor `not-allowed`, y no activar hover.
+> ⚠️ **REGLA DE ORO:** No alteres la lógica de filtrado de datos, ni los esquemas de bases de datos, ni los endpoints de API. Tu trabajo se concentra en: **UI, UX, CSS responsivo, micro-interacciones, legibilidad y diseño móvil en pantallas estrechas (< 576px).**
 
 ---
 
-## Reglas de Implementación en Código
+## 2. Definición Oficial de Ciclos de Apertura CINF USS (¡REQUERIMIENTO CLAVE!)
 
-1. **Ubicación de archivos:**
-   - Estructura HTML: `uss-consulta-curso/horarios.html` y `uss-consulta-curso/index.html`.
-   - Lógica JS: `uss-consulta-curso/assets/js/horarios.js` e `index.js`.
-   - Estilos CSS: `uss-consulta-curso/assets/css/estilos.css`.
-2. **Cero estilos inline innecesarios:** Todo el diseño responsivo debe vivir en `assets/css/estilos.css` bajo las media queries estándar:
-   - `@media (max-width: 991px)` (Tablets)
-   - `@media (max-width: 768px)` (Móviles estándar)
-   - `@media (max-width: 480px)` (Móviles pequeños)
-3. **No romper enlaces de proxy:** Los enlaces relativos deben ser `./` o `consulta-cursos` para que funcionen tanto localmente como bajo el proxy de Vercel en `https://informatica-uss.vercel.app/consulta-cursos`.
-4. **Prueba visual:** Tras aplicar los cambios, abre la página en el navegador en modo responsive (iPhone SE 375px y iPhone 14 390px) y confirma que **las pestañas se pueden deslizar libremente con el dedo sin cortarse**, que no hay desborde horizontal de la página y que los textos se leen con total nitidez.
+Los ciclos académicos oficiales del Centro de Informática USS y sus duraciones exactas son:
+
+| Ciclo | Duración Oficial | Descripción Académica |
+| :--- | :--- | :--- |
+| **Enero** | **2 meses** | Ciclo de verano regular (enero - febrero) |
+| **Febrero** | **2 meses** | Ciclo intensivo / regular |
+| **Abril** | **3 meses** | Ciclo semestral I |
+| **Mayo** | **2 meses** | Ciclo intermedio |
+| **Agosto** | **1 mes** | Ciclo rápido de actualización |
+| **Setiembre** | **3 meses** | Ciclo semestral II |
+| **Octubre / Noviembre** | **2 meses** | Ciclo de cierre de año: **formalmente inicia en Noviembre y cubre Noviembre – Diciembre**. En las hojas de matrícula y en la base de datos se registra como *Noviembre* (ciclo 2026-02). |
+
+### Cómo deben presentarse en la interfaz:
+1. **En la Portada (`index.html` — Paso 3 "Elige el ciclo de apertura"):**
+   - Cuadrícula responsiva de tarjetas de ciclo (`#grid-ciclos`):
+     - **Desktop:** Cuadrícula de 4 columnas x 2 filas (u 8 tarjetas balanceadas).
+     - **Tablet (576px a 991px):** 2 columnas x 4 filas.
+     - **Móvil (< 576px):** 1 o 2 columnas compactas y fluidas, con altura táctil accesible (mínimo 44px para targets táctiles).
+   - Cada tarjeta debe mostrar con claridad:
+     - Ícono calendario `📅`.
+     - Nombre del mes y año (ej. **Noviembre 2026** o **Enero 2027**).
+     - Subtítulo de duración académica: `2 meses`, `3 meses`, `1 mes`, etc.
+     - Badge de disponibilidad en tiempo real:
+       - **Si tiene clases programadas:** Badge verde destacado con el conteo (`5 cursos · 28 secciones`).
+       - **Si aún no abre para la carrera/modelo:** Tarjeta atenuada (opacidad 0.5, cursor `not-allowed`, badge gris `Próximamente`).
+2. **En la Página de Horarios (`horarios.html` — Cinta superior de pestañas):**
+   - Carrusel de pestañas tipo **"Scrollable Pills"** horizontales (`.cinta-horarios__pestanas`):
+     - Contenedor con `min-width: 0; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; display: flex; gap: 8px;`.
+     - Cada pestaña debe mantener `white-space: nowrap; flex-shrink: 0;`.
+     - Meses con apertura: resaltados con su conteo de secciones (ej. `Noviembre 35` o `Enero 16`).
+     - Meses sin apertura: botón sutil atenuado con candado `🔒` (ej. `Febrero 🔒`).
+     - **Crítico para móvil:** Las pestañas NO deben cortarse bruscamente contra el borde de la pantalla; debe existir un efecto sutil de desvanecimiento (*fade gradient* o sombra de scroll) que indique que se puede deslizar horizontalmente con el dedo.
+
+---
+
+## 3. Identidad Visual y Paleta de Colores por Curso (Badges de Especialidad)
+
+En `assets/css/estilos.css` y `assets/js/horarios.js` ya existen las clases base para dar identidad de marca a cada curso oficial. Claude debe asegurar que estas clases se vean pulidas, contrastadas y legibles (accesibilidad WCAG AA):
+
+| Curso Oficial | Color Distintivo | Variables / Clases CSS recomendadas |
+| :--- | :--- | :--- |
+| **Word 365 / Microsoft Word Asociado** | Azul Microsoft | `.badge-curso--word` (Color: `#185abd`, Fondo: `#eff6ff`, Borde: `#bfdbfe`) |
+| **Excel 365 / Excel Asociado** | Verde Microsoft | `.badge-curso--excel` (Color: `#107c41`, Fondo: `#f0fdf4`, Borde: `#bbf7d0`) |
+| **Diseño con Canva** | Cian / Teal Creativo | `.badge-curso--canva` (Color: `#00838f`, Fondo: `#ecfeff`, Borde: `#a5f3fc`) |
+| **AutoCAD 2D / AutoCAD 3D** | Rojo Autodesk | `.badge-curso--autocad` (Color: `#c4151b`, Fondo: `#fef2f2`, Borde: `#fecaca`) |
+| **Power BI / Análisis con SPSS** | Ámbar Analítico | `.badge-curso--powerbi`, `.badge-curso--spss` (Color: `#b45309`, Fondo: `#fffbeb`, Borde: `#fde68a`) |
+| **Computación I, II, III (Tradicional)** | Azul Marino USS | `.badge-curso--tradicional` (Color: `#073299`, Fondo: `#eef2ff`, Borde: `#c7d2fe`) |
+| **Diseño Web / Otros Cursos** | Índigo / Violeta | `.badge-curso--default` (Color: `#4f46e5`, Fondo: `#f5f3ff`, Borde: `#ddd6fe`) |
+
+---
+
+## 4. Problemas Críticos de UI/UX a Corregir en Móvil (< 576px)
+
+Al probar en dispositivos móviles reales (iPhone SE 375px, iPhone 14 390px, Android 360px), se han detectado los siguientes detalles a perfeccionar:
+
+### A. En `index.html` (Portada de Consulta):
+1. **Hero Header excesivamente alto:**
+   - En pantallas pequeñas, el banner azul superior empuja la tarjeta de selección demasiado hacia abajo, forzando al usuario a hacer mucho scroll para ver los pasos.
+   - **Solución:** Reducir paddings verticales (`padding: 24px 16px 20px;`), achicar títulos de 28px a 20-22px en móvil, y compactar la distancia entre el logo y el texto.
+2. **Paso 2 (Selector de Modelo de Acreditación):**
+   - Actualmente las tarjetas de "Modelo PROTECH XP" y "Plan Tradicional" necesitan verse limpias y proporcionadas en celular.
+   - En pantallas estrechas, pueden ir una al lado de la otra (2 columnas de ~75-85px de alto) o en tarjetas verticales compactas con radio button visual claro (`aria-checked`), icono ilustrativo y texto explicativo nítido.
+3. **Paso 3 (Grid de Ciclos):**
+   - Mantener tarjetas táctiles con padding cómodo (10px - 12px), donde el nombre del mes, su duración (`2 meses`) y la cantidad de secciones se lean de un solo vistazo.
+   - Si no hay ciclos disponibles para una carrera/modelo, la caja de aviso (`#ciclos-proximos`) debe verse moderna, con bordes redondeados, fondo azul tenue y enlace directo de asistencia a WhatsApp.
+
+### B. En `horarios.html` (Listado Oficial de Secciones):
+1. **Pestañas de Ciclos cortadas a la mitad:**
+   - La cinta de meses (`Noviembre 35`, `Enero 16`, `Febrero 🔒`) no debe desbordar ni cortarse con aristas duras. Debe tener scroll horizontal elástico táctil (`-webkit-overflow-scrolling: touch`) y una sutil sombra de borde derecho indicando que hay más meses.
+2. **Banner de Carrera y Modelo en móvil:**
+   - El encabezado con la carrera seleccionada, el badge de ruta (ej. `Ruta 2 · Sociales y Leyes`) y el badge del modelo (`🛡️ PROTECH XP` o `📚 Plan Tradicional`) debe ordenarse con gracia en pantallas estrechas:
+     - Fila 1: Nombre de la carrera con tipografía destacada.
+     - Fila 2: Badges de Ruta y Modelo alineados horizontalmente.
+     - Fila 3 o esquina: Botón `Cambiar carrera ✕` compacto y accesible.
+3. **Barra de Filtros en Pantallas Pequeñas:**
+   - El campo de búsqueda por texto debe ocupar el 100% del ancho con su ícono de lupa bien centrado.
+   - Los 4 selectores (*Curso, Turno, Días, Modalidad*) deben colocarse en una cuadrícula limpia de 2 columnas (`col-6`) con tipografía de 12px-13px y altura mínima de 40px para fácil pulsación táctil.
+   - El botón de limpiar filtros (`↺`) debe quedar accesible sin romper la alineación.
+4. **Tabla de 12 Columnas en Pantalla Móvil:**
+   - La tabla con columnas (`#`, `Curso Oficial`, `Sec.`, `Inicio`, `Fin`, `Turno`, `Días`, `Horario`, `Aula`, `Cupos`, `Docente`, `Acceso Zoom`) no debe desbordar el ancho de la página completa (`body overflow-x`).
+   - El contenedor `.tabla-horarios-wrap` debe tener scroll horizontal suave e incluir un aviso sutil superior visible solo en móvil:
+     ```html
+     <div class="d-flex d-md-none align-items-center justify-content-between px-3 py-2 bg-slate-50 border-bottom text-muted" style="font-size: 11px;">
+       <span>👉 Desliza la tabla para ver horarios, días y cupos</span>
+       <span class="fw-bold">⇄</span>
+     </div>
+     ```
+   - Las cabeceras (`thead th`) deben ser pegajosas (`position: sticky; top: 0; z-index: 2;`) con fondo sólido para no perder el contexto al hacer scroll vertical.
+   - Badges de cupos: fondo menta `#ecfdf5`, texto verde oscuro `#065f46`, icono `👥 30 cupos`.
+   - Badges de turnos: Mañana (ámbar suave), Tarde (azul cielo), Noche (púrpura o índigo suave).
+
+---
+
+## 5. Estructura de Archivos del Proyecto
+
+```text
+uss-consulta-curso/
+├── index.html                     # Portada: Selección de Carrera (Paso 1), Modelo (Paso 2) y Ciclos (Paso 3)
+├── horarios.html                  # Vista de Horarios: Cinta de ciclos, filtros, tabla con badges y botón WhatsApp
+├── assets/
+│   ├── css/
+│   │   ├── bootstrap.min.css      # Bootstrap 5 base (no modificar)
+│   │   └── estilos.css            # Estilos personalizados (AQUÍ DEBEN IR TODOS LOS CAMBIOS DE DISEÑO)
+│   ├── js/
+│   │   ├── config.js              # URL de Google Sheets y endpoints API
+│   │   ├── datos.js               # Catálogo oficial, duraciones de ciclos, rutas y parser de Google Sheets
+│   │   ├── index.js               # Controlador de portada (selección de carrera, modelo y contadores)
+│   │   └── horarios.js            # Controlador de horarios (filtros, rendering de tabla y badges de cursos)
+│   └── img/
+│       └── logo-uss.png           # Logo oficial institucional
+└── documentos/
+    ├── CINF 202602 NOVIEMBRE.xlsx # Archivo fuente original vinculado a Google Drive
+    └── 2027-2.pdf                 # Brochure oficial de rutas por competencias
+```
+
+---
+
+## 6. Instrucciones Específicas para Claude Code
+
+1. **Inspecciona primero `assets/css/estilos.css`, `index.html` y `horarios.html`.**
+2. **Aplica las mejoras de estilos prioritariamente en `assets/css/estilos.css`**, utilizando variables CSS nativas y media queries ordenadas:
+   - `@media (max-width: 991px)` (Tablets / Laptops pequeñas)
+   - `@media (max-width: 575px)` (Smartphones estándar)
+   - `@media (max-width: 380px)` (Smartphones compactos tipo iPhone SE)
+3. **Asegúrate de que los ciclos reflejen fielmente la duración oficial:**
+   - Enero: 2 meses
+   - Febrero: 2 meses
+   - Abril: 3 meses
+   - Mayo: 2 meses
+   - Agosto: 1 mes
+   - Setiembre: 3 meses
+   - Octubre / Noviembre: 2 meses (Noviembre – Diciembre)
+4. **Respeta los atributos de accesibilidad (`aria-checked`, `role="radio"`, `aria-label`)** en las tarjetas de selección de modelo y botones de ciclo.
+5. **No uses estilos inline innecesarios (`style="..."`)**; todas las nuevas reglas deben estar encapsuladas en `estilos.css`.
+6. **Al terminar, verifica que el código compile sin errores** (`node --check assets/js/*.js`), comprueba que el layout sea 100% fluido en 360px de ancho y reporta un resumen claro de las mejoras visuales implementadas.

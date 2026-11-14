@@ -10,10 +10,10 @@
  * actúa como fuente de datos verídica y completa.
  */
 window.CONSULTA_CURSOS = {
-  // Ciclos oficiales de apertura CINF y su duración (Noviembre culminó; Enero 2027 es el ciclo activo)
+  // Ciclos oficiales de apertura CINF y su duración académica
   ciclos: [
-    { id: 'noviembre', nombre: 'Noviembre', duracion: '6 semanas' },
-    { id: 'enero', nombre: 'Enero', duracion: '6 semanas' },
+    { id: 'noviembre', nombre: 'Noviembre', duracion: '2 meses' },
+    { id: 'enero', nombre: 'Enero', duracion: '2 meses' },
     { id: 'febrero', nombre: 'Febrero', duracion: '2 meses' },
     { id: 'abril', nombre: 'Abril', duracion: '3 meses' },
     { id: 'mayo', nombre: 'Mayo', duracion: '2 meses' },
