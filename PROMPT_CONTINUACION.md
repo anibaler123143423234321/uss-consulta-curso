@@ -9,6 +9,15 @@ Actúa como Diseñador UI/UX y Arquitecto Frontend Senior del Centro de Informá
 
 ---
 
+## 🛑 REGLA SUPREMA DE CONTROL DE VERSIONES (¡TOTALMENTE PROHIBIDO!)
+
+> ⛔ **NUNCA, BAJO NINGUNA CIRCUNSTANCIA, EJECUTES `git push`.**  
+> - Está **TERMINANTEMENTE PROHIBIDO** hacer push al repositorio remoto (`origin`, `github`, etc.).  
+> - El usuario (Dagner) es el **ÚNICO** autorizado para ejecutar `git push` manualmente desde su terminal cuando él lo decida.  
+> - Como IA, solo puedes editar archivos en local y hacer commits locales si se te pide, pero **JAMÁS disparar `git push`**.
+
+---
+
 ## ⚠️ DIRECTIVA OBLIGATORIA DEL PROYECTO: CERO DATOS LOCALES (TODO A TRAVÉS DE INTERNET)
 
 > 🔴 **REGLA FUNDAMENTAL:** **Elimina cualquier dependencia de datos locales quemados en el código. NADA DE DATOS LOCALES.**  
