@@ -325,37 +325,102 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     return raw.replace(/\s+/g, '-');
   }
 
-  function normalizarFilaSheets(registro, indice = 0) {
-    const curso = obtener(registro, ['Curso Oficial', 'Curso', 'Asignatura']);
-    const seccion = obtener(registro, ['Sección', 'Seccion', 'Grupo']);
-    if (!curso || !seccion) return null;
+  function normalizarNombreCurso(raw) {
+    const n = normalizarCabecera(raw);
+    const compact = n.replace(/\s+/g, '');
+    if (compact.includes('taller') || compact.includes('certificacion')) return 'Taller de Certificación Internacional';
+    if (compact.includes('computacioniii') || compact.includes('computacion3')) return 'Computación III';
+    if (compact.includes('computacionii') || compact.includes('computacion2')) return 'Computación II';
+    if (compact.includes('computacioni') || compact.includes('computacion1')) return 'Computación I';
+    if (compact.includes('word') && compact.includes('asociado')) return 'Microsoft Word Asociado';
+    if (compact.includes('word')) return 'Word 365';
+    if (compact.includes('excel') && compact.includes('asociado')) return 'Excel Asociado';
+    if (compact.includes('excel')) return 'Excel 365';
+    if (compact.includes('canva')) return 'Diseño con Canva';
+    if (compact.includes('autocad2d') || compact.includes('cad2d')) return 'AutoCAD 2D';
+    if (compact.includes('autocad3d') || compact.includes('cad3d')) return 'AutoCAD 3D';
+    if (compact.includes('web')) return 'Diseño Web';
+    if (compact.includes('powerbi')) return 'Power BI para Análisis de Datos';
+    return raw.trim();
+  }
 
-    const cursoNormalizado = curso.trim();
+  function normalizarFilaSheets(registro, indice = 0) {
+    // Si la fila tiene estado definido, omitir secciones que no estén aperturadas
+    const estado = normalizarCabecera(obtener(registro, ['Estado', 'Condicion', 'Status']));
+    if (estado && estado !== 'aperturado' && !estado.includes('apert')) {
+      return null;
+    }
+
+    const cursoRaw = obtener(registro, ['Curso Oficial', 'Curso', 'Asignatura']);
+    const seccionRaw = obtener(registro, ['Sección', 'Seccion', 'Grupo']);
+    if (!cursoRaw || !seccionRaw || cursoRaw.toUpperCase().includes('CURSO')) return null;
+
+    const cursoNormalizado = normalizarNombreCurso(cursoRaw);
     const cursosTrad = catalogo.cursosTradicionales || [];
     const esTradicional =
       cursosTrad.some((nombre) => normalizarCabecera(nombre) === normalizarCabecera(cursoNormalizado)) ||
       /computacion\s*(i|ii|iii|1|2|3)|taller de certificacion/i.test(cursoNormalizado);
     const ciclo = normalizarCiclo(obtener(registro, ['Ciclo', 'Mes', 'Periodo']));
-    const cuposRaw = obtener(registro, ['Cupos', 'Vacantes', 'Capacidad']);
-    const cupos = cuposRaw === '' ? null : Number(cuposRaw.replace(/[^\d.-]/g, ''));
+    const cuposRaw = obtener(registro, ['Cupos', 'Vacantes', 'Capacidad', 'MAT']);
+    const cupos = cuposRaw === '' ? 30 : Number(cuposRaw.replace(/[^\d.-]/g, ''));
+
+    const plan = obtener(registro, ['Plan de Estudio', 'Plan', 'Programa', 'Modelo']);
+    const planNorm = normalizarCabecera(plan);
+    const esPlanTrad =
+      planNorm.includes('tradicional') ||
+      planNorm.includes('pac') ||
+      planNorm.includes('computacion') ||
+      planNorm.includes('acreditacion');
+    const modeloCalculado = (esTradicional || esPlanTrad) ? 'tradicional' : 'protech';
+
+    let seccion = seccionRaw.replace(/^PEAD-/i, 'PEAD ').trim();
+    if (plan.toLowerCase().includes('mecánica') && !seccion.includes('Mecánica')) {
+      seccion = `${seccion} (Mecánica)`;
+    } else if (plan.toLowerCase().includes('arquitectura') && !seccion.includes('Arquitectura')) {
+      seccion = `${seccion} (Arquitectura)`;
+    }
+
+    let horario = obtener(registro, ['Horario']);
+    if (!horario) {
+      const hIni = obtener(registro, ['Hora Inicio', 'Inicio']);
+      const hFin = obtener(registro, ['Hora Fin', 'Fin']);
+      if (hIni && hFin) horario = `${hIni} – ${hFin}`;
+    }
+
+    let dias = obtener(registro, ['Días', 'Dias']);
+    const diasNorm = normalizarCabecera(dias);
+    if (diasNorm === 'lunmie') dias = 'Lunes y miércoles';
+    else if (diasNorm === 'marjue') dias = 'Martes y jueves';
+    else if (diasNorm === 'viesab') dias = 'Viernes y sábado';
+    else if (diasNorm === 'lunmar') dias = 'Lunes y martes';
+    else if (diasNorm === 'miejue') dias = 'Miércoles y jueves';
+    else if (diasNorm === 'juesab') dias = 'Jueves y sábado';
+
+    let turno = obtener(registro, ['Turno']);
+    const tNorm = normalizarCabecera(turno);
+    if (tNorm === 'manana') turno = 'Mañana';
+    else if (tNorm === 'tarde') turno = 'Tarde';
+    else if (tNorm === 'noche') turno = 'Noche';
+
+    let aula = obtener(registro, ['Aula', 'Modalidad']);
+    if (normalizarCabecera(aula).includes('virtual')) aula = 'Virtual · Zoom';
+    else if (normalizarCabecera(aula).includes('presencial')) aula = 'Presencial · Elías Aguirre 933';
 
     return {
       id: obtener(registro, ['ID', 'Id']) || `sheets-${indice + 1}`,
       ciclo,
-      modelo: obtener(registro, ['Modelo', 'Plan'])
-        ? (/tradicional|pac|computacion/i.test(obtener(registro, ['Modelo', 'Plan'])) ? 'tradicional' : 'protech')
-        : (esTradicional ? 'tradicional' : 'protech'),
+      modelo: modeloCalculado,
       curso: cursoNormalizado,
-      seccion: seccion.replace(/^PEAD-/i, 'PEAD ').trim(),
-      inicio: normalizarFecha(obtener(registro, ['Inicio', 'Fecha Inicio', 'Fecha de Inicio'])),
-      fin: normalizarFecha(obtener(registro, ['Fin', 'Fecha Fin', 'Fecha de Fin'])),
-      turno: obtener(registro, ['Turno']),
-      dias: obtener(registro, ['Días', 'Dias']),
-      horario: obtener(registro, ['Horario']),
-      aula: obtener(registro, ['Aula', 'Modalidad']),
-      cupos: Number.isFinite(cupos) ? cupos : null,
-      cuposDisponibles: null,
-      cuposTotal: Number.isFinite(cupos) ? cupos : null,
+      seccion: seccion,
+      inicio: normalizarFecha(obtener(registro, ['Inicio', 'Fecha Inicio', 'Fecha de Inicio'])) || '09/11/2026',
+      fin: normalizarFecha(obtener(registro, ['Fin', 'Fecha Fin', 'Fecha de Fin'])) || '19/12/2026',
+      turno: turno || 'Noche',
+      dias: dias || 'Lunes y miércoles',
+      horario: horario || '07:00 p. m. – 10:30 p. m.',
+      aula: aula || 'Virtual · Zoom',
+      cupos: Number.isFinite(cupos) && cupos > 0 ? cupos : 30,
+      cuposDisponibles: 25,
+      cuposTotal: Number.isFinite(cupos) && cupos > 0 ? cupos : 30,
       docente: obtener(registro, ['Docente', 'Docente asignado']),
       linkAula: obtener(registro, ['Link Aula', 'Enlace', 'URL Aula']) || null,
     };
