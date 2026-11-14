@@ -2,12 +2,10 @@
  * USS Consulta de Cursos - Datos Oficiales CINF
  * Archivo: assets/js/datos.js
  *
- * Fuente: Catálogo de Rutas Oficiales y Programación de Horarios Canva
- * (documentos/2027-2.pdf y documentos/HORARIOS NOVIEMBRE.pdf).
- *
- * Cuando la API REST (/api/horarios) esté disponible, app.js cargará los datos
- * desde Supabase. Si no hay conexión o se prueba localmente, este archivo
- * actúa como fuente de datos verídica y completa.
+ * Contiene SOLO metadatos estructurales (ciclos, rutas, carreras, especialidades,
+ * calendario). Las secciones y horarios NO viven aquí: llegan 100% por Internet
+ * desde las hojas de Google Drive publicadas como CSV (assets/js/config.js),
+ * a través de catalogo.cargarHorariosRemotos().
  */
 window.CONSULTA_CURSOS = {
   // Ciclos oficiales de apertura CINF y su duración académica
@@ -183,99 +181,17 @@ window.CONSULTA_CURSOS = {
     { patron: /\bARQ\b|Arquitectura/i, carreras: ['Arquitectura', 'Arquitectura y Diseño de Interiores'] },
   ],
 
-  // Programación real extraída de los documentos oficiales Canva CINF
-  horarios: [
-    /* ==========================================================================
-       CICLO ENERO 2027 (Fuente: hoja oficial "Horarios enero 2027" del CINF)
-       Inducción: 04/01 al 09/01 · Clases: 11/01/2027 al 20/02/2027 (06 semanas)
-       Cierre de curso: 22/02 al 27/02 · Modalidad: Virtual USS Zoom · 30 cupos por grupo
-       13 grupos Modelo PROTECH XP + 7 grupos Plan Tradicional
-       ========================================================================== */
-    // ==========================================================================
-    // 1. CICLO NOVIEMBRE 2026 (Sincronizado desde Google Drive / Excel CINF)
-    // ==========================================================================
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD h', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'QUESADA QUIROZ JENNIE', linkAula: null, cupos: 35 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD i', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR-JUE', horario: '07:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'QUESADA QUIROZ JENNIE', linkAula: null, cupos: 18 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación III', seccion: 'PEAD m', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'MOGOLLON GALECIO POLO', linkAula: null, cupos: 42 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación III', seccion: 'PEAD n', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR-JUE', horario: '07:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'MOGOLLON GALECIO POLO', linkAula: null, cupos: 26 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación III', seccion: 'PEAD o', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'MOGOLLON GALECIO POLO', linkAula: null, cupos: 44 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD a (Mecánica)', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'AUTOCAD 2D', linkAula: null, cupos: 1 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación III', seccion: 'PEAD b (Mecánica)', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'JUE-SAB', horario: '08:00 AM – 0.4791666666666667', aula: 'Virtual · Zoom', docente: 'DIAZ MUSAYON CESAR', linkAula: null, cupos: 5 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD b (Arquitectura)', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'LUN-MAR', horario: '08:00 AM – 0.4791666666666667', aula: 'Virtual · Zoom', docente: 'DIAZ MUSAYON CESAR', linkAula: null, cupos: 7 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD b', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'Lunes y miércoles', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: 'DISEÑO WEB', linkAula: null, cupos: 30 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD ah', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'MIÑOPE FLORES ZAIDA', linkAula: null, cupos: 33 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD ai', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'MIÑOPE FLORES ZAIDA', linkAula: null, cupos: 24 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD aj', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'TULLUME DIAZ JOSE', linkAula: null, cupos: 27 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD ak', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'MIE-JUE', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'JIMENEZ RIVERA MILAGROS', linkAula: null, cupos: 31 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD al', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'VIE-SAB', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'BRUNO SARMIENTO JOSE', linkAula: null, cupos: 19 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD am', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'LUN-MAR', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'JIMENEZ RIVERA MILAGROS', linkAula: null, cupos: 14 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD ao', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'TULLUME DIAZ JOSE', linkAula: null, cupos: 30 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD ap', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'DIAZ ESPINO MIGUEL', linkAula: null, cupos: 23 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD aq', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'DIAZ ESPINO MIGUEL', linkAula: null, cupos: 27 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD as', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'QUESADA QUIROZ JENNIE', linkAula: null, cupos: 21 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD u', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MAR', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'BRUNO SARMIENTO JOSE', linkAula: null, cupos: 41 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD v', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MIE-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'BRUNO SARMIENTO JOSE', linkAula: null, cupos: 34 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD w', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'GUERRERO AGURTO GINO', linkAula: null, cupos: 34 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD x', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'MIE-JUE', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'GUERRERO AGURTO GINO', linkAula: null, cupos: 15 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD aa', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MAR', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'CASTAÑEDA BALCAZAR EDWARD', linkAula: null, cupos: 35 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ab', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MIE-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'CASTAÑEDA BALCAZAR EDWARD', linkAula: null, cupos: 26 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ac', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'CASTAÑEDA BALCAZAR EDWARD', linkAula: null, cupos: 23 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ad', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'LUN-MIE', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'JIMENEZ HERNANDEZ STHEFANNI', linkAula: null, cupos: 25 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ae', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'MAR-JUE', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'JIMENEZ HERNANDEZ STHEFANNI', linkAula: null, cupos: 18 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD af', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Mañana', dias: 'VIE-SAB', horario: '08:00 AM – 12:00 PM', aula: 'Virtual · Zoom', docente: 'SANDOVAL HORNA CARMEN', linkAula: null, cupos: 27 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ag', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MAR', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'FLORES ARRELUCE JOSE', linkAula: null, cupos: 39 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ah', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MIE-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'JIMENEZ HERNANDEZ STHEFANNI', linkAula: null, cupos: 21 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD ai', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SANDOVAL HORNA CARMEN', linkAula: null, cupos: 16 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Microsoft Word Asociado', seccion: 'PEAD g', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SALAZAR LLUEN IVONNE', linkAula: null, cupos: 24 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel Asociado', seccion: 'PEAD k', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SANCHEZ GUEVARA OMAR', linkAula: null, cupos: 31 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel Asociado', seccion: 'PEAD l', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR-JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'MENDO FARROÑAN JORGE', linkAula: null, cupos: 25 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel Asociado', seccion: 'PEAD m', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SANCHEZ GUEVARA OMAR', linkAula: null, cupos: 17 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Excel Asociado', seccion: 'PEAD n', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SALAZAR LLUEN IVONNE', linkAula: null, cupos: 22 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Power BI para Análisis de Datos', seccion: 'PEAD c', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'MENDO FARROÑAN JORGE', linkAula: null, cupos: 11 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'Diseño Web', seccion: 'PEAD c', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'FLORES ARRELUCE JOSE', linkAula: null, cupos: 15 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'AutoCAD 2D', seccion: 'PEAD f', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'LUN-MIE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'RUIZ RIOS HANNY', linkAula: null, cupos: 34 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'AutoCAD 2D', seccion: 'PEAD g', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'RUIZ RIOS HANNY', linkAula: null, cupos: 9 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'AutoCAD 3D', seccion: 'PEAD e', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'MAR.JUE', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SALAZAR LLUEN JAIRO', linkAula: null, cupos: 17 },
-    { ciclo: 'noviembre', modelo: 'protech', curso: 'AutoCAD 3D', seccion: 'PEAD f', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: 'VIE-SAB', horario: '07:00 PM – 11:00 PM', aula: 'Virtual · Zoom', docente: 'SALAZAR LLUEN JAIRO', linkAula: null, cupos: 7 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Taller de Certificación Internacional', seccion: 'D', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: '10,17 Y 24', horario: '7:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'SALAZAR LLUEN IVONNE', linkAula: null, cupos: 10 },
-    { ciclo: 'noviembre', modelo: 'tradicional', curso: 'Taller de Certificación Internacional', seccion: 'D', inicio: '09/11/2026', fin: '19/12/2026', turno: 'Noche', dias: '11,18 Y 25', horario: '7:00 PM – 10:30 PM', aula: 'Virtual · Zoom', docente: 'SALAZAR LLUEN IVONNE', linkAula: null, cupos: 1 },
+  // Calendario oficial de clases por ciclo (metadato estructural, NO son horarios).
+  // Se usa solo si la hoja de Drive no trae las columnas FECHA INICIO / FECHA FIN.
+  // Clave: '<año>-<ciclo>'. Si un ciclo no figura aquí ni en la hoja, se muestra «Por confirmar».
+  calendarioCiclos: {
+    '2026-noviembre': { inicio: '09/11/2026', fin: '19/12/2026' },
+    '2027-enero': { inicio: '11/01/2027', fin: '20/02/2027' },
+  },
 
-    // ==========================================================================
-    // 2. CICLO ENERO 2027 (Planificación Oficial / Supabase)
-    // ==========================================================================
-    // --- MODELO PROTECH XP (Rutas oficiales por carrera) ---
-    // Word 365
-    { ciclo: 'enero', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Word 365', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // Excel 365
-    { ciclo: 'enero', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Martes, jueves y sábado', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Excel 365', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // Diseño con Canva
-    { ciclo: 'enero', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Martes, jueves y sábado', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD c', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'protech', curso: 'Diseño con Canva', seccion: 'PEAD d', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // Excel Asociado
-    { ciclo: 'enero', modelo: 'protech', curso: 'Excel Asociado', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Lunes, miércoles y viernes', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // AutoCAD 2D
-    { ciclo: 'enero', modelo: 'protech', curso: 'AutoCAD 2D', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Mañana', dias: 'Martes, jueves y sábado', horario: '08:00 a. m. – 12:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // AutoCAD 3D
-    { ciclo: 'enero', modelo: 'protech', curso: 'AutoCAD 3D', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 11:00 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-
-    // --- PLAN TRADICIONAL (Computación I, II y III) ---
-    // Computación II general
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // Computación III general
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación III', seccion: 'PEAD a', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación III', seccion: 'PEAD b', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    // Computación II por especialidad (solo para su carrera)
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD CIV', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD SIST', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Lunes, miércoles y viernes', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD MEC', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-    { ciclo: 'enero', modelo: 'tradicional', curso: 'Computación II', seccion: 'PEAD ARQ', inicio: '11/01/2027', fin: '20/02/2027', turno: 'Noche', dias: 'Martes, jueves y sábado', horario: '07:00 p. m. – 10:30 p. m.', aula: 'Virtual · Zoom', docente: '', linkAula: '', cupos: 30 },
-  ],
+  // Vacío a propósito: el 100% de las secciones llega por Internet desde las hojas
+  // de Google Drive configuradas en assets/js/config.js (window.GOOGLE_SHEETS_URLS).
+  horarios: [],
 };
 
 /** Determina si un curso pertenece al modelo especificado ('protech' o 'tradicional'). */
@@ -292,7 +208,7 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
 
 
 /**
- * Integración opcional con Google Sheets.
+ * Integración con Google Drive (única fuente de horarios).
  * La hoja debe estar publicada en la web como CSV o entregar JSON accesible por fetch.
  * No completa fechas, cupos ni horarios ausentes con valores inventados.
  */
@@ -378,6 +294,31 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     return raw.replace(/\s+/g, '-');
   }
 
+  // «LUN-MIE-VIE», «MAR.JUE», «VIE-SAB» → «Lunes, miércoles y viernes».
+  // Si no son abreviaturas de días (p. ej. «10,17 Y 24»), se respeta el texto original.
+  const NOMBRES_DIAS = {
+    lun: 'lunes', mar: 'martes', mie: 'miércoles', jue: 'jueves', vie: 'viernes', sab: 'sábado', dom: 'domingo',
+  };
+  function expandirDias(valor) {
+    const raw = String(valor || '').trim();
+    const tokens = normalizarCabecera(raw).split(' ').filter((t) => t && t !== 'y');
+    if (!tokens.length || !tokens.every((t) => NOMBRES_DIAS[t.slice(0, 3)] && t.length <= 9)) return raw;
+    const nombres = tokens.map((t) => NOMBRES_DIAS[t.slice(0, 3)]);
+    const texto = nombres.length > 1
+      ? `${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]}`
+      : nombres[0];
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
+  // Año académico de la fila: PERIODO «2026 02» → 2026; si no hay, se toma de FECHA INICIO.
+  function anioDeRegistro(registro) {
+    const periodo = obtener(registro, ['Periodo', 'Año', 'Anio']);
+    const desdePeriodo = periodo.match(/\b(20\d{2})/);
+    if (desdePeriodo) return desdePeriodo[1];
+    const fecha = obtener(registro, ['Fecha Inicio', 'Fecha de Inicio']);
+    return fecha.match(/\b(20\d{2})\b/)?.[1] || '';
+  }
+
   function normalizarNombreCurso(raw) {
     const n = normalizarCabecera(raw);
     const compact = n.replace(/\s+/g, '');
@@ -398,11 +339,13 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
   }
 
   function normalizarFilaSheets(registro, indice = 0) {
-    // Si la fila tiene estado definido, omitir secciones que no estén aperturadas
-    const estado = normalizarCabecera(obtener(registro, ['Estado', 'Condicion', 'Status']));
-    if (estado && estado !== 'aperturado' && !estado.includes('apert')) {
-      return null;
-    }
+    // ESTADO de la hoja: APERTURADO y CERRADO se muestran (el estudiante ve qué sección ya no
+    // recibe matrícula); vacío = «Por confirmar». Otros valores (ANULADO, CANCELADO…) no se publican.
+    const estadoRaw = normalizarCabecera(obtener(registro, ['Estado', 'Condicion', 'Status']));
+    let estado = 'Por confirmar';
+    if (estadoRaw.includes('apert') || estadoRaw === 'abierto') estado = 'Aperturado';
+    else if (estadoRaw.includes('cerr')) estado = 'Cerrado';
+    else if (estadoRaw) return null;
 
     const cursoRaw = obtener(registro, ['Curso Oficial', 'Curso', 'Asignatura']);
     const seccionRaw = obtener(registro, ['Sección', 'Seccion', 'Grupo']);
@@ -440,14 +383,7 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
       if (hIni && hFin) horario = `${hIni} – ${hFin}`;
     }
 
-    let dias = obtener(registro, ['Días', 'Dias']);
-    const diasNorm = normalizarCabecera(dias);
-    if (diasNorm === 'lunmie') dias = 'Lunes y miércoles';
-    else if (diasNorm === 'marjue') dias = 'Martes y jueves';
-    else if (diasNorm === 'viesab') dias = 'Viernes y sábado';
-    else if (diasNorm === 'lunmar') dias = 'Lunes y martes';
-    else if (diasNorm === 'miejue') dias = 'Miércoles y jueves';
-    else if (diasNorm === 'juesab') dias = 'Jueves y sábado';
+    const dias = expandirDias(obtener(registro, ['Días', 'Dias']));
 
     let turno = obtener(registro, ['Turno']);
     const tNorm = normalizarCabecera(turno);
@@ -459,14 +395,27 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     if (normalizarCabecera(aula).includes('virtual')) aula = 'Virtual · Zoom';
     else if (normalizarCabecera(aula).includes('presencial')) aula = 'Presencial · Elías Aguirre 933';
 
+    // Fechas: 1) columnas FECHA INICIO / FECHA FIN de la hoja; 2) calendario oficial del ciclo;
+    // 3) vacío → la interfaz muestra «Por confirmar». Nunca se inventan fechas de otro ciclo.
+    const anio = anioDeRegistro(registro, ciclo);
+    const calendario = (catalogo.calendarioCiclos || {})[`${anio}-${ciclo}`] || {};
+    const inicio =
+      normalizarFecha(obtener(registro, ['Fecha Inicio', 'Fecha de Inicio', 'Inicio de clases'])) ||
+      calendario.inicio || '';
+    const fin =
+      normalizarFecha(obtener(registro, ['Fecha Fin', 'Fecha de Fin', 'Fin de clases'])) ||
+      calendario.fin || '';
+
     return {
-      id: obtener(registro, ['ID', 'Id']) || `sheets-${indice + 1}`,
+      id: obtener(registro, ['ID', 'Id']) || `sheets-${ciclo}-${indice + 1}`,
       ciclo,
+      anio,
       modelo: modeloCalculado,
       curso: cursoNormalizado,
       seccion: seccion,
-      inicio: normalizarFecha(obtener(registro, ['Inicio', 'Fecha Inicio', 'Fecha de Inicio'])) || '09/11/2026',
-      fin: normalizarFecha(obtener(registro, ['Fin', 'Fecha Fin', 'Fecha de Fin'])) || '19/12/2026',
+      estado,
+      inicio,
+      fin,
       turno: turno || 'Noche',
       dias: dias || 'Lunes y miércoles',
       horario: horario || '07:00 p. m. – 10:30 p. m.',
@@ -534,5 +483,83 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     const filas = convertirDatosSheets(datos);
     if (!filas.length) throw new Error('Google Sheets no contiene filas válidas con Curso Oficial y Sección.');
     return filas;
+  };
+
+  /** Hojas fijas declaradas en config.js (una por ciclo), sin duplicados. */
+  catalogo.urlsHojasDrive = () => {
+    const lista = [
+      ...(Array.isArray(window.GOOGLE_SHEETS_URLS) ? window.GOOGLE_SHEETS_URLS : []),
+      window.GOOGLE_SHEETS_URL,
+      window.GOOGLE_SHEETS_CSV_URL,
+    ];
+    return [...new Set(lista.map((url) => String(url || '').trim()).filter(Boolean))];
+  };
+
+  const conTiempoMaximo = async (url, tiempoMaximoMs) => {
+    const controlador = typeof AbortController === 'function' ? new AbortController() : null;
+    const temporizador = controlador ? setTimeout(() => controlador.abort(), tiempoMaximoMs) : null;
+    try {
+      const respuesta = await fetch(url, { cache: 'no-store', signal: controlador?.signal });
+      if (!respuesta.ok) throw new Error(`Google Drive respondió ${respuesta.status}`);
+      return await respuesta.text();
+    } finally {
+      if (temporizador) clearTimeout(temporizador);
+    }
+  };
+
+  /**
+   * Hojas descubiertas automáticamente en la carpeta de Drive (Apps Script «?accion=indice»).
+   * Así, una hoja creada desde el Panel Admin aparece en el portal sin tocar config.js.
+   * Si el índice no está configurado o falla, se sigue solo con las hojas fijas.
+   */
+  catalogo.urlsHojasIndice = async (tiempoMaximoMs = 15000) => {
+    const indice = String(window.CINF_DRIVE_INDICE_URL || '').trim();
+    if (!indice) return [];
+    try {
+      const separador = indice.includes('?') ? '&' : '?';
+      const json = JSON.parse(await conTiempoMaximo(`${indice}${separador}accion=indice`, tiempoMaximoMs));
+      return (json?.hojas || []).map((h) => String(h.csvUrl || '').trim()).filter(Boolean);
+    } catch (error) {
+      console.warn('No se pudo leer el índice de hojas de Google Drive:', error);
+      return [];
+    }
+  };
+
+  // Una misma hoja puede llegar por config.js y por el índice (con URLs distintas): se une sin repetir.
+  const claveSeccion = (h) =>
+    [h.anio, h.ciclo, h.curso, h.seccion, h.dias, h.horario, h.docente].map((v) => normalizarCabecera(v)).join('|');
+
+  /**
+   * Descarga en paralelo TODAS las hojas de Drive y une sus secciones.
+   * - Si una hoja falla pero otras responden, se muestran las que llegaron (y se avisa en consola).
+   * - Si fallan todas, lanza un error: la interfaz muestra «Reintentar conexión», nunca datos locales.
+   */
+  catalogo.cargarHorariosRemotos = async ({ tiempoMaximoMs = 20000 } = {}) => {
+    const urls = [...new Set([...catalogo.urlsHojasDrive(), ...(await catalogo.urlsHojasIndice())])];
+    if (!urls.length) throw new Error('No hay hojas de Google Drive configuradas en config.js.');
+
+    const descargar = async (url) => {
+      const contenido = await conTiempoMaximo(url, tiempoMaximoMs);
+      const datos = /^[\s]*[\[{]/.test(contenido) ? JSON.parse(contenido) : contenido;
+      return convertirDatosSheets(datos);
+    };
+
+    const resultados = await Promise.allSettled(urls.map(descargar));
+    const fallidas = resultados.filter((r) => r.status === 'rejected');
+    fallidas.forEach((r) => console.warn('Una hoja de Google Drive no respondió:', r.reason));
+    if (fallidas.length === resultados.length) {
+      throw new Error('No se pudo conectar con Google Drive.');
+    }
+
+    const vistas = new Set();
+    return resultados
+      .filter((r) => r.status === 'fulfilled')
+      .flatMap((r) => r.value)
+      .filter((h) => {
+        const clave = claveSeccion(h);
+        if (vistas.has(clave)) return false;
+        vistas.add(clave);
+        return true;
+      });
   };
 })();

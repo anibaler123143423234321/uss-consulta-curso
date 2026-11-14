@@ -1521,6 +1521,55 @@ body {
 }
 
 /* Default / Otros */
+.badge-curso--web {
+    background: #fff1ec;
+    color: #c2381b;
+    border: 1px solid #fed7cc;
+}
+
+.badge-curso--taller {
+    background: #fffbeb;
+    color: #975a16;
+    border: 1px solid #fde68a;
+}
+
+.badge-curso--project {
+    background: #f0fdf4;
+    color: #31752f;
+    border: 1px solid #bbf7d0;
+}
+
+.badge-curso--bizagi {
+    background: #f0f9ff;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.badge-curso--basedatos {
+    background: #eef2ff;
+    color: #4c51bf;
+    border: 1px solid #c7d2fe;
+}
+
+.badge-curso--sketchup,
+.badge-curso--solidworks {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.badge-curso--revit {
+    background: #eff6ff;
+    color: #1e5aa8;
+    border: 1px solid #bfdbfe;
+}
+
+.badge-curso--matlab {
+    background: #fff7ed;
+    color: #0b3d63;
+    border: 1px solid #fed7aa;
+}
+
 .badge-curso--default {
     background: #f8fafc;
     color: #334155;
@@ -2447,4 +2496,197 @@ body {
         animation: none !important;
         transition: none !important;
     }
+}
+/* ==========================================================================
+   ESTADO DE CONEXIÓN CON GOOGLE DRIVE (sin datos locales)
+   Esqueleto mientras descarga · alerta con «Reintentar conexión» si falla
+   ========================================================================== */
+.estado-red {
+    margin-top: 10px;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.estado-red--cargando {
+    background: var(--uss-azul-light);
+    border: 1px solid #dbeafe;
+}
+
+.estado-red--error {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+}
+
+.estado-red__titulo {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #9a3412;
+}
+
+.estado-red__texto {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--uss-text-muted);
+}
+
+.estado-red--cargando .estado-red__texto {
+    color: var(--uss-azul);
+}
+
+.estado-red__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.estado-red__acciones .btn {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+}
+
+.estado-red__spinner {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2.5px solid #bfdbfe;
+    border-top-color: var(--uss-azul);
+    animation: estadoRedGiro 0.8s linear infinite;
+}
+
+.estado-red__esqueletos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.estado-red__filas {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.esqueleto {
+    border-radius: 12px;
+    background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 45%, #e2e8f0 90%);
+    background-size: 200% 100%;
+    animation: estadoRedBrillo 1.3s ease-in-out infinite;
+}
+
+.esqueleto--ciclo {
+    height: 96px;
+}
+
+.esqueleto--fila {
+    height: 38px;
+    border-radius: 8px;
+}
+
+@keyframes estadoRedGiro {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes estadoRedBrillo {
+    from {
+        background-position: 100% 0;
+    }
+    to {
+        background-position: -100% 0;
+    }
+}
+
+@media (max-width: 575px) {
+    .estado-red {
+        padding: 12px;
+    }
+
+    .estado-red__esqueletos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .esqueleto--ciclo {
+        height: 76px;
+    }
+
+    .estado-red__acciones .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .esqueleto,
+    .estado-red__spinner {
+        animation: none;
+    }
+}
+
+/* ===================================================
+   Estado de la sección (columna ESTADO de la hoja de Drive)
+   =================================================== */
+.tabla-horarios .col-estado {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.badge-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.badge-estado::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.badge-estado--abierto {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+.badge-estado--cerrado {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.badge-estado--pendiente {
+    background: #f8fafc;
+    color: #64748b;
+    border-color: #e2e8f0;
+}
+
+/* Sección cerrada: sigue visible pero atenuada, para que no compita con las abiertas */
+.tabla-horarios tbody tr.fila-cerrada > td:not(.col-estado) {
+    opacity: .55;
+}
+
+.tabla-horarios tbody tr.fila-cerrada .badge-cupos {
+    background: #f1f5f9;
+    color: #64748b;
+    border-color: #e2e8f0;
 }

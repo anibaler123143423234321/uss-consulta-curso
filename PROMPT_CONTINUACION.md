@@ -1,7 +1,7 @@
 # Prompt de Perfeccionamiento de Diseño, UX, Sincronización en la Nube y Cero Datos Locales — USS Consulta de Cursos
 
 > **Instrucciones para el usuario (Dagner):**  
-> Copia todo el contenido a continuación de la línea divisoria y pégalo directamente en **Claude Code**. Este documento contiene todas las directivas técnicas, las reglas de negocio oficiales, la especificación de ciclos y la instrucción de **eliminar todo dato local para que el 100% funcione a través de Internet (Google Drive / Cloud)**.
+> Copia todo el contenido a continuación de la línea divisoria y pégalo directamente en **Claude Code**. Este documento contiene todas las directivas técnicas, las reglas de negocio oficiales, la especificación de ciclos y la instrucción de **eliminar todo dato local para que el 100% funcione a través de Internet (Google Drive / Cloud)**.  
 
 ---
 

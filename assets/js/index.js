@@ -9,8 +9,10 @@
  * 3. Al hacer clic en un ciclo, redirige a horarios.html con los filtros aplicados.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const { ciclos, rutas, horarios, cursosTradicionales = [], cursosParaTodos = [] } = window.CONSULTA_CURSOS;
-  let horariosDisponibles = Array.isArray(horarios) ? [...horarios] : [];
+  const { ciclos, rutas, cursosTradicionales = [], cursosParaTodos = [] } = window.CONSULTA_CURSOS;
+  // Sin datos locales: las secciones llegan solo desde Google Drive (ver sincronizarHorariosDrive).
+  let horariosDisponibles = [];
+  let estadoCarga = 'cargando'; // 'cargando' | 'listo' | 'error'
   const $ = (id) => document.getElementById(id);
 
   let carreraSeleccionada = '';
@@ -348,8 +350,44 @@ document.addEventListener('DOMContentLoaded', () => {
   ayuda.appendChild(enlaceWsp);
   gridCiclos.after(proximos, ayuda);
 
+  // Estado de conexión con Google Drive: esqueleto mientras descarga, alerta con reintento si falla
+  const estadoRed = crear('div', 'estado-red');
+  estadoRed.id = 'estado-red-ciclos';
+  estadoRed.setAttribute('role', 'status');
+  estadoRed.setAttribute('aria-live', 'polite');
+  estadoRed.hidden = true;
+  gridCiclos.before(estadoRed);
+
+  function pintarEstadoRed() {
+    if (estadoCarga === 'cargando') {
+      estadoRed.className = 'estado-red estado-red--cargando';
+      const aviso = crear('p', 'estado-red__texto');
+      aviso.append(crear('span', 'estado-red__spinner'), 'Conectando con Google Drive y cargando horarios en tiempo real…');
+      const esqueletos = crear('div', 'estado-red__esqueletos');
+      esqueletos.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 4; i += 1) esqueletos.appendChild(crear('div', 'esqueleto esqueleto--ciclo'));
+      estadoRed.replaceChildren(aviso, esqueletos);
+    } else {
+      estadoRed.className = 'estado-red estado-red--error';
+      estadoRed.setAttribute('role', 'alert');
+      const titulo = crear('p', 'estado-red__titulo', 'No pudimos conectar con Google Drive');
+      const detalle = crear('p', 'estado-red__texto', 'Revisa tu conexión a Internet e inténtalo de nuevo. Los horarios se publican solo en línea.');
+      const acciones = crear('div', 'estado-red__acciones');
+      const reintentar = crear('button', 'btn btn-sm btn-primary rounded-pill px-3', '↻ Reintentar conexión');
+      reintentar.type = 'button';
+      reintentar.addEventListener('click', sincronizarHorariosDrive);
+      const wsp = crear('a', 'btn btn-sm btn-outline-success rounded-pill px-3', 'WhatsApp de soporte');
+      wsp.href = 'https://wa.me/51986724506';
+      wsp.target = '_blank';
+      wsp.rel = 'noopener noreferrer';
+      acciones.append(reintentar, wsp);
+      estadoRed.replaceChildren(titulo, detalle, acciones);
+    }
+  }
+
   // Solo se muestran como tarjeta los ciclos con horarios para la carrera y modelo elegidos
   function actualizarContadoresCiclos() {
+    estadoRed.hidden = true;
     // Validación: impedir mostrar ciclos mientras no exista un modelo elegido
     if (!modeloSeleccionado) {
       ciclos.forEach((ciclo) => {
@@ -362,6 +400,15 @@ document.addEventListener('DOMContentLoaded', () => {
       gridCiclos.hidden = true;
       proximos.hidden = false;
       proximos.textContent = '👆 Selecciona en el Paso 2 si cursas el Modelo PROTECH XP o el Plan Tradicional para ver los ciclos disponibles.';
+      return;
+    }
+
+    // Mientras Drive no responde (o si falló) no se pinta ningún ciclo: nada de datos simulados
+    if (estadoCarga !== 'listo') {
+      gridCiclos.hidden = true;
+      proximos.hidden = true;
+      estadoRed.hidden = false;
+      pintarEstadoRed();
       return;
     }
 
@@ -394,13 +441,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const cursosDistintos = new Set(filas.map((h) => h.curso)).size;
-      const anio = (filas[0].inicio || '').split('/')[2] || '';
+      const anio = filas[0].anio || (filas[0].inicio || '').split('/')[2] || '';
       btn.dataset.anio = anio;
       btn.classList.add('ciclo-btn--destacado');
       btn.querySelector('.ciclo-btn__mes').textContent = `${ciclo.nombre} ${anio}`.trim();
-      btn.querySelector('.ciclo-btn__duracion').textContent = `Clases del ${filas[0].inicio} al ${filas[0].fin} · ${ciclo.duracion}`;
+      const conFechas = filas.find((h) => h.inicio && h.fin);
+      btn.querySelector('.ciclo-btn__duracion').textContent = conFechas
+        ? `Clases del ${conFechas.inicio} al ${conFechas.fin} · ${ciclo.duracion}`
+        : `Fechas por confirmar · ${ciclo.duracion}`;
       badge.className = 'ciclo-btn__badge ciclo-btn__badge--disponible';
-      badge.textContent = `${cursosDistintos} ${cursosDistintos === 1 ? 'curso' : 'cursos'} · ${total} ${total === 1 ? 'sección' : 'secciones'}`;
+      const cerradas = filas.filter((h) => h.estado === 'Cerrado').length;
+      badge.textContent =
+        `${cursosDistintos} ${cursosDistintos === 1 ? 'curso' : 'cursos'} · ${total} ${total === 1 ? 'sección' : 'secciones'}` +
+        (cerradas ? ` · ${cerradas} ${cerradas === 1 ? 'cerrada' : 'cerradas'}` : '');
     });
 
     proximos.hidden = sinApertura.length === 0;
@@ -427,26 +480,22 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = url;
   }
 
-  // Sincronización opcional de ciclos y secciones desde Google Sheets.
-  // Si la hoja falla, se conserva intacto el catálogo oficial de datos.js.
-  async function sincronizarHorariosSheets() {
-    const urlSheets = window.GOOGLE_SHEETS_URL || window.GOOGLE_SHEETS_CSV_URL || '';
-    if (!urlSheets || typeof window.CONSULTA_CURSOS.cargarDesdeGoogleSheets !== 'function') return;
+  // Ciclos y secciones 100% desde Google Drive (todas las hojas de config.js).
+  // Si Drive no responde se muestra «Reintentar conexión»; nunca se usan datos locales.
+  async function sincronizarHorariosDrive() {
+    estadoCarga = 'cargando';
+    if (carreraSeleccionada) actualizarContadoresCiclos();
     try {
-      const filas = await window.CONSULTA_CURSOS.cargarDesdeGoogleSheets(urlSheets);
-      if (filas.length) {
-        const ciclosRemotos = new Set(filas.map((f) => (f.ciclo || '').toLowerCase()));
-        horariosDisponibles = [
-          ...filas,
-          ...(catalogo.horarios || []).filter((h) => !ciclosRemotos.has((h.ciclo || '').toLowerCase())),
-        ];
-        if (carreraSeleccionada) actualizarContadoresCiclos();
-      }
+      horariosDisponibles = await window.CONSULTA_CURSOS.cargarHorariosRemotos();
+      estadoCarga = 'listo';
     } catch (error) {
-      console.warn('Google Sheets no disponible; se mantiene el catálogo local.', error);
+      console.error('Google Drive no disponible:', error);
+      horariosDisponibles = [];
+      estadoCarga = 'error';
     }
+    if (carreraSeleccionada) actualizarContadoresCiclos();
   }
-  sincronizarHorariosSheets();
+  sincronizarHorariosDrive();
 
   // Comprobar parámetros de URL (si regresan desde horarios.html).
   // Se restaura la carrera, nunca el modelo: el estudiante debe elegirlo de nuevo.

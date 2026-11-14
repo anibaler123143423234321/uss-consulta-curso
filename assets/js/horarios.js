@@ -6,14 +6,14 @@
  * 1. Lee parámetros de URL (?ciclo=enero&carrera=Psicologia).
  * 2. Muestra banner oficial de la carrera y ruta de aprendizaje CINF.
  * 3. Muestra únicamente la carrera, modelo y ciclo seleccionados en el portal.
- * 4. Consume API REST (/api/horarios) con respaldo en datos.js (Canva oficial).
+ * 4. Descarga las secciones en vivo desde Google Drive (config.js); la API REST es
+ *    respaldo en línea. Sin datos locales: si no hay red, muestra «Reintentar conexión».
  * 5. Filtra por cursos correspondientes a la carrera, turno y búsqueda en vivo.
  */
 document.addEventListener('DOMContentLoaded', () => {
   const {
     ciclos,
     rutas,
-    horarios,
     cursosTradicionales = [],
     cursosParaTodos = [],
     seccionVisible,
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   actualizarBadgeModelo();
 
-  // 4. Fuente de datos: API REST o catálogo oficial en datos.js
+  // 4. Fuente de datos: solo en línea (Google Drive y, de respaldo, la API REST)
   let horariosCargados = [];
   let fuenteEnVivo = false;
 
@@ -173,108 +173,156 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 4.1 Identidad y Colores Temáticos por Curso Oficial
+  // Ícono (assets/img/cursos/<icono>.svg) y color de cada curso del catálogo oficial (21 cursos).
+  // Se revisa en orden: «Diseño Mecánico con AutoCAD 3D» debe caer en AutoCAD y no en Diseño Web.
+  // Mantener igual a ecosistema-cinf/src/lib/iconoCurso.ts (mismo juego de SVG).
+  const ICONOS_CURSO = [
+    { patron: /word/, icono: 'word', color: 'word' },
+    { patron: /excel/, icono: 'excel', color: 'excel' },
+    { patron: /canva/, icono: 'canva', color: 'canva' },
+    { patron: /autocad|\bcad\b|diseno mecanico/, icono: 'autocad', color: 'autocad' },
+    { patron: /web/, icono: 'diseno-web', color: 'web' },
+    { patron: /taller|certificacion/, icono: 'taller', color: 'taller' },
+    { patron: /project/, icono: 'project', color: 'project' },
+    { patron: /bizagi/, icono: 'bizagi', color: 'bizagi' },
+    { patron: /base de datos|cientific/, icono: 'base-datos', color: 'basedatos' },
+    { patron: /sketch/, icono: 'sketchup', color: 'sketchup' },
+    { patron: /revit/, icono: 'revit', color: 'revit' },
+    { patron: /solid ?works/, icono: 'solidworks', color: 'solidworks' },
+    { patron: /matlab/, icono: 'matlab', color: 'matlab' },
+    { patron: /power ?bi/, icono: 'power-bi', color: 'powerbi' },
+    { patron: /spss/, icono: 'spss', color: 'spss' },
+    { patron: /computacion/, icono: 'computacion', color: 'tradicional' },
+  ];
+
+  function datosVisualesCurso(nombre) {
+    const n = (nombre || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return ICONOS_CURSO.find((c) => c.patron.test(n)) || { icono: 'software', color: 'default' };
+  }
+
   function obtenerClaseColorCurso(nombre) {
-    const n = (nombre || '').toLowerCase();
-    if (n.includes('word')) return 'badge-curso--word';
-    if (n.includes('excel')) return 'badge-curso--excel';
-    if (n.includes('canva')) return 'badge-curso--canva';
-    if (n.includes('autocad') || n.includes('cad') || n.includes('diseño mecánico') || n.includes('diseno mecanico')) return 'badge-curso--autocad';
-    if (n.includes('spss')) return 'badge-curso--spss';
-    if (n.includes('power bi')) return 'badge-curso--powerbi';
-    if (n.includes('computacion') || n.includes('computación')) return 'badge-curso--tradicional';
-    return 'badge-curso--default';
+    return `badge-curso--${datosVisualesCurso(nombre).color}`;
   }
 
   function obtenerIconoCurso(nombre) {
-    const n = (nombre || '').toLowerCase();
-    if (n.includes('word')) return 'word';
-    if (n.includes('excel')) return 'excel';
-    if (n.includes('canva')) return 'canva';
-    if (n.includes('autocad') || n.includes('cad') || n.includes('diseño mecánico') || n.includes('diseno mecanico')) return 'autocad';
-    if (n.includes('power bi')) return 'power-bi';
-    if (n.includes('spss')) return 'spss';
-    if (n.includes('computacion') || n.includes('computación')) return 'computacion';
-    return 'software';
+    return datosVisualesCurso(nombre).icono;
   }
 
-  // 4.2 Sincronización opcional con Google Sheets (CSV o JSON)
-  // La normalización compartida vive en datos.js para reutilizarse también en index.js.
-  const GOOGLE_SHEETS_URL = window.GOOGLE_SHEETS_URL || window.GOOGLE_SHEETS_CSV_URL || '';
+  // 4.2 Carga 100% por Internet: hojas de Google Drive (config.js) y, solo si TODAS fallan,
+  // la API REST. Nunca se usan datos locales: si no hay red se muestra «Reintentar conexión».
+  async function cargarDesdeApi() {
+    const resp = await fetch(`${resolveApiBase()}/horarios`, { headers: { Accept: 'application/json' } });
+    if (!resp.ok) throw new Error(`API respondió ${resp.status}`);
+    const json = await resp.json();
+    const filas = Array.isArray(json) ? json : (json.data || []);
+    if (!filas.length) throw new Error('La API no devolvió horarios.');
+    return filas.map((r) => {
+      const cLimpio = limpiarCurso(r.curso);
+      const modFila =
+        r.modelo ||
+        (window.CONSULTA_CURSOS.esCursoDeModelo(cLimpio, 'tradicional') ? 'tradicional' : 'protech');
+      return {
+        id: r.id,
+        ciclo: (r.ciclo || '').toLowerCase(),
+        anio: r.anio ? String(r.anio) : '',
+        modelo: modFila,
+        curso: cLimpio,
+        seccion: r.seccion || '',
+        estado: 'Aperturado', // la API solo devuelve secciones publicadas
+        inicio: formatearFecha(r.fechaInicio),
+        fin: formatearFecha(r.fechaFin),
+        turno: r.turno || '',
+        dias: r.dias || '',
+        horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
+        aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
+        cupos: r.cupos || 30,
+        cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
+        cuposTotal: r.cupos || 30,
+        docente: r.docente || '',
+        linkAula: r.linkAula || null,
+      };
+    });
+  }
 
-  async function cargarDesdeGoogleSheets(sheetsCsvUrl) {
-    const cargar = window.CONSULTA_CURSOS?.cargarDesdeGoogleSheets;
-    if (typeof cargar !== 'function') {
-      throw new Error('No se encontró el módulo de integración de Google Sheets en datos.js.');
+  // Caja de estado de red (esqueleto mientras descarga / alerta con reintento si falla)
+  const cajaTablaScroll = document.querySelector('.tabla-horarios__scroll');
+  const estadoRed = document.createElement('div');
+  estadoRed.id = 'estado-red-horarios';
+  estadoRed.hidden = true;
+  cajaTablaScroll?.before(estadoRed);
+
+  function mostrarEstadoRed(estado) {
+    const conteo = $('conteo-secciones');
+    $('sin-horarios').hidden = true;
+    if (cajaTablaScroll) cajaTablaScroll.hidden = true;
+    estadoRed.hidden = false;
+    estadoRed.replaceChildren();
+    if (estado === 'cargando') {
+      estadoRed.className = 'estado-red estado-red--cargando';
+      estadoRed.setAttribute('role', 'status');
+      estadoRed.setAttribute('aria-live', 'polite');
+      if (conteo) conteo.textContent = 'Cargando secciones…';
+      const aviso = document.createElement('p');
+      aviso.className = 'estado-red__texto';
+      const spinner = document.createElement('span');
+      spinner.className = 'estado-red__spinner';
+      aviso.append(spinner, 'Conectando con Google Drive y cargando horarios en tiempo real…');
+      const filas = document.createElement('div');
+      filas.className = 'estado-red__filas';
+      filas.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 6; i += 1) {
+        const barra = document.createElement('div');
+        barra.className = 'esqueleto esqueleto--fila';
+        filas.appendChild(barra);
+      }
+      estadoRed.append(aviso, filas);
+      return;
     }
-    return cargar(sheetsCsvUrl);
+    estadoRed.className = 'estado-red estado-red--error';
+    estadoRed.setAttribute('role', 'alert');
+    if (conteo) conteo.textContent = 'Sin conexión con Google Drive';
+    const titulo = document.createElement('p');
+    titulo.className = 'estado-red__titulo';
+    titulo.textContent = 'No pudimos conectar con Google Drive';
+    const detalle = document.createElement('p');
+    detalle.className = 'estado-red__texto';
+    detalle.textContent = 'Revisa tu conexión a Internet e inténtalo de nuevo. Los horarios se publican solo en línea.';
+    const acciones = document.createElement('div');
+    acciones.className = 'estado-red__acciones';
+    const reintentar = document.createElement('button');
+    reintentar.type = 'button';
+    reintentar.className = 'btn btn-sm btn-primary rounded-pill px-3';
+    reintentar.textContent = '↻ Reintentar conexión';
+    reintentar.addEventListener('click', cargarDatos);
+    const wsp = document.createElement('a');
+    wsp.className = 'btn btn-sm btn-outline-success rounded-pill px-3';
+    wsp.href = 'https://wa.me/51986724506';
+    wsp.target = '_blank';
+    wsp.rel = 'noopener noreferrer';
+    wsp.textContent = 'WhatsApp de soporte';
+    acciones.append(reintentar, wsp);
+    estadoRed.append(titulo, detalle, acciones);
   }
 
   async function cargarDatos() {
+    mostrarEstadoRed('cargando');
+    horariosCargados = [];
     try {
-      // Intento 1: Cargar desde la hoja publicada en Google Sheets (Drive) en vivo
-      if (GOOGLE_SHEETS_URL) {
-        try {
-          const filasSheets = await cargarDesdeGoogleSheets(GOOGLE_SHEETS_URL);
-          if (filasSheets && filasSheets.length > 0) {
-            const ciclosRemotos = new Set(filasSheets.map((f) => (f.ciclo || '').toLowerCase()));
-            horariosCargados = [
-              ...filasSheets,
-              ...(horarios || []).filter((h) => !ciclosRemotos.has((h.ciclo || '').toLowerCase())),
-            ];
-            fuenteEnVivo = true;
-          }
-        } catch (eSheets) {
-          console.warn('Google Sheets no disponible, probando API de Supabase...', eSheets);
-        }
+      horariosCargados = await window.CONSULTA_CURSOS.cargarHorariosRemotos();
+      fuenteEnVivo = true;
+    } catch (eDrive) {
+      console.warn('Google Drive no disponible, probando API…', eDrive);
+      try {
+        horariosCargados = await cargarDesdeApi();
+        fuenteEnVivo = true;
+      } catch (eApi) {
+        console.error('Sin conexión con las fuentes en línea:', eApi);
+        fuenteEnVivo = false;
+        mostrarEstadoRed('error');
+        return;
       }
-
-      // Intento 2: API REST Supabase (si Google Sheets no respondió)
-      if (horariosCargados.length === 0) {
-        const apiBase = resolveApiBase();
-        const resp = await fetch(`${apiBase}/horarios`, {
-          headers: { Accept: 'application/json' },
-        });
-        if (resp.ok) {
-          const json = await resp.json();
-          const filas = Array.isArray(json) ? json : (json.data || []);
-          if (filas.length > 0) {
-            horariosCargados = filas.map((r) => {
-              const cLimpio = limpiarCurso(r.curso);
-              const modFila =
-                r.modelo ||
-                (window.CONSULTA_CURSOS.esCursoDeModelo(cLimpio, 'tradicional')
-                  ? 'tradicional'
-                  : 'protech');
-              return {
-                id: r.id,
-                ciclo: (r.ciclo || '').toLowerCase(),
-                modelo: modFila,
-                curso: cLimpio,
-                seccion: r.seccion || '',
-                inicio: formatearFecha(r.fechaInicio),
-                fin: formatearFecha(r.fechaFin),
-                turno: r.turno || '',
-                dias: r.dias || '',
-                horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
-                aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
-                cupos: r.cupos || 30,
-                cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
-                cuposTotal: r.cupos || 30,
-                docente: r.docente || '',
-                linkAula: r.linkAula || null,
-              };
-            });
-            fuenteEnVivo = true;
-          } else {
-            horariosCargados = horarios || [];
-          }
-        } else {
-          horariosCargados = horarios || [];
-        }
-      }
-    } catch {
-      horariosCargados = horarios || [];
     }
+    estadoRed.hidden = true;
 
     const filasCicloSeleccionado = horariosCargados.filter(
       (fila) => (fila.ciclo || '').toLowerCase() === cicloActivo && esDeLaCarrera(fila)
@@ -407,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     destino.replaceChildren(contenido.slice(0, inicio), marca, contenido.slice(inicio + texto.length));
   }
 
-  const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
+  const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Estado', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   const tbodyHorarios = $('filas-horarios');
@@ -459,9 +507,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const i = ordenCursos.indexOf(curso);
       return i === -1 ? ordenCursos.length : i;
     };
+    // Dentro de cada curso, las secciones cerradas van al final: primero lo que aún recibe matrícula.
+    const esCerrada = (fila) => (fila.estado === 'Cerrado' ? 1 : 0);
     filasVisibles.sort(
       (x, y) =>
         posicion(x.curso) - posicion(y.curso) ||
+        esCerrada(x) - esCerrada(y) ||
         x.seccion.length - y.seccion.length ||
         x.seccion.localeCompare(y.seccion, 'es')
     );
@@ -517,13 +568,24 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeSeccion.textContent = fila.seccion || '—';
         tdSec.appendChild(badgeSeccion);
 
+        // Estado de la sección (columna ESTADO de la hoja)
+        const tdEstado = document.createElement('td');
+        tdEstado.className = 'col-estado';
+        const estado = fila.estado || 'Aperturado';
+        const tipoEstado = { Aperturado: 'abierto', Cerrado: 'cerrado' }[estado] || 'pendiente';
+        const badgeEstado = document.createElement('span');
+        badgeEstado.className = `badge-estado badge-estado--${tipoEstado}`;
+        badgeEstado.textContent = estado;
+        tdEstado.appendChild(badgeEstado);
+        if (tipoEstado === 'cerrado') tr.classList.add('fila-cerrada');
+
         // 4. Inicio
         const tdInicio = document.createElement('td');
-        tdInicio.textContent = fila.inicio;
+        tdInicio.textContent = fila.inicio || 'Por confirmar';
 
         // 5. Fin
         const tdFin = document.createElement('td');
-        tdFin.textContent = fila.fin;
+        tdFin.textContent = fila.fin || 'Por confirmar';
 
         // 6. Turno
         const tdTurno = document.createElement('td');
@@ -611,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // En celular cada fila es una tarjeta: la etiqueta de cada dato sale de data-label
-        const celdas = [tdNum, tdCurso, tdSec, tdInicio, tdFin, tdTurno, tdDias, tdHorario, tdAula, tdCupos, tdDocente, tdAcceso];
+        const celdas = [tdNum, tdCurso, tdSec, tdEstado, tdInicio, tdFin, tdTurno, tdDias, tdHorario, tdAula, tdCupos, tdDocente, tdAcceso];
         celdas.forEach((td, i) => {
           td.dataset.label = ETIQUETAS_CELDA[i];
         });
@@ -620,6 +682,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tdNum,
           tdCurso,
           tdSec,
+          tdEstado,
           tdInicio,
           tdFin,
           tdTurno,
