@@ -1,7 +1,7 @@
-# Prompt de Perfeccionamiento de Diseño, UX y Responsividad Móvil — USS Consulta de Cursos
+# Prompt de Perfeccionamiento de Diseño, UX, Sincronización en la Nube y Cero Datos Locales — USS Consulta de Cursos
 
 > **Instrucciones para el usuario (Dagner):**  
-> Copia todo el contenido a continuación de la línea divisoria y pégalo directamente en **Claude Code** (o en la IA que vayas a utilizar para refinar los estilos). Este documento contiene toda la arquitectura técnica, las reglas de negocio oficiales, la paleta de colores por curso y la especificación exacta de los ciclos y su duración.
+> Copia todo el contenido a continuación de la línea divisoria y pégalo directamente en **Claude Code**. Este documento contiene todas las directivas técnicas, las reglas de negocio oficiales, la especificación de ciclos y la instrucción de **eliminar todo dato local para que el 100% funcione a través de Internet (Google Drive / Cloud)**.
 
 ---
 
@@ -9,7 +9,18 @@ Actúa como Diseñador UI/UX y Arquitecto Frontend Senior del Centro de Informá
 
 ---
 
-## 1. Contexto y Estado Actual del Proyecto (¡NO TOCAR BACKEND NI LÓGICA CORE!)
+## ⚠️ DIRECTIVA OBLIGATORIA DEL PROYECTO: CERO DATOS LOCALES (TODO A TRAVÉS DE INTERNET)
+
+> 🔴 **REGLA FUNDAMENTAL:** **Elimina cualquier dependencia de datos locales quemados en el código. NADA DE DATOS LOCALES.**  
+> El sistema no debe tener arrays estáticos ni mocks de horarios (`catalogo.horarios = [...]`) dentro de los archivos JavaScript.
+> - **El 100% de los horarios y secciones debe obtenerse en tiempo real a través de Internet** (consumiendo directamente las hojas de Google Drive / Google Sheets / Cloud API).
+> - La **única fuente de verdad oficial** son los archivos de cálculo alojados en la carpeta de Google Drive institucional (`1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX`).
+> - Si se añade, modifica o cierra un curso en Google Drive, debe verse reflejado de inmediato a través de Internet en la web de consulta y en el panel administrativo.
+> - Si la aplicación está cargando los datos desde la red, debe mostrar un **estado de carga (loader o skeleton)** moderno, y no pintar datos simulados antiguos de archivos locales.
+
+---
+
+## 1. Contexto y Estado Actual del Proyecto
 
 Este repositorio (`uss-consulta-curso/`) es el portal web oficial para que los estudiantes de la USS consulten sus rutas de aprendizaje, asignaturas y secciones programadas por ciclo académico.
 
@@ -259,4 +270,73 @@ function doPost(e) {
 1. Conectar `ecosistema-cinf/src/services/horarioService.ts` y `HorariosManager.tsx` al webhook o endpoint de sincronización con Google Drive.
 2. Al ejecutar cualquier `createHorario` o `updateHorario`, despachar la actualización al webhook de Drive para mantener el Excel de la carpeta `1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX` 100% al día.
 3. Asegurar que `uss-consulta-curso` consuma tanto la hoja publicada de Noviembre como las nuevas hojas que se generen para Enero, Febrero, etc.
+
+---
+
+## 8. Flujo Asistido con "Claude for Chrome" para Crear el Excel Directamente en Google Drive
+
+> 🚀 **VENTAJA CLAVE:** Como tienes activa la extensión **Claude for Chrome**, Claude puede interactuar directamente con tu navegador para realizar la creación y configuración paso a paso en tu Google Drive. Tú solo autorizas o pones tus credenciales institucionales.
+
+### Procedimiento Guiado para Claude for Chrome:
+1. **Navegación a la Carpeta Oficial:**
+   - Claude debe abrir la pestaña del navegador en:  
+     `https://drive.google.com/drive/u/1/folders/1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX`
+2. **Creación del Archivo de Horarios Oficial:**
+   - Hacer clic en el botón `+ Nuevo` > `Hojas de cálculo de Google` (o duplicar la hoja existente `CINF 202602 NOVIEMBRE.xlsx`).
+   - Nombrar el archivo según la nomenclatura estándar del Centro de Informática:  
+     `CINF 202701 ENERO` (o una hoja consolidada `CINF HORARIOS OFICIALES` con pestañas por ciclo: `202602 NOV`, `202701 ENE`).
+3. **Estructura de Columnas Oficiales (Fila 1 o Fila 2):**
+   - Asegurar que la hoja tenga las 14 columnas requeridas por el parser:
+     ```text
+     A: PERIODO
+     B: MES
+     C: MODALIDAD
+     D: PLAN DE ESTUDIO
+     E: CURSO
+     F: SECCION
+     G: MAT
+     H: PREMAT
+     I: DOCENTE
+     J: ESTADO
+     K: TURNO
+     L: DIAS
+     M: HORA INICIO
+     N: HORA FIN
+     ```
+   - Poblar las secciones aperturadas (`ESTADO = APERTURADO`) para el ciclo correspondiente (ej. Enero 2027).
+4. **Publicación en la Web en Formato CSV:**
+   - En Google Sheets, ir al menú: `Archivo` > `Compartir` > `Publicar en la web`.
+   - Seleccionar la hoja a publicar y cambiar el formato de `Página web` a:  
+     **`Valores separados por comas (.csv)`**.
+   - Marcar obligatoriamente la casilla:  
+     **☑️ Volver a publicar automáticamente cuando se realicen cambios**.
+   - Hacer clic en **Publicar** y copiar el enlace generado (ejemplo: `https://docs.google.com/spreadsheets/d/e/.../pub?output=csv`).
+5. **Vinculación en el Código:**
+   - Pegar el nuevo enlace publicado en `assets/js/config.js`:
+     ```javascript
+     window.GOOGLE_SHEETS_URL = '<NUEVA_URL_PUBLICADA_CSV_DE_GOOGLE_DRIVE>';
+     ```
+
+---
+
+## 9. ELIMINACIÓN DE DATOS LOCALES: 100% POR INTERNET (NADA DE LOCAL)
+
+> 🔴 **ORDEN EXPRESA DEL USUARIO:** **Eliminar todos los datos locales quemados en el código. Toda la consulta y gestión debe operar 100% a través de Internet desde Google Drive.**
+
+### Tareas concretas de limpieza y arquitectura online:
+1. **Vaciar el catálogo estático en `assets/js/datos.js`:**
+   - El arreglo `catalogo.horarios` debe quedar **vacío** `[]`:
+     ```javascript
+     horarios: [], // Vacío: se carga exclusivamente desde Google Drive a través de Internet
+     ```
+   - No mantener arrays quemados de secciones ni horarios locales. Las carreras, rutas y ciclos se conservan como metadatos estructurales, pero las secciones programadas deben fluir exclusivamente desde la nube.
+2. **Estado de Carga (Loading State / Skeleton) en `index.html` y `horarios.html`:**
+   - Mientras `fetch(GOOGLE_SHEETS_URL)` descarga los datos de Internet:
+     - Mostrar un indicador visual elegante: *"Conectando con Google Drive y cargando horarios en tiempo real..."* con un spinner o tarjetas en esqueleto (*skeleton loader*).
+   - En cuanto el CSV o JSON de Google Drive se descarga y procesa, renderizar los ciclos aperturados de inmediato.
+3. **Manejo de Errores de Red Limpio:**
+   - Si no hay conexión a Internet o Google Drive no responde, mostrar una alerta clara con un botón de **"Reintentar conexión"** y el botón directo de WhatsApp de soporte. **NUNCA recurrir a datos locales simulados o desfasados.**
+4. **Desconexión progresiva de Supabase:**
+   - Configurar la arquitectura para que Google Drive sea la base de datos operativa principal del sistema para alumnos y coordinadores.
+
 
