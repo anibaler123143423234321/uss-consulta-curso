@@ -166,3 +166,97 @@ uss-consulta-curso/
 4. **Respeta los atributos de accesibilidad (`aria-checked`, `role="radio"`, `aria-label`)** en las tarjetas de selección de modelo y botones de ciclo.
 5. **No uses estilos inline innecesarios (`style="..."`)**; todas las nuevas reglas deben estar encapsuladas en `estilos.css`.
 6. **Al terminar, verifica que el código compile sin errores** (`node --check assets/js/*.js`), comprueba que el layout sea 100% fluido en 360px de ancho y reporta un resumen claro de las mejoras visuales implementadas.
+
+---
+
+## 7. Módulo de Integración con Google Drive: Sincronización Bidireccional y Creación Automática de Hojas
+
+> 📌 **OBJETIVO ESTRATÉGICO:** La institución migrará progresivamente de Supabase hacia Google Drive como fuente de verdad oficial para los horarios de cursos.
+
+### Especificaciones de la Carpeta de Google Drive:
+- **URL de la Carpeta:** `https://drive.google.com/drive/u/1/folders/1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX`
+- **ID de la Carpeta en Drive:** `1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX`
+- **Ruta institucional:** `Compartido conmigo > CINF GEX > CURSOS`
+
+### Requerimientos Funcionales de Sincronización:
+1. **Edición en Google Sheets -> Reflejo en el Panel Administrativo y Portal Web:**
+   - Cuando un coordinador o docente edita una sección en el archivo de Google Drive (ej. cambia horario, aula o docente), el cambio debe reflejarse en tiempo real en el Panel Administrativo (`ecosistema-cinf/src/components/admin/HorariosManager.tsx`) y en el portal de alumnos (`uss-consulta-curso`).
+2. **Edición en el Panel Administrativo -> Actualización en Google Drive en Tiempo Real:**
+   - Cuando en `HorariosManager.tsx` se agrega, modifica o elimina una sección o se asigna un docente, la acción debe impactar y actualizar la fila correspondiente en la hoja de Google Drive de forma instantánea.
+3. **Creación Automática de Archivos para Ciclos Nuevos:**
+   - Si no existe el archivo de un ciclo (por ejemplo, para abrir `CINF 202701 ENERO` o `CINF 202702 FEBRERO`), el sistema debe crear automáticamente la hoja de cálculo dentro de la carpeta con ID `1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX`.
+   - La nueva hoja debe crearse con la estructura y cabeceras oficiales:
+     ```text
+     PERIODO | MES | MODALIDAD | PLAN DE ESTUDIO | CURSO | SECCION | MAT | PREMAT | DOCENTE | ESTADO | TURNO | DIAS | HORA INICIO | HORA FIN
+     ```
+
+### Solución Recomendada: Google Apps Script Webhook (Microservicio Serverless)
+Para habilitar lectura y escritura en la carpeta privada de Google Drive sin requerir credenciales complejas de Google Cloud ni facturación, se recomienda desplegar un **Google Apps Script Web App** asociado a la carpeta:
+
+```javascript
+/**
+ * Google Apps Script: CINF Google Drive Synchronizer
+ * Carpeta Destino: 1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX
+ */
+const FOLDER_ID = '1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX';
+
+function doGet(e) {
+  const ciclo = (e.parameter.ciclo || 'noviembre').toUpperCase();
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  const files = folder.getFiles();
+  let targetSheet = null;
+
+  while (files.hasNext()) {
+    const file = files.next();
+    if (file.getName().toUpperCase().includes(ciclo)) {
+      targetSheet = SpreadsheetApp.open(file);
+      break;
+    }
+  }
+
+  if (!targetSheet) {
+    return ContentService.createTextOutput(JSON.stringify({ error: 'Hoja no encontrada para el ciclo ' + ciclo }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const sheet = targetSheet.getSheets()[0];
+  const data = sheet.getDataRange().getValues();
+  return ContentService.createTextOutput(JSON.stringify({ success: true, data: data }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  const payload = JSON.parse(e.postData.contents);
+  const action = payload.action; // 'create_sheet', 'upsert_section', 'delete_section'
+  const ciclo = (payload.ciclo || 'ENERO').toUpperCase();
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+
+  if (action === 'create_sheet') {
+    const fileName = 'CINF 202701 ' + ciclo;
+    const newSheet = SpreadsheetApp.create(fileName);
+    const sheetFile = DriveApp.getFileById(newSheet.getId());
+    folder.addFile(sheetFile);
+    DriveApp.getRootFolder().removeFile(sheetFile);
+
+    const sheet = newSheet.getSheets()[0];
+    sheet.appendRow([
+      'PERIODO', 'MES', 'MODALIDAD', 'PLAN DE ESTUDIO', 'CURSO',
+      'SECCION', 'MAT', 'PREMAT', 'DOCENTE', 'ESTADO', 'TURNO',
+      'DIAS', 'HORA INICIO', 'HORA FIN'
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({ success: true, fileId: newSheet.getId() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Lógica de upsert_section en la hoja correspondiente
+  // Busca por SECCION y actualiza o inserta nueva fila
+  return ContentService.createTextOutput(JSON.stringify({ success: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+### Pasos para Claude Code al implementar la sincronización:
+1. Conectar `ecosistema-cinf/src/services/horarioService.ts` y `HorariosManager.tsx` al webhook o endpoint de sincronización con Google Drive.
+2. Al ejecutar cualquier `createHorario` o `updateHorario`, despachar la actualización al webhook de Drive para mantener el Excel de la carpeta `1Fin2Z5dCGVTeQe7tReP0oshA0L7m3iiX` 100% al día.
+3. Asegurar que `uss-consulta-curso` consuma tanto la hoja publicada de Noviembre como las nuevas hojas que se generen para Enero, Febrero, etc.
+
