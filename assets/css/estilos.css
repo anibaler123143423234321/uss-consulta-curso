@@ -389,6 +389,20 @@ a {
     letter-spacing: -0.025em;
 }
 
+/* Igual que la portada de GEX: sobretítulo dorado y la segunda línea del título en dorado */
+.hero__eyebrow {
+    color: var(--uss-oro);
+    font-size: var(--t-sm);
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.hero__resalte {
+    display: block;
+    color: var(--uss-oro);
+}
+
 .hero__lead {
     max-width: 52ch;
     color: rgb(255 255 255 / .86);
@@ -2380,5 +2394,64 @@ body:has(.hero[data-enter]) {
     .conoce-ruta__flecha,
     .conoce-ruta__punto {
         transition: none;
+    }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Header de la portada idéntico al de GEX (informatica-uss.vercel.app/gex/):
+   76 px de alto, logo de 44 px (36 px en celular) y botón blanco «Ir al Portal CINF».
+   Así, al pasar de GEX a Consulta de cursos el header no salta.
+   --------------------------------------------------------------------------- */
+.nav--sobre-azul {
+    background: var(--uss-azul);
+}
+
+.nav--sobre-azul .nav__fila {
+    min-height: 76px;
+}
+
+.nav--sobre-azul .nav__marca img {
+    height: 44px;
+}
+
+.btn--blanco {
+    padding: 0 16px;
+    border-color: #ffffff;
+    border-radius: 12px;
+    background: #ffffff;
+    color: var(--uss-azul);
+    font-weight: 600;
+}
+
+.btn--blanco:hover {
+    border-color: #eff6ff;
+    background: #eff6ff;
+}
+
+.nav__texto-corto {
+    display: none;
+}
+
+/* La regla general de 767 px oculta el texto largo; en este header manda el corte de GEX (640 px) */
+.nav--sobre-azul .nav__texto-largo {
+    display: inline;
+}
+
+@media (max-width: 639px) {
+    .nav--sobre-azul .nav__marca img {
+        height: 36px;
+    }
+
+    .btn--blanco {
+        padding: 0 12px;
+    }
+
+    .nav--sobre-azul .nav__texto-largo {
+        display: none;
+    }
+
+    .nav--sobre-azul .nav__texto-corto {
+        display: inline;
     }
 }
