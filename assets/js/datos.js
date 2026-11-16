@@ -153,16 +153,16 @@ window.CONSULTA_CURSOS = {
       titulo: 'Plan Tradicional (Computación I, II y III)',
       subtitulo: 'Para estudiantes con niveles previos que culminan su plan',
       badge: 'Estudiantes Anteriores',
-      descripcion: 'Para estudiantes que ya cursaron Computación I o II y necesitan terminar Computación II, III o Taller de Certificación.',
+      descripcion: 'Para estudiantes que ya cursaron Computación I o II y necesitan terminar Computación II o III.',
     },
   ],
 
-  // Cursos pertenecientes al Plan Tradicional (Computación I, II, III y Taller)
+  // Cursos del Plan Tradicional: solo Computación I, II y III.
+  // El taller de certificación es de PROTECH XP (3 cursos + 1 taller), nunca de este plan.
   cursosTradicionales: [
     'Computación I',
     'Computación II',
     'Computación III',
-    'Taller de Certificación Internacional',
   ],
 
   // Mantener cursosParaTodos como alias para retrocompatibilidad
@@ -170,15 +170,15 @@ window.CONSULTA_CURSOS = {
     'Computación I',
     'Computación II',
     'Computación III',
-    'Taller de Certificación Internacional',
   ],
 
   // Grupos por especialidad: la sección lleva la sigla o el nombre y solo la ve esa carrera
+  // El plan «PAC <carrera>» de la hoja también marca la sección con su etiqueta: «PEAD b (Sistemas)».
   especialidades: [
-    { patron: /\bCIV\b|Civil/i, carreras: ['Ingeniería Civil'] },
-    { patron: /\bSIST\b|Sistemas/i, carreras: ['Ingeniería de Sistemas', 'Ingeniería de Software'] },
-    { patron: /\bMEC\b|Mec[aá]nica/i, carreras: ['Ingeniería Mecánica Eléctrica'] },
-    { patron: /\bARQ\b|Arquitectura/i, carreras: ['Arquitectura', 'Arquitectura y Diseño de Interiores'] },
+    { patron: /\bCIV\b|Civil/i, etiqueta: 'Civil', carreras: ['Ingeniería Civil'] },
+    { patron: /\bSIST\b|Sistemas/i, etiqueta: 'Sistemas', carreras: ['Ingeniería de Sistemas', 'Ingeniería de Software'] },
+    { patron: /\bMEC\b|Mec[aá]nica/i, etiqueta: 'Mecánica', carreras: ['Ingeniería Mecánica Eléctrica'] },
+    { patron: /\bARQ\b|Arquitectura/i, etiqueta: 'Arquitectura', carreras: ['Arquitectura', 'Arquitectura y Diseño de Interiores'] },
   ],
 
   // Calendario oficial de clases por ciclo (metadato estructural, NO son horarios).
@@ -205,6 +205,18 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
   const grupo = window.CONSULTA_CURSOS.especialidades.find((e) => e.patron.test(seccion || ''));
   return !grupo || grupo.carreras.includes(carrera);
 };
+
+/**
+ * ¿La fila se muestra a esta carrera? Sección de especialidad y, si la hoja dice
+ * «PAC <carrera>» con una carrera sin sigla propia, solo a esa carrera (soloCarreras).
+ */
+window.CONSULTA_CURSOS.filaVisible = (fila, carrera) => {
+  if (Array.isArray(fila.soloCarreras) && !fila.soloCarreras.includes(carrera)) return false;
+  return window.CONSULTA_CURSOS.seccionVisible(fila.seccion, carrera);
+};
+
+/** Talleres de certificación (TALLER EXCEL 2019, TALLER WORD 2019…): PROTECH XP, para toda carrera. */
+window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(String(curso || '').trim());
 
 
 /**
@@ -322,7 +334,11 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
   function normalizarNombreCurso(raw) {
     const n = normalizarCabecera(raw);
     const compact = n.replace(/\s+/g, '');
-    if (compact.includes('taller') || compact.includes('certificacion')) return 'Taller de Certificación Internacional';
+    // Taller de certificación: se respeta su nombre en la hoja («TALLER EXCEL 2019» → «Taller Excel 2019»)
+    if (compact.startsWith('taller') || compact.includes('certificacion')) {
+      const nombre = raw.trim().toLowerCase().replace(/(^|\s)\S/g, (l) => l.toUpperCase());
+      return /^taller\b/i.test(nombre) ? nombre : `Taller ${nombre}`;
+    }
     if (compact.includes('computacioniii') || compact.includes('computacion3')) return 'Computación III';
     if (compact.includes('computacionii') || compact.includes('computacion2')) return 'Computación II';
     if (compact.includes('computacioni') || compact.includes('computacion1')) return 'Computación I';
@@ -355,10 +371,12 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     const cursosTrad = catalogo.cursosTradicionales || [];
     const esTradicional =
       cursosTrad.some((nombre) => normalizarCabecera(nombre) === normalizarCabecera(cursoNormalizado)) ||
-      /computacion\s*(i|ii|iii|1|2|3)|taller de certificacion/i.test(cursoNormalizado);
+      /computacion\s*(i|ii|iii|1|2|3)/i.test(normalizarCabecera(cursoNormalizado));
     const ciclo = normalizarCiclo(obtener(registro, ['Ciclo', 'Mes', 'Periodo']));
+    // Matriculados (columna MAT): vacío = sin dato. 0 es un dato real y se muestra.
     const cuposRaw = obtener(registro, ['Cupos', 'Vacantes', 'Capacidad', 'MAT']);
-    const cupos = cuposRaw === '' ? 30 : Number(cuposRaw.replace(/[^\d.-]/g, ''));
+    const cuposNumero = cuposRaw === '' ? NaN : Number(cuposRaw.replace(/[^\d.-]/g, ''));
+    const cupos = Number.isFinite(cuposNumero) && cuposNumero >= 0 ? cuposNumero : null;
 
     const plan = obtener(registro, ['Plan de Estudio', 'Plan', 'Programa', 'Modelo']);
     const planNorm = normalizarCabecera(plan);
@@ -367,13 +385,27 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
       planNorm.includes('pac') ||
       planNorm.includes('computacion') ||
       planNorm.includes('acreditacion');
-    const modeloCalculado = (esTradicional || esPlanTrad) ? 'tradicional' : 'protech';
+    // El taller de certificación nunca es Plan Tradicional, aunque la hoja lo ponga en un plan PAC
+    const esTaller = /^taller\b/i.test(cursoNormalizado);
+    const modeloCalculado = !esTaller && (esTradicional || esPlanTrad) ? 'tradicional' : 'protech';
 
+    // Plan «PAC <carrera>»: la sección es solo de esa carrera.
+    // Con sigla conocida (Civil, Sistemas, Mecánica, Arquitectura) se marca la sección: «PEAD b (Sistemas)».
+    // Con otra carrera, se guarda la lista de carreras que la pueden ver (soloCarreras).
     let seccion = seccionRaw.replace(/^PEAD-/i, 'PEAD ').trim();
-    if (plan.toLowerCase().includes('mecánica') && !seccion.includes('Mecánica')) {
-      seccion = `${seccion} (Mecánica)`;
-    } else if (plan.toLowerCase().includes('arquitectura') && !seccion.includes('Arquitectura')) {
-      seccion = `${seccion} (Arquitectura)`;
+    let soloCarreras = null;
+    const grupoPlan = (catalogo.especialidades || []).find((e) => e.patron.test(plan));
+    if (grupoPlan) {
+      if (!grupoPlan.patron.test(seccion)) seccion = `${seccion} (${grupoPlan.etiqueta})`;
+    } else if (/^pac\b/.test(planNorm)) {
+      const carreraPlan = planNorm.replace(/^pac\b/, '').replace(/\bing\b\.?/g, 'ingenieria').replace(/[^a-z0-9]+/g, ' ').trim();
+      const todas = [...new Set((catalogo.rutas || []).flatMap((r) => r.carreras))];
+      const coinciden = todas.filter((c) => {
+        const n = normalizarCabecera(c).replace(/[^a-z0-9]+/g, ' ').trim();
+        return carreraPlan && (n === carreraPlan || n.includes(carreraPlan) || carreraPlan.includes(n));
+      });
+      // Si no se reconoce la carrera del plan, la sección no se muestra a nadie (mejor que a todos)
+      soloCarreras = coinciden.length ? coinciden : [];
     }
 
     let horario = obtener(registro, ['Horario']);
@@ -395,8 +427,9 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     if (normalizarCabecera(aula).includes('virtual')) aula = 'Virtual · Zoom';
     else if (normalizarCabecera(aula).includes('presencial')) aula = 'Presencial · Elías Aguirre 933';
 
-    // Fechas: 1) columnas FECHA INICIO / FECHA FIN de la hoja; 2) calendario oficial del ciclo;
-    // 3) vacío → la interfaz muestra «Por confirmar». Nunca se inventan fechas de otro ciclo.
+    // Fechas: 1) columnas FECHA INICIO / FECHA FIN de la hoja; 2) calendario oficial del ciclo
+    // (el mismo que muestran las tarjetas de ciclo en la portada); 3) vacío → «Por confirmar».
+    // La hoja actual no trae columnas de fecha, por eso rige el calendario del ciclo.
     const anio = anioDeRegistro(registro, ciclo);
     const calendario = (catalogo.calendarioCiclos || {})[`${anio}-${ciclo}`] || {};
     const inicio =
@@ -416,15 +449,18 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
       estado,
       inicio,
       fin,
-      turno: turno || 'Noche',
-      dias: dias || 'Lunes y miércoles',
-      horario: horario || '07:00 p. m. – 10:30 p. m.',
-      aula: aula || 'Virtual · Zoom',
-      cupos: Number.isFinite(cupos) && cupos > 0 ? cupos : 30,
-      cuposDisponibles: 25,
-      cuposTotal: Number.isFinite(cupos) && cupos > 0 ? cupos : 30,
+      // Celda vacía en la hoja = campo vacío aquí: la tabla muestra «—» o «por confirmar»,
+      // nunca un valor de ejemplo (antes: Noche, Lunes y miércoles, 07:00 p. m., 30 matriculados).
+      turno: turno || '',
+      dias: dias || '',
+      horario: horario || '',
+      aula: aula || '',
+      cupos,
+      cuposDisponibles: null,
+      cuposTotal: cupos,
       docente: obtener(registro, ['Docente', 'Docente asignado']),
       linkAula: obtener(registro, ['Link Aula', 'Enlace', 'URL Aula']) || null,
+      soloCarreras,
     };
   }
 

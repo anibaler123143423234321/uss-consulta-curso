@@ -559,6 +559,7 @@ a {
 
 .carrera-combobox__dropdown {
     color: var(--ink);
+    overscroll-behavior: contain;
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
@@ -684,13 +685,25 @@ a {
 
 .card-modelo-opcion__iconos {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 6px;
+    padding-right: 32px; /* deja libre el círculo de selección */
 }
 
 .card-modelo-opcion__iconos img {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
+}
+
+/* Plan Tradicional: dos íconos con la sigla (CII, CIII), más grandes para que se lea */
+.card-modelo-opcion__iconos--grandes {
+    gap: 10px;
+}
+
+.card-modelo-opcion__iconos--grandes img {
+    width: 40px;
+    height: 40px;
 }
 
 .card-modelo-opcion__titulo {
@@ -1370,7 +1383,7 @@ select.campo.filtro-activo {
 
 .carga__fila {
     display: grid;
-    grid-template-columns: 24px 1.5fr .6fr .8fr .8fr .6fr 1fr .5fr 1.3fr .9fr;
+    grid-template-columns: 24px 1.5fr .6fr .8fr .8fr .6fr 1fr .5fr;
     align-items: center;
     gap: 20px;
     min-height: 60px;
@@ -2135,4 +2148,237 @@ html:not([data-motion="off"]) .field :is(input, select, textarea):focus, .m-inpu
   html:not([data-motion="off"]) .btn--secondary:active { background: color-mix(in oklab, var(--bg) 86%, var(--ink)); }
   [data-m-loop] * { animation-duration: var(--m-cycle) !important; animation-iteration-count: infinite !important;
                     animation-delay: calc(-1 * var(--m-still) * var(--m-cycle)) !important; animation-play-state: paused !important; }
+}
+
+/* Portada: si la lista de carreras hace bajar la página, debajo del hero sigue el azul (no una franja gris) */
+body:has(.hero[data-enter]) {
+    background: var(--uss-azul);
+}
+
+/* Espaciador invisible bajo la lista abierta: deja 16px de aire al bajar la página */
+.carrera-combobox:has(.carrera-combobox__wrap.abierto)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    top: calc(100% + 6px + var(--alto-lista, 0px) + 16px);
+    pointer-events: none;
+}
+
+
+/* --- Conoce tu ruta: carrusel a mano con las imágenes oficiales de las rutas --- */
+.conoce-ruta {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg);
+}
+
+.conoce-ruta[hidden] {
+    display: none;
+}
+
+/* Cabecera clicable (igual que las preguntas frecuentes): abre y cierra el carrusel */
+.conoce-ruta__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 56px;
+    padding: 14px 16px;
+    border-radius: var(--r);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 150ms var(--ease);
+}
+
+.conoce-ruta__summary::-webkit-details-marker {
+    display: none;
+}
+
+.conoce-ruta__summary:hover {
+    background: #f8f9fc;
+}
+
+.conoce-ruta__texto {
+    display: block;
+}
+
+.conoce-ruta__chevron {
+    flex-shrink: 0;
+    color: var(--muted);
+    transition: transform 150ms var(--ease);
+}
+
+.conoce-ruta[open] .conoce-ruta__chevron {
+    transform: rotate(180deg);
+}
+
+.conoce-ruta__cuerpo {
+    padding: 4px 16px 20px;
+}
+
+.conoce-ruta__cuerpo .conoce-ruta__flechas {
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.conoce-ruta__titulo {
+    font-size: var(--t-base);
+    font-weight: 700;
+}
+
+.conoce-ruta__texto {
+    max-width: 62ch;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: var(--t-sm);
+}
+
+.conoce-ruta__flechas {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.conoce-ruta__flecha {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 140ms var(--ease), background-color 140ms var(--ease), border-color 140ms var(--ease);
+}
+
+.conoce-ruta__flecha:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--uss-azul);
+    background: var(--uss-azul-50);
+}
+
+.conoce-ruta__flecha:active:not(:disabled) {
+    transform: translateY(1px) scale(.97);
+}
+
+.conoce-ruta__flecha:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.conoce-ruta__pista {
+    position: relative; /* las imágenes miden su posición desde la pista */
+    display: grid;
+    grid-auto-columns: 100%;
+    grid-auto-flow: column;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: var(--r-sm);
+}
+
+.conoce-ruta__pista::-webkit-scrollbar {
+    display: none;
+}
+
+.conoce-ruta__pista:focus-visible {
+    outline: 3px solid var(--uss-oro);
+    outline-offset: 3px;
+}
+
+.conoce-ruta__slide {
+    position: relative;
+    height: clamp(220px, 58vh, 560px);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: #fff;
+    scroll-snap-align: start;
+    overflow: hidden;
+}
+
+.conoce-ruta__slide img {
+    position: absolute;
+    inset: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    object-fit: contain;
+}
+
+.conoce-ruta__puntos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.conoce-ruta__punto {
+    position: relative;
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-2);
+    font: inherit;
+    font-size: var(--t-xs);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 140ms var(--ease), background-color 140ms var(--ease), color 140ms var(--ease), border-color 140ms var(--ease);
+}
+
+.conoce-ruta__punto:hover {
+    transform: translateY(-1px);
+    border-color: var(--line-strong);
+}
+
+.conoce-ruta__punto:active {
+    transform: translateY(1px);
+}
+
+/* La ruta de la carrera lleva un punto dorado */
+.conoce-ruta__punto.es-tu-ruta::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+    background: var(--uss-oro);
+}
+
+.conoce-ruta__punto[aria-current="true"] {
+    border-color: var(--uss-azul);
+    background: var(--uss-azul);
+    color: #fff;
+}
+
+/* Tocar la imagen la abre completa en otra pestaña (útil en celular para leer la tabla) */
+.conoce-ruta__abrir {
+    display: block;
+    cursor: zoom-in;
+}
+
+@media (max-width: 639px) {
+    .conoce-ruta__slide {
+        height: auto;
+        aspect-ratio: 16 / 10;
+    }
+
+    .conoce-ruta__flechas {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .conoce-ruta__flecha,
+    .conoce-ruta__punto {
+        transition: none;
+    }
 }

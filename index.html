@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Horarios del Centro de Informática USS | Consulta de cursos</title>
     <meta name="description"
-        content="Elige tu carrera de la Universidad Señor de Sipán y consulta las secciones abiertas del Centro de Informática: turno, días, docente y enlace al aula virtual." />
+        content="Elige tu carrera de la Universidad Señor de Sipán y consulta las secciones abiertas del Centro de Informática: turno, días y matriculados." />
     <meta name="page-type" content="service" />
     <meta name="site-kind" content="other" />
     <meta name="theme-color" content="#073299" />
@@ -27,7 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/estilos.css?v=61" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=68" />
     <script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
 </head>
 
@@ -56,15 +56,62 @@
             <div class="wrap"><div class="hero-text hero__grid">
                 <div class="hero__texto">
                     <h1 id="hero-h">Horarios del Centro de Informática USS</h1>
-                    <p class="hero__lead">27 carreras en 7 rutas de aprendizaje. Elige la tuya y ve cada sección
-                        abierta con su turno, días, docente y enlace al aula virtual.</p>
+                    <p class="hero__lead">27 carreras en 7 rutas de aprendizaje. Elige tu modelo y tu carrera, y ve
+                        cada sección abierta con su turno, días y matriculados.</p>
 
                     <!-- La herramienta: los tres pasos viven en este panel -->
                     <div class="herramienta" id="tarjeta-carrera">
 
-                        <!-- PASO 1: Carrera -->
-                        <div id="vista-carrera">
-                            <label class="campo__etiqueta" for="input-carrera-principal">Tu carrera profesional</label>
+                        <!-- PASO 1: Modelo de acreditación (va primero: define qué cursos se muestran) -->
+                        <div class="paso paso-modelo" id="paso-modelo">
+                            <p class="paso__titulo" id="titulo-modelo">
+                                <span class="paso__num" aria-hidden="true">1</span>
+                                ¿Qué modelo de acreditación llevas?
+                            </p>
+                            <div class="selector-modelo-grid" role="radiogroup" aria-labelledby="titulo-modelo">
+                                <div class="card card-modelo-opcion" id="opcion-modelo-protech"
+                                    data-modelo="protech" role="radio" aria-checked="false" tabindex="0">
+                                    <span class="card-modelo-opcion__check" aria-hidden="true"></span>
+                                    <span class="card-modelo-opcion__iconos" aria-hidden="true">
+                                        <img src="assets/img/cursos/word.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/excel.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/canva.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/power-bi.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/project.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/bizagi.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/base-datos.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/spss.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/matlab.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/autocad.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/sketchup.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/revit.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/solidworks.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/diseno-web.svg" alt="" width="24" height="24" />
+                                        <img src="assets/img/cursos/taller.svg" alt="" width="24" height="24" />
+                                    </span>
+                                    <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
+                                    <span class="card-modelo-opcion__desc">3 cursos + 1 taller de certificación.</span>
+                                </div>
+
+                                <div class="card card-modelo-opcion" id="opcion-modelo-tradicional"
+                                    data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
+                                    <span class="card-modelo-opcion__check" aria-hidden="true"></span>
+                                    <span class="card-modelo-opcion__iconos card-modelo-opcion__iconos--grandes" aria-hidden="true">
+                                        <img src="assets/img/cursos/computacion-ii.svg" alt="" width="40" height="40" />
+                                        <img src="assets/img/cursos/computacion-iii.svg" alt="" width="40" height="40" />
+                                    </span>
+                                    <strong class="card-modelo-opcion__titulo">Plan Tradicional</strong>
+                                    <span class="card-modelo-opcion__desc">Computación II y Computación III.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PASO 2: Carrera (aparece al elegir el modelo) -->
+                        <div class="paso" id="vista-carrera" hidden>
+                            <p class="paso__titulo">
+                                <span class="paso__num" aria-hidden="true">2</span>
+                                <label for="input-carrera-principal">¿Cuál es tu carrera?</label>
+                            </p>
                             <div class="buscador-fila">
                             <div class="carrera-combobox" id="carrera-combobox">
                                 <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
@@ -89,11 +136,11 @@
                             <button type="button" class="btn btn--primary btn--lg" id="btn-buscar-carrera">Ver mis
                                 horarios</button>
                             </div>
-                            <p class="campo__ayuda">Después eliges tu modelo de acreditación y el ciclo.</p>
+                            <p class="campo__ayuda">Después eliges el ciclo y ves sus horarios.</p>
                         </div>
 
-                        <!-- PASOS 2 y 3: aparecen en el mismo panel al elegir la carrera -->
-                        <div id="vista-ciclos" hidden>
+                        <!-- PASO 3: aparece en el mismo panel al elegir la carrera -->
+                        <div class="paso" id="vista-ciclos" hidden>
                             <div class="carrera-seleccionada-barra">
                                 <div>
                                     <span class="carrera-seleccionada-barra__tag">Tu carrera</span>
@@ -103,40 +150,6 @@
                                 <button type="button" class="btn btn--claro btn--sm" id="btn-cambiar-carrera">
                                     Cambiar carrera
                                 </button>
-                            </div>
-
-                            <!-- PASO 2: Modelo de acreditación -->
-                            <div class="paso paso-modelo">
-                                <p class="paso__titulo" id="titulo-modelo">
-                                    <span class="paso__num" aria-hidden="true">2</span>
-                                    ¿Qué modelo de acreditación llevas?
-                                </p>
-                                <div class="selector-modelo-grid" role="radiogroup" aria-labelledby="titulo-modelo">
-                                    <div class="card card-modelo-opcion" id="opcion-modelo-protech"
-                                        data-modelo="protech" role="radio" aria-checked="false" tabindex="0">
-                                        <span class="card-modelo-opcion__check" aria-hidden="true"></span>
-                                        <span class="card-modelo-opcion__iconos" aria-hidden="true">
-                                            <img src="assets/img/cursos/word.svg" alt="" width="28" height="28" />
-                                            <img src="assets/img/cursos/excel.svg" alt="" width="28" height="28" />
-                                            <img src="assets/img/cursos/canva.svg" alt="" width="28" height="28" />
-                                        </span>
-                                        <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
-                                        <span class="card-modelo-opcion__desc">Nunca llevaste cursos de computación en
-                                            la USS o sigues la ruta de tu carrera.</span>
-                                    </div>
-
-                                    <div class="card card-modelo-opcion" id="opcion-modelo-tradicional"
-                                        data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
-                                        <span class="card-modelo-opcion__check" aria-hidden="true"></span>
-                                        <span class="card-modelo-opcion__iconos" aria-hidden="true">
-                                            <img src="assets/img/cursos/computacion.svg" alt="" width="28" height="28" />
-                                            <img src="assets/img/cursos/taller.svg" alt="" width="28" height="28" />
-                                        </span>
-                                        <strong class="card-modelo-opcion__titulo">Plan Tradicional</strong>
-                                        <span class="card-modelo-opcion__desc">Ya aprobaste Computación I o II y te
-                                            falta Computación II o III.</span>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- PASO 3: Ciclo de apertura -->
@@ -172,8 +185,8 @@
 
     <!-- Datos (Google Drive) y lógica de selección -->
     <script src="assets/js/config.js?v=48"></script>
-    <script src="assets/js/datos.js?v=48"></script>
-    <script src="assets/js/index.js?v=60"></script>
+    <script src="assets/js/datos.js?v=51"></script>
+    <script src="assets/js/index.js?v=65"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.

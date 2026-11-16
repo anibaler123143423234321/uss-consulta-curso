@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Horarios por carrera | Centro de Informática USS</title>
     <meta name="description"
-        content="Secciones del Centro de Informática USS para tu carrera y ciclo: estado, fechas, turno, días, matriculados, docente y enlace al aula virtual." />
+        content="Secciones del Centro de Informática USS para tu carrera y ciclo: estado, fechas, turno, días y matriculados." />
     <meta name="page-type" content="service" />
     <meta name="site-kind" content="other" />
     <meta name="theme-color" content="#073299" />
@@ -14,7 +14,7 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Horarios por carrera · Centro de Informática USS" />
-    <meta property="og:description" content="Secciones abiertas con turno, días, docente y enlace al aula virtual." />
+    <meta property="og:description" content="Secciones abiertas con turno, días y matriculados." />
     <meta property="og:image" content="assets/img/campus-uss.jpg" />
     <meta property="og:locale" content="es_PE" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -25,7 +25,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/estilos.css?v=61" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=68" />
 </head>
 
 <body>
@@ -68,12 +68,12 @@
 
             <div class="filtros-horarios">
                 <label class="filtros-horarios__buscar">
-                    <span class="visually-hidden">Buscar curso, docente o sección</span>
+                    <span class="visually-hidden">Buscar curso o sección</span>
                     <svg class="icono icono--sm filtros-horarios__lupa" viewBox="0 0 24 24" aria-hidden="true">
                         <circle cx="11" cy="11" r="7" />
                         <path d="m20 20-3.5-3.5" />
                     </svg>
-                    <input type="search" class="campo" id="filtro-texto" placeholder="Curso, docente o sección"
+                    <input type="search" class="campo" id="filtro-texto" placeholder="Curso o sección"
                         autocomplete="off" />
                 </label>
                 <select class="campo" id="filtro-curso" aria-label="Filtrar por curso">
@@ -110,8 +110,7 @@
                             <th scope="col">Turno</th>
                             <th scope="col">Horario y días</th>
                             <th scope="col" class="col-centro">Matriculados</th>
-                            <th scope="col">Docente</th>
-                            <th scope="col" class="col-acceso">Acceso</th>
+                            <!-- <th scope="col">Docente</th> (oculta por ahora: MOSTRAR_DOCENTE en horarios.js) -->
                         </tr>
                     </thead>
                     <tbody id="filas-horarios"></tbody>
@@ -127,6 +126,63 @@
             </div>
         </section>
 
+        <!-- Conoce tu ruta: imágenes oficiales de las rutas PROTECH XP (solo en ese modelo).
+             Cerrado por defecto: el estudiante lo abre si quiere ver su ruta. -->
+        <details class="conoce-ruta" id="conoce-ruta">
+            <summary class="conoce-ruta__summary">
+                <span>
+                    <h2 class="conoce-ruta__titulo" id="titulo-conoce-ruta">Conoce tu ruta</h2>
+                    <span class="conoce-ruta__texto" id="conoce-ruta-texto">Llevas 3 cursos de tu ruta en el orden que quieras y
+                        terminas con 1 taller de certificación internacional.</span>
+                </span>
+                <svg class="icono conoce-ruta__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+            <div class="conoce-ruta__cuerpo" aria-roledescription="carrusel" aria-labelledby="titulo-conoce-ruta">
+                <div class="conoce-ruta__flechas">
+                    <button type="button" class="conoce-ruta__flecha" id="conoce-ruta-anterior" aria-label="Imagen anterior">
+                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
+                    </button>
+                    <button type="button" class="conoce-ruta__flecha" id="conoce-ruta-siguiente" aria-label="Imagen siguiente">
+                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                    </button>
+                </div>
+            <div class="conoce-ruta__pista" id="conoce-ruta-pista" tabindex="0" aria-label="Imágenes de las rutas; usa las flechas del teclado para pasar">
+                <div class="conoce-ruta__slide" data-rutas="" role="group" aria-roledescription="diapositiva" aria-label="1 de 5: PROTECH XP">
+                    <a class="conoce-ruta__abrir" href="assets/img/rutas/protech-xp.jpg" target="_blank" rel="noopener" tabindex="-1">
+                        <img src="assets/img/rutas/protech-xp.jpg?v=1" alt="Acreditación en Computación PROTECH XP: 3 cursos de tu ruta de aprendizaje más 1 taller de certificación internacional, o 4 talleres de certificación. Al terminar obtienes la certificación Microsoft Office Specialist." width="1600" height="905" loading="lazy" decoding="async" />
+                    </a>
+                </div>
+                <div class="conoce-ruta__slide" data-rutas="1,2" role="group" aria-roledescription="diapositiva" aria-label="2 de 5: Rutas 1 y 2">
+                    <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-1-2.jpg" target="_blank" rel="noopener" tabindex="-1">
+                        <img src="assets/img/rutas/rutas-1-2.jpg?v=1" alt="Agrupaciones 1 y 2. Salud: Word 365, Excel 365, Canva, Excel Asociado, SPSS y Base de datos científicos. Derecho, Psicología y Trabajo Social: Word 365, Excel 365, Canva, Word Asociado, Excel Asociado y SPSS. Ambas cierran con el Taller de Certificación Internacional." width="1600" height="887" loading="lazy" decoding="async" />
+                    </a>
+                </div>
+                <div class="conoce-ruta__slide" data-rutas="3,7" role="group" aria-roledescription="diapositiva" aria-label="3 de 5: Rutas 3 y 7">
+                    <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-3-7.jpg" target="_blank" rel="noopener" tabindex="-1">
+                        <img src="assets/img/rutas/rutas-3-7.jpg?v=1" alt="Agrupaciones 3 y 7. Empresariales: Word 365, Excel 365, Canva, Excel Asociado, Microsoft Project y Power BI. Diseño, Comunicación, Sistemas y Software: Word 365, Excel 365, Canva, Word Asociado, Excel Asociado y Diseño Web. Ambas cierran con el Taller de Certificación Internacional." width="1600" height="912" loading="lazy" decoding="async" />
+                    </a>
+                </div>
+                <div class="conoce-ruta__slide" data-rutas="4,5" role="group" aria-roledescription="diapositiva" aria-label="4 de 5: Rutas 4 y 5">
+                    <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-4-5.jpg" target="_blank" rel="noopener" tabindex="-1">
+                        <img src="assets/img/rutas/rutas-4-5.jpg?v=1" alt="Agrupaciones 4 y 5. Arquitectura, Civil y Diseño de Interiores: Excel Asociado, AutoCAD 2D y 3D, Sketchup, Microsoft Project y Revit. Sistemas, Software e Industrial: Excel Asociado, AutoCAD 2D y 3D, Bizagi, Diseño Web y Power BI. Ambas cierran con el Taller de Certificación Internacional." width="1600" height="888" loading="lazy" decoding="async" />
+                    </a>
+                </div>
+                <div class="conoce-ruta__slide" data-rutas="6" role="group" aria-roledescription="diapositiva" aria-label="5 de 5: Ruta 6">
+                    <a class="conoce-ruta__abrir" href="assets/img/rutas/ruta-6.jpg" target="_blank" rel="noopener" tabindex="-1">
+                        <img src="assets/img/rutas/ruta-6.jpg?v=1" alt="Agrupación 6. Mecánica Eléctrica, Civil y Arquitectura: Excel Asociado, AutoCAD 2D y 3D, SolidWorks, MatLab y Diseño Mecánico con AutoCAD 3D, más el Taller de Certificación Internacional." width="1600" height="594" loading="lazy" decoding="async" />
+                    </a>
+                </div>
+            </div>
+            <div class="conoce-ruta__puntos" id="conoce-ruta-puntos">
+                <button type="button" class="conoce-ruta__punto" data-indice="0" data-rutas="" aria-label="Ver PROTECH XP">PROTECH XP</button>
+                <button type="button" class="conoce-ruta__punto" data-indice="1" data-rutas="1,2" aria-label="Ver Rutas 1 y 2">Rutas 1 y 2</button>
+                <button type="button" class="conoce-ruta__punto" data-indice="2" data-rutas="3,7" aria-label="Ver Rutas 3 y 7">Rutas 3 y 7</button>
+                <button type="button" class="conoce-ruta__punto" data-indice="3" data-rutas="4,5" aria-label="Ver Rutas 4 y 5">Rutas 4 y 5</button>
+                <button type="button" class="conoce-ruta__punto" data-indice="4" data-rutas="6" aria-label="Ver Ruta 6">Ruta 6</button>
+            </div>
+            </div>
+        </details>
+
         <!-- Lo que el estudiante suele preguntar antes de matricularse -->
         <details class="ayuda-horarios" id="seccion-ayuda">
             <summary class="ayuda-horarios__summary">
@@ -138,22 +194,18 @@
                     <li><strong>¿PROTECH XP o Plan Tradicional?</strong> Si nunca llevaste computación en la USS, te
                         corresponde el Modelo PROTECH XP con los cursos de tu carrera. Si ya aprobaste Computación I o II,
                         vuelve al inicio y elige Plan Tradicional para ver Computación II y III.</li>
-                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje y los
-                        cursos de otras rutas no aparecen. Si te equivocaste de carrera, usa «Elegir otra carrera».</li>
+                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje (algunas,
+                        como Sistemas o Arquitectura, tienen dos y ven los cursos de ambas). Si te equivocaste de carrera, usa «Cambiar carrera o ciclo» arriba.</li>
                     <li><strong>Un ciclo que no aparece aún no abre</strong> para tu carrera. Al inicio lo verás en la
                         lista de próximos ciclos.</li>
                     <li><strong>La sección (PEAD) es la que eliges al matricularte</strong> en el Campus Virtual. Anótala
                         junto con el turno y los días.</li>
-                    <li><strong>«Docente por asignar»</strong> significa que el horario ya está confirmado y solo falta
-                        publicar el nombre del docente.</li>
-                    <li><strong>«Enlace por publicar»</strong> significa que el enlace al aula virtual aún no está en la hoja
-                        oficial. Vuelve a consultar antes de tu primera clase.</li>
                 </ul>
                 <div class="ayuda-horarios__acciones">
                     <a class="btn btn--primary" href="https://wa.me/51986724506" target="_blank"
                         rel="noopener noreferrer">Escribir por WhatsApp</a>
-                    <a class="btn btn--secondary" href="mailto:centro.informatica@uss.edu.pe">Escribir a
-                        centro.informatica@uss.edu.pe</a>
+                    <a class="btn btn--secondary" href="mailto:paccis@uss.edu.pe">Escribir a
+                        paccis@uss.edu.pe</a>
                 </div>
             </div>
         </details>
@@ -165,8 +217,8 @@
 
     <!-- Datos (Google Drive) y lógica de horarios -->
     <script src="assets/js/config.js?v=48"></script>
-    <script src="assets/js/datos.js?v=48"></script>
-    <script src="assets/js/horarios.js?v=60"></script>
+    <script src="assets/js/datos.js?v=51"></script>
+    <script src="assets/js/horarios.js?v=69"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.

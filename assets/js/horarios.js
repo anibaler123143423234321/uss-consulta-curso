@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     rutas,
     cursosTradicionales = [],
     cursosParaTodos = [],
-    seccionVisible,
   } = window.CONSULTA_CURSOS;
   const $ = (id) => document.getElementById(id);
 
@@ -67,11 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 2. Identificar la Ruta Oficial de la Carrera
-  const ruta = rutas.find((r) => r.carreras.includes(carrera)) || {
+  // Algunas carreras llevan dos rutas (Sistemas: 5 y 7; Arquitectura y Civil: 4 y 6) y ven los cursos de ambas
+  const rutasDeCarrera = rutas.filter((r) => r.carreras.includes(carrera));
+  const ruta = rutasDeCarrera[0] || {
     id: 0,
     nombre: 'Ruta Especial',
     cursos: [],
   };
+  const idsRutas = rutasDeCarrera.length ? rutasDeCarrera.map((r) => r.id) : [ruta.id];
 
   const cursosRutaCarrera = new Set(
     rutas
@@ -96,9 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modeloFila !== modeloActivo) return false;
 
     const permitidos = cursosPermitidosActivos();
-    if (!permitidos.has(h.curso)) return false;
+    // El taller de certificación es de PROTECH XP y lo ve toda carrera de ese modelo
+    const tallerProtech = modeloActivo === 'protech' && window.CONSULTA_CURSOS.esTallerCertificacion(h.curso);
+    if (!permitidos.has(h.curso) && !tallerProtech) return false;
 
-    return seccionVisible(h.seccion, carrera);
+    return window.CONSULTA_CURSOS.filaVisible(h, carrera);
   };
 
   // La API devuelve «Word 365 (Protech XP)»; las rutas lo llaman «Word 365»
@@ -106,8 +110,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pintar banner de carrera y modelo
   $('txt-carrera-nombre').textContent = carrera;
-  $('txt-ruta-badge').textContent = `Ruta ${ruta.id}`;
-  $('txt-ruta-nombre').textContent = `(${ruta.nombre.replace(/^Ruta \d+ · /, '')})`;
+  $('txt-ruta-badge').textContent = idsRutas.length > 1 ? `Rutas ${idsRutas.join(' y ')}` : `Ruta ${ruta.id}`;
+  const nombresRutas = (rutasDeCarrera.length ? rutasDeCarrera : [ruta]).map((r) => r.nombre.replace(/^Ruta \d+ · /, ''));
+  $('txt-ruta-nombre').textContent = `(${nombresRutas.join(' · ')})`;
+
+  iniciarConoceRuta();
+
+  // «Conoce tu ruta»: carrusel a mano (sin avance automático) con las imágenes oficiales de las rutas.
+  // Solo en PROTECH XP; abre en la imagen de la ruta de la carrera y marca sus botones.
+  function iniciarConoceRuta() {
+    const seccion = $('conoce-ruta');
+    const pista = $('conoce-ruta-pista');
+    if (!seccion || !pista) return;
+    if (modeloActivo !== 'protech') {
+      seccion.hidden = true;
+      return;
+    }
+    const slides = [...pista.querySelectorAll('.conoce-ruta__slide')];
+    const puntos = [...seccion.querySelectorAll('.conoce-ruta__punto')];
+    const anterior = $('conoce-ruta-anterior');
+    const siguiente = $('conoce-ruta-siguiente');
+    const esDeLaCarrera = (el) => (el.dataset.rutas || '').split(',').some((id) => idsRutas.includes(Number(id)));
+    const suave = () => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+    let actual = 0;
+
+    puntos.forEach((p) => {
+      if (!esDeLaCarrera(p)) return;
+      p.classList.add('es-tu-ruta');
+      p.setAttribute('aria-label', `${p.getAttribute('aria-label')}, tu ruta`);
+    });
+    const texto = $('conoce-ruta-texto');
+    if (texto && rutasDeCarrera.length) {
+      const nombre = idsRutas.length > 1 ? `las rutas ${idsRutas.join(' y ')}` : `la ruta ${idsRutas[0]}`;
+      texto.textContent = `${carrera} lleva ${nombre}. Eliges 3 cursos en el orden que quieras y terminas con 1 taller de certificación internacional.`;
+    }
+
+    const marcar = (i) => {
+      actual = i;
+      puntos.forEach((p, j) => p.setAttribute('aria-current', j === i ? 'true' : 'false'));
+      if (anterior) anterior.disabled = i === 0;
+      if (siguiente) siguiente.disabled = i === slides.length - 1;
+    };
+    const ir = (i, comportamiento = suave()) => {
+      const destino = Math.max(0, Math.min(slides.length - 1, i));
+      pista.scrollTo({ left: slides[destino].offsetLeft, behavior: comportamiento });
+      marcar(destino);
+    };
+
+    anterior?.addEventListener('click', () => ir(actual - 1));
+    siguiente?.addEventListener('click', () => ir(actual + 1));
+    puntos.forEach((p, i) => p.addEventListener('click', () => ir(i)));
+    pista.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); ir(actual + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); ir(actual - 1); }
+    });
+    // Al deslizar con el dedo o el trackpad, el botón activo sigue a la imagen visible
+    let espera;
+    pista.addEventListener('scroll', () => {
+      clearTimeout(espera);
+      espera = setTimeout(() => {
+        // La imagen más cercana al borde izquierdo de la pista es la visible
+        const x = pista.scrollLeft;
+        let i = 0;
+        slides.forEach((s, j) => {
+          if (Math.abs(s.offsetLeft - x) < Math.abs(slides[i].offsetLeft - x)) i = j;
+        });
+        if (i !== actual) marcar(i);
+      }, 120);
+    }, { passive: true });
+
+    // Cerrado al cargar: al abrirlo por primera vez se ubica en la imagen de la ruta de la carrera
+    const primera = slides.findIndex(esDeLaCarrera);
+    let ubicado = false;
+    marcar(primera > 0 ? primera : 0);
+    seccion.addEventListener('toggle', () => {
+      if (!seccion.open || ubicado) return;
+      ubicado = true;
+      ir(primera > 0 ? primera : 0, 'auto');
+    });
+  }
   const cicloSeleccionado = ciclos.find((ciclo) => ciclo.id.toLowerCase() === cicloActivo);
   const badgeCiclo = $('txt-ciclo-badge');
   if (badgeCiclo && cicloSeleccionado) {
@@ -172,17 +253,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${hStr}:${m} ${ampm}`;
   }
 
+  // Columna Docente oculta por ahora (pedido del Centro de Informática). Para mostrarla: true
+  // y descomentar su <th> en horarios.html.
+  const MOSTRAR_DOCENTE = false;
+
   // 4.1 Identidad y Colores Temáticos por Curso Oficial
   // Ícono (assets/img/cursos/<icono>.svg) y color de cada curso del catálogo oficial (21 cursos).
   // Se revisa en orden: «Diseño Mecánico con AutoCAD 3D» debe caer en AutoCAD y no en Diseño Web.
   // Mantener igual a ecosistema-cinf/src/lib/iconoCurso.ts (mismo juego de SVG).
   const ICONOS_CURSO = [
+    { patron: /^taller|certificacion/, icono: 'taller', color: 'taller' },
     { patron: /word/, icono: 'word', color: 'word' },
     { patron: /excel/, icono: 'excel', color: 'excel' },
     { patron: /canva/, icono: 'canva', color: 'canva' },
     { patron: /autocad|\bcad\b|diseno mecanico/, icono: 'autocad', color: 'autocad' },
     { patron: /web/, icono: 'diseno-web', color: 'web' },
-    { patron: /taller|certificacion/, icono: 'taller', color: 'taller' },
     { patron: /project/, icono: 'project', color: 'project' },
     { patron: /bizagi/, icono: 'bizagi', color: 'bizagi' },
     { patron: /base de datos|cientific/, icono: 'base-datos', color: 'basedatos' },
@@ -233,11 +318,12 @@ document.addEventListener('DOMContentLoaded', () => {
         fin: formatearFecha(r.fechaFin),
         turno: r.turno || '',
         dias: r.dias || '',
-        horario: `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}`,
-        aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || 'Virtual · Zoom'),
-        cupos: r.cupos || 30,
-        cuposDisponibles: r.cuposDisponibles !== undefined ? r.cuposDisponibles : (r.cupos || 25),
-        cuposTotal: r.cupos || 30,
+        // Sin dato en la API = campo vacío (la tabla dice «—» o «por confirmar»), nunca un valor de ejemplo
+        horario: r.horaInicio && r.horaFin ? `${formatearHora12(r.horaInicio)} – ${formatearHora12(r.horaFin)}` : '',
+        aula: r.aula === 'Virtual' ? 'Virtual · Zoom' : (r.aula || ''),
+        cupos: Number.isFinite(Number(r.cupos)) && r.cupos !== null && r.cupos !== '' ? Number(r.cupos) : null,
+        cuposDisponibles: r.cuposDisponibles ?? null,
+        cuposTotal: Number.isFinite(Number(r.cupos)) && r.cupos !== null && r.cupos !== '' ? Number(r.cupos) : null,
         docente: r.docente || '',
         linkAula: r.linkAula || null,
       };
@@ -286,7 +372,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const filas = document.createElement('div');
       filas.className = 'carga__filas';
       filas.setAttribute('aria-hidden', 'true');
-      const celdas = ['icono', 'curso', 'corta', 'estado', 'doble', 'corta', 'doble', 'mini', 'docente', 'acceso'];
+      const celdas = ['icono', 'curso', 'corta', 'estado', 'doble', 'corta', 'doble', 'mini'];
+      if (MOSTRAR_DOCENTE) celdas.push('docente');
       for (let i = 0; i < 6; i += 1) {
         const fila = document.createElement('div');
         fila.className = 'carga__fila';
@@ -391,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (omitir !== 'aula' && f.aula && (f.aula === 'zoom') !== esVirtual(fila)) return false;
     if (
       f.texto &&
-      !normalizar(`${fila.curso} ${fila.seccion} ${fila.docente} ${fila.dias} ${fila.aula} ${fila.turno} ${fila.horario}`).includes(f.texto)
+      !normalizar(`${fila.curso} ${fila.seccion} ${MOSTRAR_DOCENTE ? fila.docente : ''} ${fila.dias} ${fila.aula} ${fila.turno} ${fila.horario}`).includes(f.texto)
     ) {
       return false;
     }
@@ -415,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const opciones = {
       curso: [...new Set(filas.map((h) => h.curso))].sort((a, b) => ordenCursos.indexOf(a) - ordenCursos.indexOf(b)).map((v) => [v, v]),
       turno: ['Madrugada', 'Mañana', 'Tarde', 'Noche'].map((v) => [v, v]),
-      dias: [...new Set(filas.map((h) => h.dias))].sort((a, b) => a.localeCompare(b, 'es')).map((v) => [v, v]),
+      dias: [...new Set(filas.map((h) => h.dias).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es')).map((v) => [v, v]),
       aula: [['zoom', 'Virtual · Zoom'], ['presencial', 'Presencial']],
     };
     const todos = { curso: 'Todos los cursos', turno: 'Todos los turnos', dias: 'Todos los días', aula: 'Todas las aulas' };
@@ -484,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
     destino.replaceChildren(contenido.slice(0, inicio), marca, contenido.slice(inicio + texto.length));
   }
 
-  const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Matriculados', 'Docente', 'Acceso'];
+  const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Matriculados', 'Docente'];
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   const tbodyHorarios = $('filas-horarios');
@@ -659,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeCupos.textContent = cuposTexto;
         tdCupos.appendChild(badgeCupos);
 
-        // 9. Docente
+        // 9. Docente: oculto por ahora (MOSTRAR_DOCENTE). Si la hoja no trae nombre, no se inventa uno.
         const tdDocente = document.createElement('td');
         if (fila.docente && fila.docente !== 'Por asignar') {
           tdDocente.className = 'docente-asignado';
@@ -669,32 +756,9 @@ document.addEventListener('DOMContentLoaded', () => {
           tdDocente.textContent = 'Docente por asignar';
         }
 
-        // 10. Acceso
-        const tdAcceso = document.createElement('td');
-        tdAcceso.className = 'col-acceso';
-        let urlAula = null;
-        try {
-          const candidata = new URL(fila.linkAula || '');
-          if (['https:', 'http:'].includes(candidata.protocol)) urlAula = candidata.href;
-        } catch { /* Enlace vacío o inválido: se muestra acceso pendiente. */ }
-        if (urlAula) {
-          const enlace = document.createElement('a');
-          enlace.href = urlAula;
-          enlace.target = '_blank';
-          enlace.rel = 'noopener noreferrer';
-          enlace.className = 'btn btn--primary btn--sm btn-zoom';
-          enlace.textContent = 'Entrar al aula virtual';
-          enlace.title = 'Abrir el aula virtual de esta sección';
-          tdAcceso.appendChild(enlace);
-        } else {
-          const pendiente = document.createElement('span');
-          pendiente.className = 'badge-acceso-pendiente';
-          pendiente.textContent = 'Enlace por publicar';
-          tdAcceso.appendChild(pendiente);
-        }
-
         // En celular cada fila es una tarjeta: la etiqueta de cada dato sale de data-label
-        const celdas = [tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos, tdDocente, tdAcceso];
+        const celdas = [tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos];
+        if (MOSTRAR_DOCENTE) celdas.push(tdDocente);
         celdas.forEach((td, i) => {
           td.dataset.label = ETIQUETAS_CELDA[i];
         });
@@ -704,7 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resaltar(tdCurso, f.texto);
         resaltar(tdSec, f.texto);
         resaltar(dias, f.texto);
-        resaltar(tdDocente, f.texto);
+        if (MOSTRAR_DOCENTE) resaltar(tdDocente, f.texto);
 
         return tr;
       })

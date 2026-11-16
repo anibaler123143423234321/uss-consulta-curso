@@ -42,10 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
           nombre: carrera,
           rutaId: ruta.id,
           rutaNombre: ruta.nombre,
+          // Algunas carreras llevan dos rutas (p. ej. Sistemas: 5 y 7) y ven los cursos de ambas
+          rutaIds: [ruta.id],
           cursos: [...ruta.cursos],
         });
       } else {
         const existente = mapaCarrerasMap.get(carrera);
+        existente.rutaIds.push(ruta.id);
+        existente.rutaNombre = `${existente.rutaNombre} · ${ruta.nombre}`;
         ruta.cursos.forEach((c) => {
           if (!existente.cursos.includes(c)) existente.cursos.push(c);
         });
@@ -86,9 +90,36 @@ document.addEventListener('DOMContentLoaded', () => {
   let opcionesFiltradas = [...mapaCarreras];
 
   function abrirDropdown() {
+    const yaAbierto = !elDropdown.hidden;
     elDropdown.hidden = false;
     elWrap.classList.add('abierto');
     renderOpciones(elInput.value.trim());
+    if (!yaAbierto) acomodarDropdown();
+  }
+
+  // Al abrir la lista, la página baja sola lo justo para que se vea entera bajo el buscador
+  // (sin esconder el buscador arriba) y la lista nunca pasa del borde inferior de la pantalla.
+  const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function acomodarDropdown() {
+    const margen = 16;
+    const altoPantalla = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const rBuscador = elWrap.getBoundingClientRect();
+    const altoDeseado = Math.min(320, elOptions.scrollHeight + 14);
+    const espacioAbajo = altoPantalla - rBuscador.bottom - 6 - margen;
+
+    let subir = 0;
+    if (espacioAbajo < altoDeseado) {
+      const maximo = Math.max(0, rBuscador.top - margen - 8);
+      subir = Math.min(altoDeseado - espacioAbajo, maximo);
+    }
+    const disponible = espacioAbajo + subir;
+    const alto = Math.max(160, Math.min(320, disponible));
+    elDropdown.style.maxHeight = `${alto}px`;
+    // Reserva el margen de abajo para que la página pueda bajar hasta dejar aire bajo la lista
+    $('carrera-combobox').style.setProperty('--alto-lista', `${Math.min(alto, altoDeseado)}px`);
+    if (subir > 0) {
+      window.scrollBy({ top: subir, behavior: sinMovimiento.matches ? 'auto' : 'smooth' });
+    }
   }
 
   function cerrarDropdown() {
@@ -146,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const spanNombre = crear('span', 'carrera-combobox__item-nombre');
       spanNombre.appendChild(resaltarTexto(item.nombre, query));
 
-      const spanRuta = crear('span', 'carrera-combobox__item-ruta', `Ruta ${item.rutaId}`);
+      const spanRuta = crear('span', 'carrera-combobox__item-ruta', item.rutaIds.length > 1 ? `Rutas ${item.rutaIds.join(' y ')}` : `Ruta ${item.rutaId}`);
 
       divItem.append(spanNombre, spanRuta);
 
@@ -176,16 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // 3. Actualizar conteo de secciones por ciclo para esta carrera
       actualizarContadoresCiclos();
     } else {
-      // Al cambiar de carrera se exige volver a elegir el modelo explícitamente.
-      modeloSeleccionado = null;
-      [cardModeloProtech, cardModeloTradicional].forEach((card) => {
-        card?.classList.remove('activa');
-        card?.setAttribute('aria-checked', 'false');
-      });
+      // Cambiar de carrera conserva el modelo: ya es el paso 1 y se ve arriba.
       gridCiclos.hidden = true;
-      // Volver a la vista de selección de carrera.
+      // Volver al paso 2 (elegir carrera).
       vistaCiclos.hidden = true;
-      vistaCarrera.hidden = false;
+      vistaCarrera.hidden = !modeloSeleccionado;
       elInput.value = '';
     }
   }
@@ -301,6 +327,15 @@ document.addEventListener('DOMContentLoaded', () => {
     cardModeloTradicional?.classList.toggle('activa', !esProtech);
     cardModeloTradicional?.setAttribute('aria-checked', String(!esProtech));
 
+    // Paso 1 → paso 2: con el modelo elegido aparece el buscador de carrera
+    if (!carreraSeleccionada) {
+      const primeraVez = vistaCarrera.hidden;
+      vistaCarrera.hidden = false;
+      // Al enfocar se abre la lista y acomodarDropdown baja la página hasta el paso 2.
+      // Va después del clic: si no, el «clic fuera» del documento la cierra al instante.
+      if (primeraVez) setTimeout(() => elInput.focus({ preventScroll: true }), 0);
+      return;
+    }
     actualizarContadoresCiclos();
   }
 
@@ -441,8 +476,10 @@ document.addEventListener('DOMContentLoaded', () => {
           h.modelo ||
           (window.CONSULTA_CURSOS.esCursoDeModelo(h.curso, 'tradicional') ? 'tradicional' : 'protech');
         if (modeloFila !== modeloSeleccionado) return false;
-        if (permitidos && !permitidos.has(h.curso)) return false;
-        return window.CONSULTA_CURSOS.seccionVisible(h.seccion, carreraSeleccionada);
+        const tallerProtech =
+          modeloSeleccionado === 'protech' && window.CONSULTA_CURSOS.esTallerCertificacion(h.curso);
+        if (permitidos && !permitidos.has(h.curso) && !tallerProtech) return false;
+        return window.CONSULTA_CURSOS.filaVisible(h, carreraSeleccionada);
       });
       const total = filas.length;
 
