@@ -309,23 +309,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     2. SELECTOR DE MODELO DE ACREDITACIÓN (PROTECH XP vs Plan Tradicional)
+     2. SELECTOR DE MODELO DE ACREDITACIÓN (Modelo Tradicional vs PROTECH XP)
      ========================================================================== */
-  const cardModeloProtech = $('opcion-modelo-protech');
   const cardModeloTradicional = $('opcion-modelo-tradicional');
+  const cardModeloProtech = $('opcion-modelo-protech');
 
   function seleccionarModelo(nuevoModelo) {
     if (!['protech', 'tradicional'].includes(nuevoModelo)) return;
 
     modeloSeleccionado = nuevoModelo;
 
-    const esProtech = modeloSeleccionado === 'protech';
+    const esTradicional = modeloSeleccionado === 'tradicional';
 
-    cardModeloProtech?.classList.toggle('activa', esProtech);
-    cardModeloProtech?.setAttribute('aria-checked', String(esProtech));
+    cardModeloTradicional?.classList.toggle('activa', esTradicional);
+    cardModeloTradicional?.setAttribute('aria-checked', String(esTradicional));
 
-    cardModeloTradicional?.classList.toggle('activa', !esProtech);
-    cardModeloTradicional?.setAttribute('aria-checked', String(!esProtech));
+    cardModeloProtech?.classList.toggle('activa', !esTradicional);
+    cardModeloProtech?.setAttribute('aria-checked', String(!esTradicional));
 
     // Paso 1 → paso 2: con el modelo elegido aparece el buscador de carrera
     if (!carreraSeleccionada) {
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarContadoresCiclos();
   }
 
-  [cardModeloProtech, cardModeloTradicional].forEach((card) => {
+  [cardModeloTradicional, cardModeloProtech].forEach((card) => {
     if (!card) return;
     const modelo = card.dataset.modelo;
     card.addEventListener('click', () => seleccionarModelo(modelo));

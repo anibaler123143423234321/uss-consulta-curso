@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Computación II">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Computación II (C2)">
   <rect x="2" y="3" width="28" height="20" rx="4" fill="#073299"/>
   <rect x="5" y="6" width="22" height="14" rx="2" fill="#DCEBFF"/>
   <path d="M12 26h8l1.5 3h-11z" fill="#073299"/>
-  <text x="16" y="13" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif" font-size="10.5" font-weight="800" letter-spacing="-0.3" fill="#073299">CII</text>
+  <text x="16" y="13" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="-0.3" fill="#073299">C2</text>
 </svg>

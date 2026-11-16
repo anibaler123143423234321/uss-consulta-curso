@@ -140,20 +140,20 @@ window.CONSULTA_CURSOS = {
   // Modelos oficiales de acreditación de Informática USS
   modelos: [
     {
+      id: 'tradicional',
+      nombre: 'Modelo Tradicional',
+      titulo: 'Modelo Tradicional (C2 y C3 / Computación II y III)',
+      subtitulo: 'Para estudiantes con niveles previos que culminan su plan',
+      badge: 'Estudiantes Anteriores',
+      descripcion: 'Para estudiantes que ya cursaron Computación I o II y necesitan terminar C2 (Computación II) o C3 (Computación III).',
+    },
+    {
       id: 'protech',
       nombre: 'Modelo PROTECH XP',
       titulo: 'Rutas por Carrera (PROTECH XP)',
       subtitulo: 'Ruta oficial por competencias según tu carrera',
       badge: 'Recomendado / Nuevo modelo',
       descripcion: 'Para estudiantes que inician o nunca han llevado cursos de computación en USS. Verás solo los cursos oficiales de tu carrera (Word 365, Excel 365, Canva, etc.).',
-    },
-    {
-      id: 'tradicional',
-      nombre: 'Plan Tradicional',
-      titulo: 'Plan Tradicional (Computación I, II y III)',
-      subtitulo: 'Para estudiantes con niveles previos que culminan su plan',
-      badge: 'Estudiantes Anteriores',
-      descripcion: 'Para estudiantes que ya cursaron Computación I o II y necesitan terminar Computación II o III.',
     },
   ],
 
@@ -333,6 +333,13 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
     const periodo = obtener(registro, ['Periodo', 'Año', 'Anio']);
     const desdePeriodo = periodo.match(/\b(20\d{2})/);
     if (desdePeriodo) return desdePeriodo[1];
+    // Un Excel convertido guarda «2026 02» como fecha y la hoja lo entrega como número de serie
+    // (46054 = 01/02/2026, días desde el 30/12/1899): se toma el año de esa fecha.
+    if (/^\d{5}$/.test(periodo.trim())) {
+      const fecha = new Date(Date.UTC(1899, 11, 30) + Number(periodo) * 86400000);
+      const anio = fecha.getUTCFullYear();
+      if (anio >= 2020 && anio <= 2100) return String(anio);
+    }
     const fecha = obtener(registro, ['Fecha Inicio', 'Fecha de Inicio']);
     return fecha.match(/\b(20\d{2})\b/)?.[1] || '';
   }
@@ -345,9 +352,9 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
       const nombre = raw.trim().toLowerCase().replace(/(^|\s)\S/g, (l) => l.toUpperCase());
       return /^taller\b/i.test(nombre) ? nombre : `Taller ${nombre}`;
     }
-    if (compact.includes('computacioniii') || compact.includes('computacion3')) return 'Computación III';
-    if (compact.includes('computacionii') || compact.includes('computacion2')) return 'Computación II';
-    if (compact.includes('computacioni') || compact.includes('computacion1')) return 'Computación I';
+    if (compact === 'c3' || compact.includes('computacioniii') || compact.includes('computacion3')) return 'Computación III';
+    if (compact === 'c2' || compact.includes('computacionii') || compact.includes('computacion2')) return 'Computación II';
+    if (compact === 'c1' || compact.includes('computacioni') || compact.includes('computacion1')) return 'Computación I';
     if (compact.includes('word') && compact.includes('asociado')) return 'Microsoft Word Asociado';
     if (compact.includes('word')) return 'Word 365';
     if (compact.includes('excel') && compact.includes('asociado')) return 'Excel Asociado';
@@ -527,9 +534,12 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
     return filas;
   };
 
-  // Respaldo de URLs oficiales por si config.js no carga por proxy/red
-  const URL_HOJA_DEFAULT =
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSz3Ap9uS8wQ9sEgccZNblL2vcDGGWsVf2V3GQYshhQaDvG2Jrcy7QQcvzHxz6Jcw/pub?gid=41443645&single=true&output=csv';
+  // Respaldo por si config.js no carga por proxy/red: las pestañas de CINF 202700.
+  const LIBRO_202700_DEFAULT =
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQw5JY_Fz5u4muIWgl8bWeunHTvuhf0f0z3rf2c9UyJtw_2tdVOsjrx18UyjfpmeDl4vmOTE6Z7zi60/pub';
+  const URLS_HOJAS_DEFAULT = ['0', '2097893266'].map(
+    (gid) => `${LIBRO_202700_DEFAULT}?gid=${gid}&single=true&output=csv`
+  );
   const URL_INDICE_DEFAULT =
     'https://script.google.com/macros/s/AKfycby9ol55gNSq7AnH_zeuDYZi0_rOfzwVjybsyiOGEfObpVFaXst2ConIDHWhQGAT82wv/exec';
 
@@ -539,9 +549,9 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
       ...(Array.isArray(window.GOOGLE_SHEETS_URLS) ? window.GOOGLE_SHEETS_URLS : []),
       window.GOOGLE_SHEETS_URL,
       window.GOOGLE_SHEETS_CSV_URL,
-      URL_HOJA_DEFAULT,
-    ];
-    return [...new Set(lista.map((url) => String(url || '').trim()).filter(Boolean))];
+    ].map((url) => String(url || '').trim()).filter(Boolean);
+    // El respaldo solo entra si config.js no declaró ninguna hoja: así una hoja retirada no vuelve.
+    return [...new Set(lista.length ? lista : URLS_HOJAS_DEFAULT)];
   };
 
   const conTiempoMaximo = async (url, tiempoMaximoMs) => {

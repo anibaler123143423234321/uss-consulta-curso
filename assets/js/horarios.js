@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!badge) return;
     if (modeloActivo === 'tradicional') {
       badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--tradicional';
-      badge.textContent = 'Plan Tradicional';
+      badge.textContent = 'Modelo Tradicional (C2 / C3)';
     } else {
       badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--protech';
       badge.textContent = 'Modelo PROTECH XP';

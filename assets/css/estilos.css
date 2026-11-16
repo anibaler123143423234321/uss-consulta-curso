@@ -710,7 +710,7 @@ a {
     height: 24px;
 }
 
-/* Plan Tradicional: dos íconos con la sigla (CII, CIII), más grandes para que se lea */
+/* Modelo Tradicional: dos íconos con la sigla (C2, C3), más grandes para que se lea */
 .card-modelo-opcion__iconos--grandes {
     gap: 10px;
 }

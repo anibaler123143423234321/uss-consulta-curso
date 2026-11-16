@@ -28,7 +28,7 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="assets/css/estilos.css?v=70" />
-    <script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+    <script>document.documentElement.classList.add('m-enter'); setTimeout(() => document.documentElement.classList.add('m-enter-done'), 700)</script>
 </head>
 
 <body>
@@ -47,148 +47,169 @@
                 rel="noopener noreferrer">
                 <span class="nav__texto-largo">Ir al Portal CINF</span>
                 <span class="nav__texto-corto">Portal</span>
-                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 17 17 7M8 7h9v9" />
+                </svg>
             </a>
         </div>
     </header>
 
     <main id="contenido">
         <section class="hero" data-enter aria-labelledby="hero-h">
-            <div class="wrap"><div class="hero-text hero__grid">
-                <div class="hero__texto">
-                    <p class="hero__eyebrow">Centro de Informática • USS</p>
-                    <h1 id="hero-h">Acreditación en Computación <span class="hero__resalte">Horarios</span></h1>
-                    <p class="hero__lead">27 carreras en 7 rutas de aprendizaje. Elige tu modelo y tu carrera, y ve
-                        cada sección abierta con su turno, días y matriculados.</p>
+            <div class="wrap">
+                <div class="hero-text hero__grid">
+                    <div class="hero__texto">
+                        <p class="hero__eyebrow">Centro de Informática • USS</p>
+                        <h1 id="hero-h">Acreditación en Computación <span class="hero__resalte">Horarios</span></h1>
+                        <p class="hero__lead">27 carreras en 7 rutas de aprendizaje. Elige tu modelo y tu carrera, y ve
+                            cada sección abierta con su turno, días y matriculados.</p>
 
-                    <!-- La herramienta: los tres pasos viven en este panel -->
-                    <div class="herramienta" id="tarjeta-carrera">
+                        <!-- La herramienta: los tres pasos viven en este panel -->
+                        <div class="herramienta" id="tarjeta-carrera">
 
-                        <!-- PASO 1: Modelo de acreditación (va primero: define qué cursos se muestran) -->
-                        <div class="paso paso-modelo" id="paso-modelo">
-                            <p class="paso__titulo" id="titulo-modelo">
-                                <span class="paso__num" aria-hidden="true">1</span>
-                                ¿Qué modelo de acreditación llevas?
-                            </p>
-                            <div class="selector-modelo-grid" role="radiogroup" aria-labelledby="titulo-modelo">
-                                <div class="card card-modelo-opcion" id="opcion-modelo-protech"
-                                    data-modelo="protech" role="radio" aria-checked="false" tabindex="0">
-                                    <span class="card-modelo-opcion__check" aria-hidden="true"></span>
-                                    <span class="card-modelo-opcion__iconos" aria-hidden="true">
-                                        <img src="assets/img/cursos/word.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/excel.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/canva.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/power-bi.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/project.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/bizagi.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/base-datos.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/spss.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/matlab.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/autocad.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/sketchup.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/revit.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/solidworks.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/diseno-web.svg" alt="" width="24" height="24" />
-                                        <img src="assets/img/cursos/taller.svg" alt="" width="24" height="24" />
-                                    </span>
-                                    <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
-                                    <span class="card-modelo-opcion__desc">3 cursos + 1 taller de certificación.</span>
-                                </div>
+                            <!-- PASO 1: Modelo de acreditación (va primero: define qué cursos se muestran) -->
+                            <div class="paso paso-modelo" id="paso-modelo">
+                                <p class="paso__titulo" id="titulo-modelo">
+                                    <span class="paso__num" aria-hidden="true">1</span>
+                                    ¿Qué modelo de acreditación llevas?
+                                </p>
+                                <div class="selector-modelo-grid" role="radiogroup" aria-labelledby="titulo-modelo">
+                                    <div class="card card-modelo-opcion" id="opcion-modelo-tradicional"
+                                        data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
+                                        <span class="card-modelo-opcion__check" aria-hidden="true"></span>
+                                        <span class="card-modelo-opcion__iconos card-modelo-opcion__iconos--grandes"
+                                            aria-hidden="true">
+                                            <img src="assets/img/cursos/computacion-ii.svg?v=2" alt="C2" width="40"
+                                                height="40" />
+                                            <img src="assets/img/cursos/computacion-iii.svg?v=2" alt="C3" width="40"
+                                                height="40" />
+                                        </span>
+                                        <strong class="card-modelo-opcion__titulo">Modelo Tradicional</strong>
+                                        <span class="card-modelo-opcion__desc">Cursos C2 y C3 (Computación II y III).</span>
+                                    </div>
 
-                                <div class="card card-modelo-opcion" id="opcion-modelo-tradicional"
-                                    data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
-                                    <span class="card-modelo-opcion__check" aria-hidden="true"></span>
-                                    <span class="card-modelo-opcion__iconos card-modelo-opcion__iconos--grandes" aria-hidden="true">
-                                        <img src="assets/img/cursos/computacion-ii.svg" alt="" width="40" height="40" />
-                                        <img src="assets/img/cursos/computacion-iii.svg" alt="" width="40" height="40" />
-                                    </span>
-                                    <strong class="card-modelo-opcion__titulo">Plan Tradicional</strong>
-                                    <span class="card-modelo-opcion__desc">Computación II y Computación III.</span>
+                                    <div class="card card-modelo-opcion" id="opcion-modelo-protech"
+                                        data-modelo="protech" role="radio" aria-checked="false" tabindex="0">
+                                        <span class="card-modelo-opcion__check" aria-hidden="true"></span>
+                                        <span class="card-modelo-opcion__iconos" aria-hidden="true">
+                                            <img src="assets/img/cursos/word.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/excel.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/canva.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/power-bi.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/project.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/bizagi.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/base-datos.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/spss.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/matlab.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/autocad.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/sketchup.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/revit.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/solidworks.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/diseno-web.svg" alt="" width="24" height="24" />
+                                            <img src="assets/img/cursos/taller.svg" alt="" width="24" height="24" />
+                                        </span>
+                                        <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
+                                        <span class="card-modelo-opcion__desc">3 cursos + 1 taller de
+                                            certificación.</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- PASO 2: Carrera (aparece al elegir el modelo) -->
-                        <div class="paso" id="vista-carrera" hidden>
-                            <p class="paso__titulo">
-                                <span class="paso__num" aria-hidden="true">2</span>
-                                <label for="input-carrera-principal">¿Cuál es tu carrera?</label>
-                            </p>
-                            <div class="buscador-fila">
-                            <div class="carrera-combobox" id="carrera-combobox">
-                                <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
-                                    <svg class="icono carrera-combobox__icono" viewBox="0 0 24 24" aria-hidden="true">
-                                        <circle cx="11" cy="11" r="7" />
-                                        <path d="m20 20-3.5-3.5" />
-                                    </svg>
-                                    <input type="text" class="carrera-combobox__input" id="input-carrera-principal"
-                                        placeholder="Psicología, Derecho, Sistemas…" autocomplete="off"
-                                        spellcheck="false" aria-controls="lista-opciones-carreras"
-                                        aria-autocomplete="list" />
-                                    <button type="button" class="carrera-combobox__chevron" id="btn-toggle-carrera"
-                                        aria-label="Ver todas las carreras">
-                                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                            <!-- PASO 2: Carrera (aparece al elegir el modelo) -->
+                            <div class="paso" id="vista-carrera" hidden>
+                                <p class="paso__titulo">
+                                    <span class="paso__num" aria-hidden="true">2</span>
+                                    <label for="input-carrera-principal">¿Cuál es tu carrera?</label>
+                                </p>
+                                <div class="buscador-fila">
+                                    <div class="carrera-combobox" id="carrera-combobox">
+                                        <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
+                                            <svg class="icono carrera-combobox__icono" viewBox="0 0 24 24"
+                                                aria-hidden="true">
+                                                <circle cx="11" cy="11" r="7" />
+                                                <path d="m20 20-3.5-3.5" />
+                                            </svg>
+                                            <input type="text" class="carrera-combobox__input"
+                                                id="input-carrera-principal"
+                                                placeholder="Psicología, Derecho, Sistemas…" autocomplete="off"
+                                                spellcheck="false" aria-controls="lista-opciones-carreras"
+                                                aria-autocomplete="list" />
+                                            <button type="button" class="carrera-combobox__chevron"
+                                                id="btn-toggle-carrera" aria-label="Ver todas las carreras">
+                                                <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="m6 9 6 6 6-6" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden>
+                                            <div class="carrera-combobox__options" id="lista-opciones-carreras"
+                                                role="listbox" aria-label="Carreras"></div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn--primary btn--lg" id="btn-buscar-carrera">Ver
+                                        mis
+                                        horarios</button>
+                                </div>
+                                <p class="campo__ayuda">Después eliges el ciclo y ves sus horarios.</p>
+                            </div>
+
+                            <!-- PASO 3: aparece en el mismo panel al elegir la carrera -->
+                            <div class="paso" id="vista-ciclos" hidden>
+                                <div class="carrera-seleccionada-barra">
+                                    <div>
+                                        <span class="carrera-seleccionada-barra__tag">Tu carrera</span>
+                                        <strong class="carrera-seleccionada-barra__nombre"
+                                            id="carrera-elegida-badge">Derecho</strong>
+                                    </div>
+                                    <button type="button" class="btn btn--claro btn--sm" id="btn-cambiar-carrera">
+                                        Cambiar carrera
                                     </button>
                                 </div>
-                                <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden>
-                                    <div class="carrera-combobox__options" id="lista-opciones-carreras"
-                                        role="listbox" aria-label="Carreras"></div>
+
+                                <!-- PASO 3: Ciclo de apertura -->
+                                <div class="paso paso-ciclos">
+                                    <p class="paso__titulo">
+                                        <span class="paso__num" aria-hidden="true">3</span>
+                                        Elige el ciclo y abre sus horarios
+                                    </p>
+                                    <div class="grid-ciclos-compacto" id="grid-ciclos"></div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn--primary btn--lg" id="btn-buscar-carrera">Ver mis
-                                horarios</button>
-                            </div>
-                            <p class="campo__ayuda">Después eliges el ciclo y ves sus horarios.</p>
                         </div>
 
-                        <!-- PASO 3: aparece en el mismo panel al elegir la carrera -->
-                        <div class="paso" id="vista-ciclos" hidden>
-                            <div class="carrera-seleccionada-barra">
-                                <div>
-                                    <span class="carrera-seleccionada-barra__tag">Tu carrera</span>
-                                    <strong class="carrera-seleccionada-barra__nombre"
-                                        id="carrera-elegida-badge">Derecho</strong>
-                                </div>
-                                <button type="button" class="btn btn--claro btn--sm" id="btn-cambiar-carrera">
-                                    Cambiar carrera
-                                </button>
+                        <dl class="hero__datos">
+                            <div>
+                                <dt>1 a 3 meses</dt>
+                                <dd>dura cada ciclo</dd>
                             </div>
-
-                            <!-- PASO 3: Ciclo de apertura -->
-                            <div class="paso paso-ciclos">
-                                <p class="paso__titulo">
-                                    <span class="paso__num" aria-hidden="true">3</span>
-                                    Elige el ciclo y abre sus horarios
-                                </p>
-                                <div class="grid-ciclos-compacto" id="grid-ciclos"></div>
+                            <div>
+                                <dt>Modelo Tradicional</dt>
+                                <dd>o PROTECH XP</dd>
                             </div>
-                        </div>
+                            <div>
+                                <dt>Virtual</dt>
+                                <dd>o presencial, según la sección</dd>
+                            </div>
+                        </dl>
                     </div>
 
-                    <dl class="hero__datos">
-                        <div><dt>1 a 3 meses</dt><dd>dura cada ciclo</dd></div>
-                        <div><dt>PROTECH XP</dt><dd>o Plan Tradicional</dd></div>
-                        <div><dt>Virtual</dt><dd>o presencial, según la sección</dd></div>
-                    </dl>
+                    <div class="hero__frame">
+                        <img class="hero__media" src="assets/img/campus-uss.jpg"
+                            srcset="assets/img/campus-uss-800.jpg 800w, assets/img/campus-uss.jpg 1280w"
+                            sizes="(max-width: 991px) 100vw, 1200px" fetchpriority="high"
+                            alt="Campus de la Universidad Señor de Sipán en Chiclayo, con el letrero USS en los jardines"
+                            width="1280" height="784" />
+                    </div>
                 </div>
-
-                <div class="hero__frame">
-                    <img class="hero__media" src="assets/img/campus-uss.jpg"
-                        srcset="assets/img/campus-uss-800.jpg 800w, assets/img/campus-uss.jpg 1280w"
-                        sizes="(max-width: 991px) 100vw, 1200px" fetchpriority="high"
-                        alt="Campus de la Universidad Señor de Sipán en Chiclayo, con el letrero USS en los jardines"
-                        width="1280" height="784" />
-                </div>
-            </div>
-            <p class="hero__pie">Universidad Señor de Sipán · Centro de Informática CINF · © 2026</p>
+                <p class="hero__pie">Universidad Señor de Sipán · Centro de Informática CINF · © 2026</p>
             </div>
         </section>
     </main>
 
     <!-- Datos (Google Drive) y lógica de selección -->
-    <script src="assets/js/config.js?v=48"></script>
-    <script src="assets/js/datos.js?v=52"></script>
-    <script src="assets/js/index.js?v=65"></script>
+    <script src="assets/js/config.js?v=49"></script>
+    <script src="assets/js/datos.js?v=54"></script>
+    <script src="assets/js/index.js?v=66"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.
