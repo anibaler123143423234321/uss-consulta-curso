@@ -25,8 +25,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/estilos.css?v=60" />
-    <link rel="stylesheet" href="assets/motion/motion.css?v=60" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=61" />
 </head>
 
 <body>
@@ -40,7 +39,7 @@
                     <span class="nav__texto-largo">Cambiar carrera o ciclo</span>
                 </a>
                 <a href="./" class="nav__marca" aria-label="Centro de Informática USS, volver al inicio">
-                    <img src="assets/img/logo-uss.png" alt="Universidad Señor de Sipán" width="951" height="328" />
+                    <img src="assets/img/logo-uss.png?v=61" alt="Universidad Señor de Sipán" width="851" height="293" />
                 </a>
             </div>
             <a class="btn btn--secondary btn--sm" href="https://informatica-uss.vercel.app/" target="_blank"
@@ -168,7 +167,12 @@
     <script src="assets/js/config.js?v=48"></script>
     <script src="assets/js/datos.js?v=48"></script>
     <script src="assets/js/horarios.js?v=60"></script>
-    <script type="module" src="assets/motion/motion.js?v=60"></script>
+    <script type="module">
+        // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
+        // ahí la capa de movimiento se pide directo al deploy de esta app.
+        const raiz = location.hostname === 'informatica-uss.vercel.app' ? 'https://uss-consulta-curso.vercel.app/' : './';
+        import(`${raiz}assets/motion/motion.js?v=61`);
+    </script>
 </body>
 
 </html>
