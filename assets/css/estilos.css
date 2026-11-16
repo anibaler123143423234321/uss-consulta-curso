@@ -987,6 +987,7 @@ a {
 
 .etiqueta,
 .banner-carrera__badge,
+.banner-carrera__duracion,
 .banner-carrera__modelo-badge {
     display: inline-flex;
     align-items: center;
@@ -998,6 +999,17 @@ a {
     color: var(--ink-2);
     font-size: var(--t-xs);
     font-weight: 700;
+}
+
+.banner-carrera__duracion {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #334155;
+    letter-spacing: 0.01em;
+}
+
+.banner-carrera__duracion:empty {
+    display: none;
 }
 
 .banner-carrera__modelo-badge {

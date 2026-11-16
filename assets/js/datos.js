@@ -10,14 +10,14 @@
 window.CONSULTA_CURSOS = {
   // Ciclos oficiales de apertura CINF y su duración académica
   ciclos: [
-    { id: 'noviembre', nombre: 'Noviembre', duracion: '2 meses' },
-    { id: 'enero', nombre: 'Enero', duracion: '2 meses' },
-    { id: 'febrero', nombre: 'Febrero', duracion: '2 meses' },
-    { id: 'abril', nombre: 'Abril', duracion: '3 meses' },
-    { id: 'mayo', nombre: 'Mayo', duracion: '2 meses' },
-    { id: 'agosto', nombre: 'Agosto', duracion: '1 mes' },
-    { id: 'setiembre', nombre: 'Setiembre', duracion: '3 meses' },
-    { id: 'octubre', nombre: 'Octubre', duracion: '2 meses' },
+    { id: 'noviembre', nombre: 'Noviembre', duracion: '2 meses', semanas: 6 },
+    { id: 'enero', nombre: 'Enero', duracion: '2 meses', semanas: 6 },
+    { id: 'febrero', nombre: 'Febrero', duracion: '2 meses', semanas: 8 },
+    { id: 'abril', nombre: 'Abril', duracion: '3 meses', semanas: 12 },
+    { id: 'mayo', nombre: 'Mayo', duracion: '2 meses', semanas: 8 },
+    { id: 'agosto', nombre: 'Agosto', duracion: '1 mes', semanas: 4 },
+    { id: 'setiembre', nombre: 'Setiembre', duracion: '3 meses', semanas: 12 },
+    { id: 'octubre', nombre: 'Octubre', duracion: '2 meses', semanas: 8 },
   ],
 
   // Las 7 rutas oficiales de aprendizaje según el brochure de Canva

@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   let modeloActivo = modeloRaw;
+  let horariosCargados = [];
+  let fuenteEnVivo = false;
 
   const btnVolver = $('btn-volver-atras');
   const actualizarEnlaceVolver = () => {
@@ -191,10 +193,70 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   const cicloSeleccionado = ciclos.find((ciclo) => ciclo.id.toLowerCase() === cicloActivo);
   const badgeCiclo = $('txt-ciclo-badge');
-  if (badgeCiclo && cicloSeleccionado) {
-    badgeCiclo.textContent = cicloSeleccionado.nombre;
-    badgeCiclo.title = 'Ciclo seleccionado';
+  const badgeDuracion = $('txt-duracion-badge');
+
+  function calcularSemanasEntreFechas(inicioStr, finStr) {
+    if (!inicioStr || !finStr) return null;
+    const pIni = String(inicioStr).split('/').map(Number);
+    const pFin = String(finStr).split('/').map(Number);
+    if (pIni.length === 3 && pFin.length === 3 && !isNaN(pIni[0]) && !isNaN(pFin[0])) {
+      const dIni = new Date(pIni[2], pIni[1] - 1, pIni[0]);
+      const dFin = new Date(pFin[2], pFin[1] - 1, pFin[0]);
+      const diffDias = Math.round((dFin - dIni) / (1000 * 60 * 60 * 24)) + 1;
+      const semanas = Math.round(diffDias / 7);
+      return semanas > 0 ? semanas : null;
+    }
+    return null;
   }
+
+  function obtenerSemanasDelCiclo(cicloId, anio, filas) {
+    if (Array.isArray(filas) && filas.length > 0) {
+      for (const f of filas) {
+        if (f.inicio && f.fin && f.inicio !== '—' && f.fin !== '—') {
+          const s = calcularSemanasEntreFechas(f.inicio, f.fin);
+          if (s) return s;
+        }
+      }
+    }
+    const claveCal = `${anio || '2027'}-${cicloId}`.toLowerCase();
+    const cal = window.CONSULTA_CURSOS?.calendarioCiclos?.[claveCal];
+    if (cal?.inicio && cal?.fin) {
+      const s = calcularSemanasEntreFechas(cal.inicio, cal.fin);
+      if (s) return s;
+    }
+    const c = window.CONSULTA_CURSOS?.ciclos?.find((x) => x.id.toLowerCase() === cicloId.toLowerCase());
+    if (c?.semanas) return c.semanas;
+    if (c?.duracion) {
+      if (c.duracion.includes('1 mes')) return 4;
+      if (c.duracion.includes('2 meses')) return 8;
+      if (c.duracion.includes('3 meses')) return 12;
+      const m = c.duracion.match(/(\d+)\s*semana/i);
+      if (m) return Number(m[1]);
+    }
+    return null;
+  }
+
+  function actualizarBadgesCiclo() {
+    if (badgeCiclo && cicloSeleccionado) {
+      badgeCiclo.textContent = `${cicloSeleccionado.nombre}${anioActivo ? ` ${anioActivo}` : ''}`;
+      badgeCiclo.title = anioActivo
+        ? `Ciclo seleccionado: ${cicloSeleccionado.nombre} ${anioActivo}`
+        : 'Ciclo seleccionado';
+    }
+    if (badgeDuracion) {
+      const semanas = obtenerSemanasDelCiclo(cicloActivo, anioActivo, horariosCargados);
+      if (semanas) {
+        badgeDuracion.textContent = `${semanas} semanas`;
+        badgeDuracion.title = `Duración académica: ${semanas} semanas`;
+        badgeDuracion.hidden = false;
+      } else {
+        badgeDuracion.textContent = '';
+        badgeDuracion.hidden = true;
+      }
+    }
+  }
+
+  actualizarBadgesCiclo();
 
   function actualizarBadgeModelo() {
     const badge = $('txt-modelo-badge');
@@ -212,8 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('portal_horarios_config_loaded', actualizarBadgeModelo);
 
   // 4. Fuente de datos: solo en línea (Google Drive y, de respaldo, la API REST)
-  let horariosCargados = [];
-  let fuenteEnVivo = false;
 
   const resolveApiBase = () => {
     if (window.API_BASE_URL) return window.API_BASE_URL.replace(/\/+$/, '');
@@ -577,12 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const obtenerAnio = (fila) =>
       String(fila?.anio || fila?.inicio || '').match(/\b(20\d{2})\b/)?.[1] || '';
     if (!anioActivo) anioActivo = obtenerAnio(filasCicloSeleccionado[0]);
-    if (badgeCiclo && cicloSeleccionado) {
-      badgeCiclo.textContent = `${cicloSeleccionado.nombre}${anioActivo ? ` ${anioActivo}` : ''}`;
-      badgeCiclo.title = anioActivo
-        ? `Ciclo seleccionado: ${cicloSeleccionado.nombre} ${anioActivo}`
-        : 'Ciclo seleccionado';
-    }
+    actualizarBadgesCiclo();
 
     leerFiltrosDeUrl();
     poblarFiltrosDinamicos();
