@@ -1,41 +1,109 @@
-/* ===================================================
-   USS Consulta de Cursos - Estilos Oficiales CINF
+/* ===================================================================
+   USS Consulta de Cursos · Estilos del Centro de Informática (CINF)
    Archivo: assets/css/estilos.css
-   Diseño institucional: Universidad Señor de Sipán
-   Tipografía: Plus Jakarta Sans
-   =================================================== */
+   Sistema propio (sin Bootstrap): tokens, escala tipográfica de 6 pasos,
+   un estilo de tarjeta, un par de botones y un radio.
+   La capa de movimiento (hover, press, entrada del hero) vive en
+   assets/motion/motion.css (Taste-Skill 2.5) y lee los tokens de aquí.
+   =================================================================== */
 
+/* -------------------------------------------------------------------
+   0. Tokens
+   ------------------------------------------------------------------- */
 :root {
+    /* Color institucional USS */
     --uss-azul: #073299;
-    --uss-azul-dark: #041d5f;
-    --uss-azul-light: #eff6ff;
-    --uss-azul-hover: #0a44cc;
-    --uss-sky: #0284c7;
+    --uss-azul-900: #041d5f;
+    --uss-azul-700: #0a3fb8;
+    --uss-azul-50: #eef3fd;
     --uss-oro: #ffc53d;
-    --uss-border: #e2e8f0;
-    --uss-border-light: #f1f5f9;
-    --uss-bg: #f8fafc;
-    --uss-text-main: #0f172a;
-    --uss-text-muted: #64748b;
-    --uss-text-subtle: #94a3b8;
-    --uss-sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --uss-sombra-md: 0 4px 14px -2px rgba(7, 50, 153, 0.08);
-    --uss-sombra-lg: 0 20px 38px -10px rgba(7, 50, 153, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
+
+    /* Tierra, tinta y líneas */
+    --bg: #ffffff;
+    --surface: #f4f6fa;
+    --ink: #0b1630;
+    --ink-2: #2a3550;
+    --muted: #556079;
+    --line: #e2e7f0;
+    --line-strong: #c7d0de;
+    --card: #ffffff;
+
+    /* Acción (la lee motion.css) */
+    --action: var(--uss-azul);
+    --action-ink: #ffffff;
+
+    /* Estados */
+    --ok: #0f7a45;
+    --ok-bg: #e8f6ee;
+    --cerrado: #b42318;
+    --cerrado-bg: #fdecea;
+
+    /* Tipografía: 6 pasos */
+    --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --t-xs: 12px;
+    --t-sm: 14px;
+    --t-base: 16px;
+    --t-lg: 19px;
+    --t-xl: 26px;
+    --t-hero: clamp(36px, 4.2vw, 60px);
+
+    /* Forma y espacio */
+    --r: 12px;
+    --r-sm: 8px;
+    --r-btn: 10px;
+    --gut: 80px;
+    --wrap: 1280px;
+    --nav-h: 76px;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    --sombra: 0 1px 2px rgb(11 22 48 / .05), 0 8px 24px -16px rgb(11 22 48 / .18);
 }
 
-* {
+/* -------------------------------------------------------------------
+   1. Base
+   ------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
 body {
+    margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--uss-bg);
-    font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 13.5px;
-    color: var(--uss-text-main);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: var(--t-base);
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ul, ol, figure {
+    margin: 0;
+}
+
+img, svg {
+    display: block;
+    max-width: 100%;
+}
+
+button, input, select {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: var(--action);
 }
 
 [hidden] {
@@ -43,1318 +111,988 @@ body {
 }
 
 :focus-visible {
-    outline: 2px solid var(--uss-azul);
+    outline: 2px solid var(--action);
     outline-offset: 2px;
 }
 
-/* ===================================================
-   1. Portada institucional (Dimensiones idénticas a uss-gex)
-   =================================================== */
-.portada-uss {
-    position: relative;
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
-    background: linear-gradient(135deg, #041d5f 0%, #073299 50%, #1450d8 100%);
-    color: #ffffff;
-    padding-top: 16px;
-    padding-bottom: 74px;
-    /* pb-16 sm:pb-20 de uss-gex para que la tarjeta flote con holgura */
-    box-shadow: 0 4px 24px -2px rgba(4, 29, 95, 0.25);
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-.portada-uss__luz {
-    position: absolute;
-    border-radius: 9999px;
-    pointer-events: none;
+.icono {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.portada-uss__luz--1 {
-    width: 320px;
-    height: 320px;
-    background: rgba(56, 189, 248, 0.25);
-    filter: blur(75px);
-    top: -90px;
-    left: -70px;
+.icono--sm {
+    width: 16px;
+    height: 16px;
 }
 
-.portada-uss__luz--2 {
-    width: 380px;
-    height: 380px;
-    background: rgba(129, 140, 248, 0.2);
-    filter: blur(85px);
-    bottom: -110px;
-    right: -70px;
+.wrap {
+    width: min(100% - 2 * var(--gut), var(--wrap));
+    margin-inline: auto;
 }
 
-.hero-illustration {
-    position: absolute;
-    right: -2rem;
-    bottom: 0.5rem;
-    width: 22rem;
-    color: rgba(255, 255, 255, 0.08);
-    pointer-events: none;
-}
-
-@media (max-width: 768px) {
-    .hero-illustration {
-        width: 14rem;
-        right: -1rem;
-        opacity: 0.6;
+@media (max-width: 1023px) {
+    :root {
+        --gut: 48px;
     }
 }
 
-.portada-uss__logo {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 12px;
-    border-radius: 12px;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.15s ease;
+@media (max-width: 639px) {
+    :root {
+        --gut: 20px;
+    }
 }
 
-.portada-uss__logo:hover {
-    transform: scale(1.02);
-}
-
-.portada-uss__logo img {
-    display: block;
-    height: 30px;
-    width: auto;
-}
-
-.btn-portal-cinf {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(8px);
-    color: #ffffff;
-    font-size: 12px;
+/* Enlace para saltar al contenido: primer foco del teclado */
+.skip-link {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: var(--r-btn);
+    background: var(--bg);
+    color: var(--ink);
     font-weight: 700;
+    font-size: var(--t-sm);
     text-decoration: none;
-    transition: all 0.15s ease;
+    transform: translateY(-160%);
 }
 
-.btn-portal-cinf:hover {
-    background: #ffffff;
-    color: var(--uss-azul);
-    border-color: #ffffff;
+.skip-link:focus-visible {
+    transform: none;
 }
 
-.insignia-uss {
+/* -------------------------------------------------------------------
+   2. Botones: un par (primario y secundario) + variante clara sobre azul
+   El hover, el paso de 1px y el press los pone motion.css.
+   ------------------------------------------------------------------- */
+.btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    font-size: 11px;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: var(--r-btn);
+    font-size: var(--t-sm);
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #e0e7ff;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.portada-uss__titulo {
-    font-size: 2.1rem;
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
-    margin-bottom: 6px;
+.btn--primary {
+    background: var(--action);
+    color: var(--action-ink);
 }
 
-@media (min-width: 768px) {
-    .portada-uss__titulo {
-        font-size: 2.5rem;
-    }
+.btn--secondary {
+    background: var(--bg);
+    color: var(--ink);
+    border-color: var(--line-strong);
 }
 
-.texto-oro {
-    color: var(--uss-oro);
+.btn--claro {
+    background: transparent;
+    color: #ffffff;
+    border-color: rgb(255 255 255 / .42);
 }
 
-.portada-uss__subtitulo {
-    font-size: 14px;
-    color: rgba(224, 231, 255, 0.9);
-    max-width: 580px;
-    margin: 0 auto;
-    line-height: 1.45;
+.btn--claro:hover {
+    background: rgb(255 255 255 / .1);
+    border-color: rgb(255 255 255 / .8);
 }
 
-/* ===================================================
-   2. Contenedor y Tarjeta Elevada de Carrera (Paso 1 y 2)
-   =================================================== */
-.hoja-contenedor {
-    flex: 1;
-    max-width: 1120px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 16px 28px;
-    position: relative;
-    z-index: 10;
+.btn--sm {
+    min-height: 40px;
+    padding: 0 14px;
 }
 
-.tarjeta-carrera-elevada {
+.btn--lg {
+    min-height: 56px;
+    padding: 0 22px;
+    font-size: var(--t-base);
+}
+
+/* -------------------------------------------------------------------
+   3. Navegación
+   ------------------------------------------------------------------- */
+.nav {
     position: relative;
     z-index: 20;
-    margin-top: -32px;
-    padding: 20px 24px 22px;
-    border-radius: 16px;
-    background: #ffffff;
-    border: 1px solid var(--uss-border);
-    box-shadow: 0 16px 38px -20px rgba(7, 50, 153, 0.28), 0 3px 10px rgba(15, 23, 42, 0.04);
 }
 
-#vista-carrera,
-#vista-ciclos {
-    animation: matSelectFadeIn 0.2s ease-out;
+.nav__fila {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: var(--nav-h);
 }
 
-#vista-ciclos {
+.nav__izq {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.nav__marca {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+}
+
+.nav__marca img {
+    width: auto;
+    height: 34px;
+}
+
+.nav--sobre-azul .nav__marca img {
+    filter: brightness(0) invert(1);
+}
+
+/* Sobre el azul del hero (portada) */
+.nav--sobre-azul {
+    position: absolute;
+    inset: 0 0 auto 0;
+}
+
+/* Barra clara fija (página de horarios) */
+.nav--claro {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+}
+
+.nav--claro .nav__fila {
+    min-height: 64px;
+}
+
+.nav__texto-largo {
+    display: inline;
+}
+
+/* -------------------------------------------------------------------
+   4. Portada: el hero es la herramienta (pasos 1 a 3) + foto del campus
+   ------------------------------------------------------------------- */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    padding-top: calc(var(--nav-h) + 8px);
+    padding-bottom: 28px;
+    background: var(--uss-azul);
+    color: #ffffff;
+}
+
+/* Sobre el azul, la acción principal es el dorado institucional */
+.hero {
+    --action: var(--uss-oro);
+    --action-ink: var(--ink);
+}
+
+.hero > .wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.hero-text {
+    margin-block: auto;
+}
+
+.hero__pie {
+    color: rgb(255 255 255 / .72);
+    font-size: var(--t-xs);
+    text-wrap: balance;
+}
+
+/* Tres datos reales al pie de la columna de texto */
+.hero__datos {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    grid-template-areas:
-        "career career"
-        "model cycle";
-    gap: 16px 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin: auto 0 0;
+    padding-top: 20px;
+    border-top: 1px solid rgb(255 255 255 / .18);
+}
+
+.hero__datos dt {
+    font-size: var(--t-lg);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.hero__datos dd {
+    margin: 2px 0 0;
+    font-size: var(--t-sm);
+    color: rgb(255 255 255 / .78);
+}
+
+.hero:has(#vista-ciclos:not([hidden])) .hero__datos {
+    display: none;
+}
+
+.hero > .wrap {
+    position: relative;
+    z-index: 1;
+}
+
+.hero__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 32px;
     align-items: start;
 }
 
-.carrera-seleccionada-barra {
-    grid-area: career;
-}
-
-.paso-modelo {
-    grid-area: model;
-}
-
-.paso-ciclos {
-    grid-area: cycle;
-}
-
-.paso-modelo,
-.paso-ciclos {
-    min-width: 0;
-    padding: 18px;
-    border: 1px solid #e8edf5;
-    border-radius: 14px;
-    background: #f8fafc;
-}
-
-.tarjeta-carrera__paso {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 9999px;
-    background: var(--uss-azul);
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 12px;
-    flex-shrink: 0;
-}
-
-.paso-encabezado {
-    gap: 12px !important;
-}
-
-.paso-encabezado > div {
+.hero__texto {
+    grid-column: 1 / span 7;
+    align-self: stretch;
+    padding-right: clamp(0px, 3vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     min-width: 0;
 }
 
-.tarjeta-carrera__titulo {
-    font-size: 17px;
+.hero h1 {
+    max-width: 14ch;
+    font-size: var(--t-hero);
     font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--uss-text-main);
-    margin: 0;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
 }
 
-.tarjeta-carrera__desc {
-    font-size: 13px;
-    color: var(--uss-text-muted);
+.hero__lead {
+    max-width: 52ch;
+    color: rgb(255 255 255 / .86);
+    font-size: var(--t-lg);
     line-height: 1.5;
 }
 
-/* ===================================================
-   3. Combobox de Carrera (Escritura Directa en el Input)
-   =================================================== */
+.hero__frame {
+    grid-column: 8 / span 5;
+    position: relative;
+    height: min(680px, calc(100svh - var(--nav-h) - 96px));
+    min-height: 460px;
+    border-radius: var(--r);
+    overflow: hidden;
+    background: var(--uss-azul-900);
+}
+
+.hero__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 46% 60%;
+}
+
+/* Con la carrera elegida el hero cede espacio a los pasos 2 y 3 */
+.hero:has(#vista-ciclos:not([hidden])) h1 {
+    max-width: none;
+    font-size: clamp(30px, 2.8vw, 40px);
+}
+
+.hero:has(#vista-ciclos:not([hidden])) .hero__lead {
+    display: none;
+}
+
+.hero:has(#vista-ciclos:not([hidden])) .hero__texto {
+    gap: 16px;
+}
+
+/* -------------------------------------------------------------------
+   5. Panel de la herramienta (una sola caja)
+   ------------------------------------------------------------------- */
+.herramienta {
+    position: relative;
+    color: #ffffff;
+}
+
+.campo__etiqueta {
+    display: block;
+    margin-bottom: 8px;
+    font-size: var(--t-sm);
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.campo__ayuda {
+    margin-top: 10px;
+    font-size: var(--t-sm);
+    color: rgb(255 255 255 / .78);
+}
+
+/* Paso: número + título en una línea, separado por una regla fina */
+.paso + .paso {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgb(255 255 255 / .18);
+}
+
+.paso__titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: var(--t-base);
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.paso__num {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border-radius: 50%;
+    background: rgb(255 255 255 / .14);
+    color: #ffffff;
+    font-size: var(--t-xs);
+    font-weight: 800;
+}
+
+/* --- Buscador de carrera (combobox) --- */
+.buscador-fila {
+    display: flex;
+    gap: 10px;
+}
+
 .carrera-combobox {
     position: relative;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
 }
 
 .carrera-combobox__wrap {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 54px;
-    padding: 0 16px 0 18px;
-    background: #ffffff;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    transition: all 0.18s ease;
-}
-
-.carrera-combobox__wrap:focus-within {
-    border-color: var(--uss-azul);
-    box-shadow: 0 0 0 3px rgba(7, 50, 153, 0.12);
-    background: #ffffff;
+    position: relative;
 }
 
 .carrera-combobox__icono {
-    font-size: 20px;
-    line-height: 1;
-    margin-right: 12px;
-    flex-shrink: 0;
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    color: var(--muted);
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 .carrera-combobox__input {
-    flex: 1;
-    height: 100%;
-    border: none;
+    width: 100%;
+    height: 56px;
+    color: var(--ink);
+    padding: 0 56px 0 46px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-btn);
+    background: var(--bg);
+    font-size: var(--t-base);
+    font-weight: 500;
+    transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
+}
+
+.carrera-combobox__input:hover {
+    border-color: color-mix(in oklab, var(--ink) 40%, transparent);
+}
+
+.carrera-combobox__input:focus,
+.carrera-combobox__wrap.abierto .carrera-combobox__input {
+    border-color: var(--uss-azul);
+    box-shadow: 0 0 0 3px var(--uss-oro);
     outline: none;
-    background: transparent;
-    font-size: 15.5px;
-    font-weight: 600;
-    font-family: inherit;
-    color: var(--uss-text-main);
 }
 
 .carrera-combobox__input::placeholder {
-    color: #94a3b8;
-    font-weight: 400;
-}
-
-.carrera-combobox__acciones {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
+    color: #6b7489;
 }
 
 .carrera-combobox__chevron {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border: 0;
+    border-radius: var(--r-sm);
     background: transparent;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    font-size: 13px;
-    border-radius: 6px;
-    transition: transform 0.2s ease, background 0.15s ease;
+    color: var(--muted);
+    transition: background-color 150ms var(--ease), color 150ms var(--ease);
 }
 
 .carrera-combobox__chevron:hover {
-    background: #f1f5f9;
-    color: var(--uss-azul);
+    background: var(--surface);
+    color: var(--ink);
 }
 
-.carrera-combobox__wrap.abierto .carrera-combobox__chevron {
+.carrera-combobox__wrap.abierto .carrera-combobox__chevron .icono {
     transform: rotate(180deg);
 }
 
-/* Dropdown flotante directamente debajo */
 .carrera-combobox__dropdown {
+    color: var(--ink);
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
     right: 0;
-    z-index: 999;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    box-shadow: 0 18px 40px -4px rgba(7, 50, 153, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05);
-    max-height: 270px;
+    z-index: 30;
+    max-height: min(320px, 46vh);
     overflow-y: auto;
     padding: 6px;
-    animation: matSelectFadeIn 0.16s ease-out;
-}
-
-@keyframes matSelectFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg);
+    box-shadow: 0 18px 40px -18px rgb(11 22 48 / .35);
 }
 
 .carrera-combobox__item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    padding: 9px 12px;
-    border-radius: 8px;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: var(--r-sm);
+    font-size: var(--t-base);
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.12s ease;
 }
 
 .carrera-combobox__item:hover,
 .carrera-combobox__item.activo {
-    background: var(--uss-azul-light);
+    background: var(--uss-azul-50);
 }
 
 .carrera-combobox__item.seleccionado {
-    background: #e0e7ff;
+    color: var(--uss-azul);
     font-weight: 700;
-}
-
-.carrera-combobox__item-nombre {
-    font-size: 13.5px;
-    color: var(--uss-text-main);
 }
 
 .carrera-combobox__item-ruta {
-    font-size: 11px;
+    flex: none;
+    font-size: var(--t-xs);
     font-weight: 600;
-    color: var(--uss-azul);
-    background: rgba(7, 50, 153, 0.08);
-    padding: 2px 7px;
-    border-radius: 6px;
-    white-space: nowrap;
+    color: var(--muted);
 }
 
 .carrera-combobox__highlight {
-    background: #fef08a;
-    color: #854d0e;
-    font-weight: 700;
-    padding: 0 1px;
-    border-radius: 2px;
+    background: #fff1c7;
+    border-radius: 3px;
 }
 
 .carrera-combobox__empty {
-    padding: 16px 12px;
-    text-align: center;
-    font-size: 12.5px;
-    color: #64748b;
+    padding: 14px 12px;
+    font-size: var(--t-sm);
+    color: var(--muted);
 }
 
-/* ===================================================
-   4. Barra de Carrera Seleccionada y Botón Cambiar
-   =================================================== */
+/* --- Carrera elegida --- */
 .carrera-seleccionada-barra {
     display: flex;
     align-items: center;
-    width: 100%;
-    max-width: 100%;
     justify-content: space-between;
-    padding: 12px 16px;
-    background: #f5f9ff;
-    border: 1px solid #d5e5fb;
-    border-radius: 12px;
-}
-
-.carrera-seleccionada-barra > div {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    min-width: 0;
-    width: 100%;
-    justify-content: flex-start;
     gap: 12px;
-}
-
-.carrera-seleccionada-barra > div > div:first-child {
-    flex: 1;
-    min-width: 0;
-}
-
-.carrera-seleccionada-barra > div > div:first-child > div {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    min-width: 0;
-    white-space: nowrap;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgb(255 255 255 / .18);
 }
 
 .carrera-seleccionada-barra__tag {
-    flex: 0 0 auto;
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--uss-text-muted);
+    display: block;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: rgb(255 255 255 / .72);
 }
 
 .carrera-seleccionada-barra__nombre {
     display: block;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1.05rem;
-    line-height: 1.2;
-    color: var(--uss-azul-dark);
-    white-space: nowrap;
+    font-size: var(--t-lg);
+    font-weight: 800;
+    line-height: 1.25;
 }
 
-.carrera-seleccionada-barra__icono,
-.btn-cambiar-carrera {
-    flex-shrink: 0;
-}
-
-.btn-cambiar-carrera {
-    display: inline-flex;
-    align-items: center;
+/* --- Una sola familia de tarjeta: opciones de modelo y ciclos --- */
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     gap: 6px;
-    padding: 5px 12px;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #475569;
-    font-size: 11.5px;
-    font-weight: 700;
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--card);
+    color: var(--ink);
+    text-align: left;
     cursor: pointer;
-    transition: all 0.15s ease;
 }
 
-.btn-cambiar-carrera:hover {
-    background: #fee2e2;
-    color: #dc2626;
-    border-color: #fca5a5;
-}
-
-/* ===================================================
-   4.1 Selector de Modelo de Acreditación (Paso 2)
-   =================================================== */
-.paso-modelo {
-    padding-top: 18px;
-    margin-bottom: 0;
+.card[aria-checked="true"],
+.card.activa {
+    border-color: var(--uss-oro);
+    box-shadow: 0 0 0 2px var(--uss-oro);
 }
 
 .selector-modelo-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.paso-modelo > .d-flex,
-.paso-ciclos > .d-flex {
-    margin-bottom: 8px;
-}
-
-.card-modelo-opcion {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    padding: 14px 16px;
-    border: 1.5px solid var(--uss-border);
-    border-radius: 14px;
-    background: #ffffff;
-    cursor: pointer;
-    user-select: none;
-    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-    outline: none;
-}
-
-.card-modelo-opcion:hover {
-    border-color: #93c5fd;
-    background: #f8fafc;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px -2px rgba(7, 50, 153, 0.1);
-}
-
-.card-modelo-opcion:focus-visible {
-    border-color: var(--uss-azul);
-    box-shadow: 0 0 0 3px rgba(7, 50, 153, 0.25);
-}
-
-.card-modelo-opcion.activa {
-    border-color: var(--uss-azul);
-    background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
-    box-shadow: 0 6px 18px -4px rgba(7, 50, 153, 0.16);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
 }
 
 .card-modelo-opcion__check {
     position: absolute;
-    top: 9px;
-    right: 9px;
-    width: 18px;
-    height: 18px;
+    top: 16px;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--line-strong);
     border-radius: 50%;
-    border: 1.5px solid #cbd5e1;
-    background: #ffffff;
-    color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    transition: all 0.18s ease;
+    background: var(--bg);
 }
 
-.card-modelo-opcion.activa .card-modelo-opcion__check {
-    border-color: var(--uss-azul);
-    background: var(--uss-azul);
-    color: #ffffff;
-    transform: scale(1.05);
+.card[aria-checked="true"] .card-modelo-opcion__check {
+    border: 6px solid var(--action);
 }
 
-.card-modelo-opcion__top {
+.card-modelo-opcion__iconos {
     display: flex;
-    align-items: center;
     gap: 6px;
-    margin-bottom: 4px;
-    padding-right: 22px;
+    margin-bottom: 6px;
 }
 
-.card-modelo-opcion__icono {
-    font-size: 18px;
-    line-height: 1;
-}
-
-.card-modelo-opcion__tag {
-    display: inline-block;
-    padding: 1px 6px;
-    border-radius: 999px;
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-}
-
-.card-modelo-opcion__tag--recomendado {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
-}
-
-.card-modelo-opcion__tag--tradicional {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+.card-modelo-opcion__iconos img {
+    width: 28px;
+    height: 28px;
 }
 
 .card-modelo-opcion__titulo {
-    font-size: 15.5px;
+    padding-right: 28px;
+    font-size: var(--t-base);
     font-weight: 800;
-    color: var(--uss-text-main);
-    line-height: 1.2;
-    margin-bottom: 1px;
-}
-
-.card-modelo-opcion.activa .card-modelo-opcion__titulo {
-    color: var(--uss-azul);
-}
-
-.card-modelo-opcion__subtitulo {
-    display: block;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--uss-text-muted);
-    margin-bottom: 4px;
+    line-height: 1.3;
 }
 
 .card-modelo-opcion__desc {
-    font-size: 13px;
-    line-height: 1.5;
-    color: #475569;
-    margin-bottom: 0;
+    font-size: var(--t-sm);
+    line-height: 1.45;
+    color: var(--muted);
 }
 
-@media (max-width: 991px) {
-    #vista-ciclos {
-        display: block;
-    }
-
-    .paso-modelo,
-    .paso-ciclos {
-        padding: 0;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-    }
-
-    .paso-modelo {
-        margin-bottom: 16px;
-    }
-
-    .selector-modelo-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-.card-modelo-opcion__desc strong {
-    color: var(--uss-text-main);
-}
-
-/* ===================================================
-   5. Grid de Ciclos de Apertura (Adentro de la Tarjeta)
-   =================================================== */
+/* --- Ciclos --- */
 .grid-ciclos-compacto {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-top: 10px;
-}
-
-.ciclos-proximos {
-    margin: 14px 0 0;
-    padding: 9px 12px;
-    border-radius: 10px;
-    background: var(--uss-bg);
-    border: 1px dashed #cbd5e1;
-    color: var(--uss-text-muted);
-    font-size: 12.5px;
-    font-weight: 600;
-}
-
-.ciclos-ayuda {
-    margin: 10px 0 0;
-    font-size: 12.5px;
-    color: var(--uss-text-muted);
-}
-
-.ciclos-ayuda a {
-    color: var(--uss-azul);
-    font-weight: 700;
 }
 
 .ciclo-btn {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
-    min-height: 104px;
-    padding: 14px 16px;
-    background: #ffffff;
-    border: 1.5px solid var(--uss-border);
-    border-radius: 12px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    box-shadow: var(--uss-sombra-sm);
-    position: relative;
-    overflow: hidden;
+    gap: 12px;
+    font: inherit;
 }
 
-.ciclo-btn:hover {
-    border-color: var(--uss-azul);
-    transform: translateY(-2px);
-    box-shadow: var(--uss-sombra-md);
-}
-
-.ciclo-btn:active {
-    transform: translateY(0);
+.ciclo-btn:disabled {
+    cursor: not-allowed;
+    opacity: .5;
 }
 
 .ciclo-btn__header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 4px;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .ciclo-btn__mes {
-    font-size: 18px;
+    font-size: var(--t-lg);
     font-weight: 800;
-    color: var(--uss-text-main);
+    line-height: 1.2;
 }
 
 .ciclo-btn__duracion {
-    margin-top: 2px;
-    font-size: 12px;
-    color: var(--uss-text-muted);
-}
-
-.ciclo-btn__icono {
-    font-size: 14px;
-    opacity: 0.85;
+    font-size: var(--t-sm);
+    color: var(--muted);
 }
 
 .ciclo-btn__footer {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 4px;
-    margin-top: 6px;
-    padding-top: 4px;
-    border-top: 1px solid #f1f5f9;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: auto;
 }
 
 .ciclo-btn__badge {
-    font-size: 12px;
+    font-size: var(--t-xs);
     font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.ciclo-btn__badge--disponible {
-    color: #0369a1;
-}
-
-.ciclo-btn__badge--vacio {
-    color: #94a3b8;
+    color: var(--ok);
 }
 
 .ciclo-btn__accion {
-    font-size: 12.5px;
-    font-weight: 700;
-    color: var(--uss-azul);
-}
-
-.ciclo-btn--destacado {
-    border-color: #93c5fd;
-    background: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
-}
-
-.ciclo-btn--destacado:hover {
-    border-color: var(--uss-azul);
-}
-
-/* Estado bloqueado / deshabilitado cuando dice Próximamente */
-.ciclo-btn:disabled,
-.ciclo-btn--deshabilitado {
-    opacity: 0.5;
-    background: #f8fafc !important;
-    border-color: #e2e8f0 !important;
-    cursor: not-allowed !important;
-    pointer-events: none;
-    box-shadow: none !important;
-    transform: none !important;
-}
-
-.ciclo-btn:disabled .ciclo-btn__mes,
-.ciclo-btn--deshabilitado .ciclo-btn__mes {
-    color: #475569;
-}
-
-.ciclo-btn:disabled .ciclo-btn__duracion,
-.ciclo-btn--deshabilitado .ciclo-btn__duracion {
-    color: #94a3b8;
-}
-
-.ciclo-btn:disabled .ciclo-btn__icono,
-.ciclo-btn--deshabilitado .ciclo-btn__icono {
-    opacity: 0.4;
-    filter: grayscale(1);
-}
-
-.ciclo-btn__accion--bloqueado {
-    color: #94a3b8 !important;
-    font-weight: 600;
-}
-
-/* Tarjeta informativa de ayuda */
-.ciclo-btn--ayuda {
-    background: #f8fafc;
-    border: 1.5px dashed #cbd5e1;
-    cursor: default;
-}
-
-.ciclo-btn--ayuda:hover {
-    transform: none;
-    border-color: #94a3b8;
-    box-shadow: none;
-}
-
-/* ===================================================
-   6. Vista de horarios (horarios.html)
-   =================================================== */
-.header-horarios__titulo {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--uss-azul);
-}
-
-.header-horarios__sub {
-    font-size: 11px;
-    color: var(--uss-text-muted);
-}
-
-.hoja-contenedor-horarios {
-    width: 100%;
-    max-width: 1680px;
-    /* en monitores anchos la tabla aprovecha el espacio */
-    margin: 0 auto;
-    padding: 8px 18px 12px;
-}
-
-.btn-volver-inicio {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    min-height: 36px;
-    padding: 6px 14px;
-    border-radius: 10px;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #334155;
-    font-size: 12.5px;
+    font-size: var(--t-sm);
     font-weight: 700;
-    text-decoration: none;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.btn-volver-inicio:hover {
-    background: #f1f5f9;
     color: var(--uss-azul);
-    border-color: #94a3b8;
 }
 
-/* ---------- 6.1 Banner de carrera ---------- */
-.banner-carrera {
+.ciclo-btn__accion::after {
+    content: "→";
+    transition: transform 120ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ciclo-btn:hover .ciclo-btn__accion::after {
+        transform: translateX(3px);
+        transition-duration: 150ms;
+    }
+}
+
+.ciclos-proximos {
+    margin-top: 12px;
+    font-size: var(--t-sm);
+    color: rgb(255 255 255 / .82);
+}
+
+.ciclos-ayuda {
+    margin-top: 12px;
+    font-size: var(--t-sm);
+    color: rgb(255 255 255 / .82);
+}
+
+.ciclos-ayuda a {
+    color: #ffffff;
+    font-weight: 700;
+    text-underline-offset: 3px;
+}
+
+/* --- Estado de red (carga desde Google Drive) --- */
+.estado-red {
+    padding: 4px 0;
+}
+
+.estado-red__titulo {
+    font-weight: 800;
+    color: var(--cerrado);
+}
+
+.estado-red__texto {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #ffffff;
-    border: 1px solid var(--uss-border);
-    border-radius: 14px;
-    padding: 6px 14px;
-    box-shadow: var(--uss-sombra-sm);
-    margin-bottom: 8px;
+    font-size: var(--t-sm);
+    color: var(--muted);
 }
 
-.banner-carrera__icono {
-    font-size: 21px;
-    line-height: 1;
-    flex-shrink: 0;
+/* En la portada el estado de red va sobre el azul */
+.hero .estado-red__titulo {
+    color: #ffd2cc;
 }
 
-.banner-carrera__datos {
+.hero .estado-red__texto {
+    color: rgb(255 255 255 / .85);
+}
+
+.hero .estado-red__spinner {
+    border-color: rgb(255 255 255 / .25);
+    border-top-color: #ffffff;
+}
+
+.hero .esqueleto {
+    background: linear-gradient(90deg, rgb(255 255 255 / .06) 0%, rgb(255 255 255 / .14) 50%, rgb(255 255 255 / .06) 100%);
+    background-size: 200% 100%;
+}
+
+.estado-red--error .estado-red__texto {
+    margin-top: 4px;
+}
+
+.estado-red__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.estado-red__spinner {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border: 2px solid var(--line);
+    border-top-color: var(--action);
+    border-radius: 50%;
+    animation: giro 0.8s linear infinite;
+}
+
+@keyframes giro {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.estado-red__esqueletos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.estado-red__filas {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.esqueleto {
+    border-radius: var(--r-sm);
+    background: linear-gradient(90deg, var(--surface) 0%, #e9edf4 50%, var(--surface) 100%);
+    background-size: 200% 100%;
+    animation: brillo 1.4s ease-in-out infinite;
+}
+
+.esqueleto--ciclo {
+    height: 104px;
+}
+
+.esqueleto--fila {
+    height: 44px;
+}
+
+@keyframes brillo {
+    from {
+        background-position: 100% 0;
+    }
+
+    to {
+        background-position: -100% 0;
+    }
+}
+
+/* -------------------------------------------------------------------
+   6. Pie
+   ------------------------------------------------------------------- */
+.footer-uss {
+    margin-top: auto;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: var(--t-xs);
+}
+
+/* -------------------------------------------------------------------
+   7. Página de horarios
+   ------------------------------------------------------------------- */
+.hoja-contenedor-horarios {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 24px;
+    padding-bottom: 32px;
+}
+
+/* --- Cabecera de la consulta: carrera, ruta, modelo y ciclo --- */
+.banner-carrera {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 10px;
-    min-width: 0;
-    flex: 1;
+    gap: 8px 20px;
 }
 
-.banner-carrera__etiqueta {
-    font-size: 11px;
+.banner-carrera__ciclo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: var(--t-xs);
     font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--uss-text-muted);
+}
+
+.banner-carrera__ciclo:empty {
+    display: none;
 }
 
 .banner-carrera__nombre {
-    font-size: 15px;
+    font-size: var(--t-xl);
     font-weight: 800;
-    color: var(--uss-text-main);
-    line-height: 1.25;
-    overflow-wrap: break-word;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
 }
 
 .banner-carrera__ruta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 6px 10px;
+    font-size: var(--t-sm);
+    color: var(--muted);
 }
 
-.banner-carrera__badge {
-    padding: 2px 9px;
-    border-radius: 999px;
-    background: var(--uss-azul);
-    color: #ffffff;
-    font-size: 11.5px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.banner-carrera__categoria {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--uss-azul);
-}
-
+.etiqueta,
+.banner-carrera__badge,
 .banner-carrera__modelo-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 10px;
+    min-height: 26px;
+    padding: 0 10px;
     border-radius: 999px;
-    font-size: 11px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: var(--t-xs);
     font-weight: 700;
-    white-space: nowrap;
 }
 
-.banner-carrera__modelo-badge--protech {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
+.banner-carrera__modelo-badge {
+    background: var(--uss-azul-50);
+    border-color: transparent;
+    color: var(--uss-azul);
 }
 
-.banner-carrera__modelo-badge--tradicional {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
-}
-
-.banner-carrera__ciclo-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 9px;
-    border: 1px solid #dbe3ee;
-    border-radius: 999px;
-    background: #f8fafc;
-    color: #475569;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.banner-carrera__cambiar {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    min-height: 30px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #475569;
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.banner-carrera__cambiar-corto,
-.tab-modelo__texto--corto {
-    display: none;
-}
-
-.banner-carrera__cambiar:hover {
-    background: #fee2e2;
-    color: #dc2626;
-    border-color: #fca5a5;
-}
-
-/* ---------- 6.2 Cinta: ciclos y filtros ---------- */
+/* --- Filtros --- */
 .cinta-horarios {
-    background: #ffffff;
-    border: 1px solid var(--uss-border);
-    border-radius: 12px;
-    padding: 6px 12px 8px;
-    box-shadow: var(--uss-sombra-sm);
-    margin-bottom: 6px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg);
 }
 
-.cinta-horarios__modelo-switch {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.cinta-horarios__modelo-label {
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--uss-text-muted);
-    flex-shrink: 0;
-}
-
-.selector-modelo-tabs {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    gap: 3px;
-}
-
-.tab-modelo {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 7px;
-    border: none;
-    background: transparent;
-    color: #475569;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-}
-
-.tab-modelo:hover:not(.activa) {
-    background: rgba(255, 255, 255, 0.7);
-    color: var(--uss-text-main);
-}
-
-.tab-modelo.activa {
-    background: #ffffff;
-    color: var(--uss-azul);
-    font-weight: 800;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.tab-modelo__icono {
-    font-size: 13.5px;
-    line-height: 1;
-}
-
-.tab-modelo__texto {
-    line-height: 1.2;
-}
-
-.cinta-horarios__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding-bottom: 5px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.cinta-horarios__ciclos-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-    flex: 1;
-}
-
-.cinta-horarios__label {
-    font-weight: 800;
-    color: #1e293b;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-/* Carril deslizable: nunca empuja el ancho de la página */
-.pestanas-ciclos-scroll {
-    min-width: 0;
-    width: 100%;
-    flex: 1;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    padding: 1px 2px 3px;
-}
-
-/* Degradado en el borde donde aún quedan pestañas por deslizar */
-.pestanas-ciclos-scroll.hay-mas-derecha {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
-}
-
-.pestanas-ciclos-scroll.hay-mas-izquierda {
-    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 34px), transparent);
-    mask-image: linear-gradient(to left, #000 calc(100% - 34px), transparent);
-}
-
-.pestanas-ciclos-scroll.hay-mas-derecha.hay-mas-izquierda {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 34px, #000 calc(100% - 34px), transparent);
-    mask-image: linear-gradient(to right, transparent, #000 34px, #000 calc(100% - 34px), transparent);
-}
-
-.pestanas-ciclos {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: max-content;
-}
-
-.pestana-ciclo {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-    min-height: 28px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    color: #475569;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.pestana-ciclo:hover:not(:disabled) {
-    background: #f1f5f9;
-    color: var(--uss-azul);
-    border-color: #cbd5e1;
-}
-
-.pestana-ciclo.activa {
-    background: var(--uss-azul);
-    color: #ffffff;
-    border-color: var(--uss-azul);
-    box-shadow: 0 2px 6px rgba(7, 50, 153, 0.2);
-}
-
-.pestana-ciclo__badge {
-    font-size: 10.5px;
-    font-weight: 800;
-    padding: 1px 6px;
-    border-radius: 10px;
-    background: #eff6ff;
-    color: var(--uss-azul);
-}
-
-.pestana-ciclo.activa .pestana-ciclo__badge {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
-}
-
-/* Meses sin apertura */
-.pestana-ciclo:disabled,
-.pestana-ciclo--bloqueada {
-    opacity: 0.5;
-    background: #f8fafc;
-    color: #94a3b8;
-    border: 1px dashed #cbd5e1;
-    cursor: not-allowed;
-    pointer-events: none;
-    box-shadow: none;
-}
-
-.pestana-ciclo__lock {
-    font-size: 10px;
-    opacity: 0.75;
-}
-
-.cinta-horarios__conteo {
-    margin: 0;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--uss-text-muted);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-/* Filtros: una fila en escritorio */
 .filtros-horarios {
     display: grid;
-    grid-template-columns: minmax(200px, 1.5fr) repeat(4, minmax(0, 1fr)) auto;
-    gap: 6px;
-    align-items: center;
-}
-
-.filtros-horarios .form-control,
-.filtros-horarios .form-select {
-    min-height: 32px;
-    border-radius: 8px;
-    border-color: #cbd5e1;
-    font-size: 13px;
-    font-family: inherit;
-}
-
-.filtros-horarios .form-control:focus,
-.filtros-horarios .form-select:focus {
-    border-color: var(--uss-azul);
-    box-shadow: 0 0 0 3px rgba(7, 50, 153, 0.12);
+    grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(0, 1fr)) 44px;
+    gap: 8px;
 }
 
 .filtros-horarios__buscar {
     position: relative;
+    display: block;
     margin: 0;
 }
 
 .filtros-horarios__lupa {
     position: absolute;
-    left: 11px;
     top: 50%;
+    left: 12px;
+    color: var(--muted);
     transform: translateY(-50%);
-    font-size: 12px;
-    line-height: 1;
     pointer-events: none;
 }
 
-.filtros-horarios__buscar .form-control {
-    padding-left: 34px;
+.campo {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-btn);
+    background-color: var(--bg);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: var(--ink);
+    transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
+}
+
+.campo:hover {
+    border-color: color-mix(in oklab, var(--ink) 40%, transparent);
+}
+
+.campo:focus {
+    border-color: var(--action);
+    box-shadow: 0 0 0 3px rgb(7 50 153 / .14);
+    outline: none;
+}
+
+.filtros-horarios__buscar .campo {
+    padding-left: 38px;
+}
+
+select.campo {
+    appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23556079' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+select.campo.filtro-activo {
+    border-color: var(--action);
+    background-color: var(--uss-azul-50);
+    color: var(--uss-azul);
+    font-weight: 700;
 }
 
 .filtros-horarios__reset {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #475569;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-btn);
+    background: var(--bg);
+    color: var(--ink-2);
+    transition: background-color 150ms var(--ease), transform 90ms var(--ease);
 }
 
 .filtros-horarios__reset:hover {
-    background: #f1f5f9;
-    color: var(--uss-azul);
+    background: var(--surface);
 }
 
-.filtros-horarios .form-select.filtro-activo {
-    border-color: var(--uss-azul);
-    background-color: var(--uss-azul-light);
-    font-weight: 700;
+.filtros-horarios__reset:active {
+    transform: translateY(1px) scale(.985);
 }
 
-.resaltado {
-    padding: 0 2px;
-    border-radius: 3px;
-    background: #fef08a;
-    color: inherit;
-}
-
-/* ---------- 6.3 Tabla ---------- */
+/* --- Tabla --- */
 .tabla-horarios-wrap {
-    background: #ffffff;
-    border: 1px solid var(--uss-border);
-    border-radius: 14px;
-    box-shadow: var(--uss-sombra-sm);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg);
     overflow: hidden;
 }
 
-/* El aviso solo aparece cuando la tabla realmente se desliza (clase puesta por horarios.js) */
 .tabla-horarios__aviso {
     display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin: 0;
-    padding: 7px 14px;
-    background: #f8fafc;
-    border-bottom: 1px solid #f1f5f9;
-    color: var(--uss-text-muted);
-    font-size: 11.5px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--t-xs);
+    color: var(--muted);
 }
 
-/* Un solo scroll: la tabla se desliza dentro de su caja y la cabecera queda fija */
 .tabla-horarios-wrap.se-desliza .tabla-horarios__aviso {
-    display: flex;
+    display: block;
 }
 
-/* horarios.js ajusta --alto-tabla para que la página no tenga un segundo scroll */
 .tabla-horarios__scroll {
     max-height: var(--alto-tabla, calc(100vh - 300px));
     min-height: 220px;
@@ -1364,371 +1102,347 @@ body {
 
 .tabla-horarios {
     width: 100%;
-    margin-bottom: 0;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 12.5px;
+    font-size: var(--t-sm);
 }
 
 .tabla-horarios thead th {
     position: sticky;
     top: 0;
     z-index: 2;
-    background: #f8fafc;
-    color: #475569;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 8px 9px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+    background: #f8f9fc;
+    color: var(--muted);
+    font-size: var(--t-xs);
+    font-weight: 700;
+    text-align: left;
     white-space: nowrap;
 }
 
 .tabla-horarios tbody td {
-    padding: 6px 9px;
-    /* filas compactas: caben más secciones sin deslizar */
-    border-bottom: 1px solid #f1f5f9;
+    padding: 10px;
+    border-bottom: 1px solid #eef1f6;
     vertical-align: middle;
-    color: #1e293b;
-    white-space: nowrap;
-}
-
-.tabla-horarios tbody tr:hover td {
-    background: #f8fafc;
+    color: var(--ink);
 }
 
 .tabla-horarios tbody tr:last-child td {
-    border-bottom: none;
+    border-bottom: 0;
 }
 
-.tabla-horarios .col-num {
-    width: 38px;
+.tabla-horarios tbody tr {
+    transition: background-color 120ms var(--ease);
+}
+
+.tabla-horarios tbody tr:hover td {
+    background: #f8f9fc;
+}
+
+.tabla-horarios .col-centro {
     text-align: center;
-    color: var(--uss-text-subtle);
+}
+
+/* Curso: icono real + nombre; repetido en filas seguidas se atenúa */
+.badge-curso {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.badge-curso__icono {
+    width: 24px;
+    height: 24px;
+    flex: none;
+}
+
+.badge-curso strong {
     font-weight: 700;
 }
 
-.tabla-horarios .col-sec,
-.tabla-horarios .col-acceso {
-    text-align: center;
-}
-
-.tabla-horarios .col-curso {
-    min-width: 120px;
-    white-space: normal;
-}
-
-.tabla-horarios .col-curso strong {
-    color: var(--uss-text-main);
-    font-weight: 700;
-}
-
-.celda-horario {
-    font-variant-numeric: tabular-nums;
+.col-curso--repite .badge-curso strong {
+    color: var(--muted);
     font-weight: 600;
 }
 
 .badge-seccion {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    color: #0f172a;
-    font-size: 11.5px;
     font-weight: 700;
+    white-space: nowrap;
 }
 
-.badge-acceso-pendiente {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: var(--uss-text-muted);
-    font-size: 10.5px;
-    font-weight: 600;
-}
-
-/* ===================================================
-   Badges y Colores Temáticos por Curso Oficial
-   =================================================== */
-.badge-curso {
+/* Estado: el único chip con color */
+.badge-estado {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 13px;
-    line-height: 1.25;
+    font-size: var(--t-sm);
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-.badge-curso__icono {
-    display: block;
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    flex-shrink: 0;
+.badge-estado::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
 }
 
-/* Word: Azul Microsoft Word */
-.badge-curso--word {
-    background: #eaf2fd;
-    color: #185abd;
-    border: 1px solid #bfdbfe;
+.badge-estado--abierto {
+    color: var(--ok);
 }
 
-/* Excel: Verde Microsoft Excel */
-.badge-curso--excel {
-    background: #ebf7ee;
-    color: #107c41;
-    border: 1px solid #bbf7d0;
+.badge-estado--cerrado {
+    color: var(--cerrado);
 }
 
-/* Canva: Cian / Turquesa */
-.badge-curso--canva {
-    background: #e0f7fa;
-    color: #00838f;
-    border: 1px solid #a5f3fc;
+.badge-estado--pendiente {
+    color: var(--muted);
 }
 
-/* AutoCAD: Rojo Autodesk */
-.badge-curso--autocad {
-    background: #fee2e2;
-    color: #c4151b;
-    border: 1px solid #fecaca;
+.fila-cerrada td {
+    color: var(--muted);
 }
 
-/* Power BI: Ámbar / Oro */
-.badge-curso--powerbi {
-    background: #fef3c7;
-    color: #b45309;
-    border: 1px solid #fde68a;
+.fila-cerrada .badge-curso__icono {
+    opacity: .5;
 }
 
-.badge-curso--spss {
-    background: #f0edff;
-    color: #51418f;
-    border: 1px solid #d8d0ff;
+.celda-fechas,
+.celda-dias {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+    white-space: nowrap;
 }
 
-/* Plan Tradicional (Computación II, III): Azul USS */
-.badge-curso--tradicional {
-    background: #eff6ff;
-    color: #073299;
-    border: 1px solid #bfdbfe;
+.celda-fechas__fin,
+.celda-dias__dias {
+    font-size: var(--t-xs);
+    color: var(--muted);
 }
 
-/* Default / Otros */
-.badge-curso--web {
-    background: #fff1ec;
-    color: #c2381b;
-    border: 1px solid #fed7cc;
+.celda-dias__hora {
+    font-weight: 700;
 }
 
-.badge-curso--taller {
-    background: #fffbeb;
-    color: #975a16;
-    border: 1px solid #fde68a;
-}
-
-.badge-curso--project {
-    background: #f0fdf4;
-    color: #31752f;
-    border: 1px solid #bbf7d0;
-}
-
-.badge-curso--bizagi {
-    background: #f0f9ff;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-}
-
-.badge-curso--basedatos {
-    background: #eef2ff;
-    color: #4c51bf;
-    border: 1px solid #c7d2fe;
-}
-
-.badge-curso--sketchup,
-.badge-curso--solidworks {
-    background: #fef2f2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-}
-
-.badge-curso--revit {
-    background: #eff6ff;
-    color: #1e5aa8;
-    border: 1px solid #bfdbfe;
-}
-
-.badge-curso--matlab {
-    background: #fff7ed;
-    color: #0b3d63;
-    border: 1px solid #fed7aa;
-}
-
-.badge-curso--default {
-    background: #f8fafc;
-    color: #334155;
-    border: 1px solid #e2e8f0;
-}
-
-.badge-turno {
+.badge-turno,
+.badge-aula {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
+    gap: 6px;
     white-space: nowrap;
 }
 
 .badge-turno__icono {
-    display: block;
     width: 16px;
     height: 16px;
-    object-fit: contain;
-    flex: 0 0 16px;
 }
 
-.badge-turno--madrugada {
-    background: #e2e8f0;
-    color: #334155;
-    border: 1px solid #cbd5e1;
-}
-
-.badge-turno--manana {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
-}
-
-.badge-turno--tarde {
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-}
-
-.badge-turno--noche {
-    background: #f3e8ff;
-    color: #6b21a8;
-    border: 1px solid #e9d5ff;
-}
-
-.badge-aula {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #e2e8f0;
-    white-space: nowrap;
-}
-
-.badge-aula--zoom {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
+.badge-aula .icono {
+    color: var(--muted);
 }
 
 .badge-cupos {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 11.5px;
     font-weight: 700;
-    background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
     white-space: nowrap;
-}
-
-.btn-zoom {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    min-height: 30px;
-    padding: 4px 12px;
-    border-radius: 8px;
-    background: var(--uss-azul);
-    color: #ffffff;
-    font-size: 11.5px;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 0.15s ease;
-}
-
-.btn-zoom:hover {
-    background: var(--uss-azul-hover);
-    color: #ffffff;
+    font-variant-numeric: tabular-nums;
 }
 
 .docente-asignado {
     font-weight: 600;
-    color: #0f172a;
+    min-width: 140px;
 }
 
 .docente-pendiente {
-    color: #94a3b8;
+    color: var(--muted);
     font-style: italic;
+    min-width: 140px;
+}
+
+.col-acceso {
+    text-align: right;
+}
+
+.btn-zoom {
+    min-height: 36px;
+    padding: 0 12px;
+}
+
+.badge-acceso-pendiente {
+    font-size: var(--t-xs);
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.resaltado {
+    padding: 0 1px;
+    border-radius: 3px;
+    background: #fff1c7;
+    color: inherit;
 }
 
 .tabla-horarios__vacio {
-    padding: 40px 20px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 32px 24px;
 }
 
-.tabla-horarios__vacio-icono {
-    font-size: 36px;
-    margin-bottom: 8px;
-}
-
-.tabla-horarios__vacio h3 {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 4px;
+.tabla-horarios__vacio h2 {
+    font-size: var(--t-lg);
+    font-weight: 800;
 }
 
 .tabla-horarios__vacio p {
-    font-size: 12.5px;
-    color: var(--uss-text-muted);
-    margin-bottom: 14px;
+    color: var(--muted);
 }
 
-/* ---------- 6.4 Ayuda al estudiante (Desplegable / Colapsable) ---------- */
-.ayuda-horarios {
+.tabla-horarios__vacio .btn {
     margin-top: 8px;
-    background: #ffffff;
-    border: 1px solid var(--uss-border);
-    border-left: 4px solid var(--uss-azul);
-    border-radius: 12px;
-    box-shadow: var(--uss-sombra-sm);
-    transition: all 0.2s ease;
+}
+
+/* --- Carga de horarios: imita la tabla mientras llega la hoja de Drive --- */
+.tabla-horarios-wrap .estado-red--cargando {
+    position: relative;
+    padding: 0;
     overflow: hidden;
+}
+
+.carga__progreso {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    overflow: hidden;
+    background: var(--uss-azul-50);
+}
+
+.carga__progreso::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 30%;
+    background: var(--uss-azul);
+    animation: avance 1.4s var(--ease) infinite;
+}
+
+@keyframes avance {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(340%);
+    }
+}
+
+.carga__cabecera {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.carga__cabecera .estado-red__spinner {
+    width: 20px;
+    height: 20px;
+}
+
+.carga__cabecera > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.carga__titulo {
+    font-size: var(--t-base);
+    font-weight: 700;
+}
+
+.carga__detalle {
+    font-size: var(--t-sm);
+    color: var(--muted);
+}
+
+.carga__fila {
+    display: grid;
+    grid-template-columns: 24px 1.5fr .6fr .8fr .8fr .6fr 1fr .5fr 1.3fr .9fr;
+    align-items: center;
+    gap: 20px;
+    min-height: 60px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #eef1f6;
+}
+
+.carga__fila:last-child {
+    border-bottom: 0;
+}
+
+/* Un solo brillo que cruza todas las barras a la vez */
+.carga__celda {
+    display: block;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(100deg, #eceff5 40%, #f7f8fb 50%, #eceff5 60%) fixed;
+    background-size: 200vw 100%;
+    animation: brillo-carga 1.6s linear infinite;
+}
+
+@keyframes brillo-carga {
+    from {
+        background-position: 100vw 0;
+    }
+
+    to {
+        background-position: -100vw 0;
+    }
+}
+
+.carga__celda--icono {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+}
+
+.carga__celda--curso { width: 80%; height: 14px; }
+.carga__celda--corta { width: 70%; }
+.carga__celda--estado { width: 85%; }
+.carga__celda--mini { width: 28px; justify-self: center; }
+.carga__celda--docente { width: 75%; }
+.carga__celda--acceso { width: 90%; }
+
+.carga__celda--doble {
+    height: 30px;
+    background-size: 200vw 100%;
+    -webkit-mask: linear-gradient(#000 0 12px, transparent 12px 18px, #000 18px 30px) top / 100% 100% no-repeat;
+    mask: linear-gradient(#000 0 12px, transparent 12px 18px, #000 18px 30px) top / 100% 100% no-repeat;
+}
+
+.carga__fila:nth-child(2n) .carga__celda--curso { width: 62%; }
+.carga__fila:nth-child(3n) .carga__celda--docente { width: 58%; }
+
+/* --- Preguntas frecuentes: desplegable, cerrado por defecto --- */
+.ayuda-horarios {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg);
 }
 
 .ayuda-horarios__summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 8px 18px;
+    gap: 16px;
+    min-height: 56px;
+    padding: 12px 16px;
+    border-radius: var(--r);
     cursor: pointer;
-    user-select: none;
     list-style: none;
-    transition: background 0.15s ease;
+    transition: background-color 150ms var(--ease);
 }
 
 .ayuda-horarios__summary::-webkit-details-marker {
@@ -1736,194 +1450,69 @@ body {
 }
 
 .ayuda-horarios__summary:hover {
-    background: #f8fafc;
-}
-
-.ayuda-horarios__summary-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-}
-
-.ayuda-horarios__icono {
-    font-size: 18px;
-    line-height: 1;
-    flex-shrink: 0;
+    background: #f8f9fc;
 }
 
 .ayuda-horarios__titulo {
-    margin: 0;
-    font-size: 14.5px;
-    font-weight: 800;
-    color: var(--uss-text-main);
-    line-height: 1.3;
-}
-
-.ayuda-horarios__summary-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.ayuda-horarios__badge-toggle {
-    font-size: 11px;
+    font-size: var(--t-base);
     font-weight: 700;
-    color: var(--uss-azul);
-    background: rgba(7, 50, 153, 0.08);
-    padding: 3px 8px;
-    border-radius: 6px;
-    transition: all 0.15s ease;
 }
 
 .ayuda-horarios__chevron {
-    font-size: 14px;
-    font-weight: bold;
-    color: #64748b;
-    transition: transform 0.2s ease;
-    display: inline-block;
+    color: var(--muted);
+    transition: transform 150ms var(--ease);
 }
 
 .ayuda-horarios[open] .ayuda-horarios__chevron {
     transform: rotate(180deg);
 }
 
-.ayuda-horarios[open] .ayuda-horarios__summary {
-    border-bottom: 1px solid #f1f5f9;
-    background: #f8fafc;
-}
-
 .ayuda-horarios__cuerpo {
-    padding: 14px 18px 16px;
-    animation: fadeInAyuda 0.2s ease;
-}
-
-@keyframes fadeInAyuda {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    padding: 4px 16px 20px;
 }
 
 .ayuda-horarios__lista {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 24px;
-    margin: 0 0 14px;
-    padding-left: 18px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #334155;
+    gap: 16px 40px;
+    padding: 0;
+    list-style: none;
+}
+
+.ayuda-horarios__lista li {
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: var(--t-sm);
+}
+
+.ayuda-horarios__lista strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--ink);
 }
 
 .ayuda-horarios__acciones {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 16px;
+    gap: 8px;
+    margin-top: 20px;
 }
 
-.ayuda-horarios__whatsapp {
-    display: inline-flex;
-    align-items: center;
-    min-height: 38px;
-    padding: 6px 16px;
-    border-radius: 999px;
-    background: #0f7a40;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.ayuda-horarios__whatsapp:hover {
-    background: #0b6233;
-    color: #ffffff;
-}
-
-.ayuda-horarios__correo {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--uss-azul);
-    overflow-wrap: anywhere;
-}
-
-/* Footer institucional */
-.footer-uss {
-    background: #ffffff;
-    border-top: 1px solid var(--uss-border);
-    padding: 7px 16px;
-    text-align: center;
-    font-size: 11.5px;
-    color: #64748b;
-    margin-top: auto;
-}
-
-/* ---------- 6.5 Barras de desplazamiento siempre visibles ----------
-   En macOS las barras nativas se ocultan hasta que se desplaza. Al darles estilo propio
-   quedan fijas. No usar scrollbar-width ni scrollbar-color en estas cajas: en Chrome
-   anulan estas reglas y vuelven a ocultarlas. */
-.tabla-horarios__scroll::-webkit-scrollbar,
-.pestanas-ciclos-scroll::-webkit-scrollbar,
-.carrera-combobox__dropdown::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-    -webkit-appearance: none;
-}
-
-.pestanas-ciclos-scroll::-webkit-scrollbar {
-    height: 8px;
-}
-
-.tabla-horarios__scroll::-webkit-scrollbar-track,
-.pestanas-ciclos-scroll::-webkit-scrollbar-track,
-.carrera-combobox__dropdown::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
-
-.tabla-horarios__scroll::-webkit-scrollbar-thumb,
-.pestanas-ciclos-scroll::-webkit-scrollbar-thumb,
-.carrera-combobox__dropdown::-webkit-scrollbar-thumb {
-    background: #94a3b8;
-    border-radius: 999px;
-    border: 2px solid #f1f5f9;
-}
-
-.tabla-horarios__scroll::-webkit-scrollbar-thumb:hover,
-.pestanas-ciclos-scroll::-webkit-scrollbar-thumb:hover,
-.carrera-combobox__dropdown::-webkit-scrollbar-thumb:hover {
-    background: var(--uss-azul);
-}
-
-.tabla-horarios__scroll::-webkit-scrollbar-corner {
-    background: #f1f5f9;
-}
-
-/* Firefox no admite las reglas anteriores */
-@supports (-moz-appearance: none) {
-
-    .tabla-horarios__scroll,
-    .pestanas-ciclos-scroll,
-    .carrera-combobox__dropdown {
-        scrollbar-width: auto;
-        scrollbar-color: #94a3b8 #f1f5f9;
-    }
-}
-
-/* ===================================================
-   7. Responsivo
-   =================================================== */
-
-/* Tablet: la tabla se desliza y lo avisa */
+/* -------------------------------------------------------------------
+   8. Responsivo
+   ------------------------------------------------------------------- */
 @media (max-width: 1199px) {
+    .buscador-fila {
+        flex-direction: column;
+    }
+
+    .buscador-fila .btn {
+        align-self: flex-start;
+    }
+
     .filtros-horarios {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) 44px;
     }
 
     .filtros-horarios__buscar {
@@ -1931,149 +1520,155 @@ body {
     }
 }
 
-@media (min-width: 900px) and (max-width: 1199px) {
-    .filtros-horarios {
-        grid-template-columns: minmax(220px, 1.6fr) repeat(4, minmax(0, 1fr)) 32px;
+@media (max-width: 1100px) {
+    .selector-modelo-grid,
+    .grid-ciclos-compacto {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .filtros-horarios__buscar {
-        grid-column: auto;
+    .hero:has(#vista-ciclos:not([hidden])) .selector-modelo-grid,
+    .hero:has(#vista-ciclos:not([hidden])) .grid-ciclos-compacto {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero:has(#vista-ciclos:not([hidden])) .hero__texto {
+        grid-column: 1 / -1;
+        padding-right: 0;
+    }
+
+    .hero:has(#vista-ciclos:not([hidden])) .hero__frame {
+        display: none;
     }
 }
 
-/* Celular: todo en una columna y cada sección como tarjeta */
+@media (max-width: 991px) {
+    .hero__texto,
+    .hero__frame {
+        grid-column: 1 / -1;
+        padding-right: 0;
+    }
+
+    .hero h1 {
+        max-width: 16ch;
+    }
+
+    .hero__frame {
+        min-height: 0;
+        height: 260px;
+        max-height: none;
+    }
+}
+
 @media (max-width: 767px) {
-    .hoja-contenedor-horarios {
-        padding: 10px 10px 24px;
+    :root {
+        --nav-h: 68px;
     }
 
-    .banner-carrera {
-        display: grid;
-        grid-template-columns: 24px minmax(0, 1fr) auto;
-        grid-template-areas:
-            "icon nombre cambiar"
-            "icon ruta ruta";
-        align-items: center;
-        gap: 4px 8px;
-        padding: 8px 10px;
+    .hero {
+        align-items: flex-start;
+        padding-bottom: 24px;
     }
 
-    .banner-carrera__datos {
-        display: contents;
+    .hero__texto {
+        gap: 16px;
     }
 
-    .banner-carrera__icono {
-        grid-area: icon;
-        font-size: 19px;
+    .hero__lead {
+        font-size: var(--t-base);
     }
 
-    .banner-carrera__etiqueta,
-    .banner-carrera__categoria {
+    .buscador-fila {
+        flex-direction: column;
+    }
+
+    .buscador-fila .btn {
+        width: 100%;
+    }
+
+    .hero__frame {
+        height: clamp(160px, 22svh, 240px);
+    }
+
+    .hero__datos {
         display: none;
     }
 
-    .banner-carrera__nombre {
-        grid-area: nombre;
-        min-width: 0;
-        font-size: 14px;
-        line-height: 1.2;
+    .hero:has(#vista-ciclos:not([hidden])) .selector-modelo-grid,
+    .hero:has(#vista-ciclos:not([hidden])) .grid-ciclos-compacto,
+    .estado-red__esqueletos {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .banner-carrera__ruta {
-        grid-area: ruta;
-        flex-wrap: nowrap;
-        gap: 3px;
+    .nav__marca img {
+        height: 26px;
     }
 
-    .banner-carrera__badge,
-    .banner-carrera__modelo-badge,
-    .banner-carrera__ciclo-badge {
-        padding: 2px 5px;
-        font-size: 8.5px;
-    }
-
-    .banner-carrera__cambiar {
-        grid-area: cambiar;
-        justify-content: center;
-        gap: 3px;
-        min-height: 28px;
-        padding: 3px 7px;
-        font-size: 10px;
-    }
-
-    .banner-carrera__cambiar-completo {
+    .nav__texto-largo {
         display: none;
     }
 
-    .banner-carrera__cambiar-corto,
-    .tab-modelo__texto--corto {
-        display: inline;
-    }
-
-    .tab-modelo__texto--completo {
-        display: none;
-    }
-
+    /* Horarios */
     .cinta-horarios {
-        padding: 7px 8px 8px;
+        padding: 12px;
     }
 
-    .cinta-horarios__conteo {
-        padding-bottom: 5px;
-        margin-bottom: 6px;
-        font-size: 11.5px;
-        font-weight: 600;
-        white-space: normal;
-    }
-
-    /* Filtros: buscador y reset arriba, desplegables de dos en dos */
+    /* Buscador + botón de reinicio en la fila 1; dos selects iguales por fila */
     .filtros-horarios {
+        position: relative;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
     .filtros-horarios__buscar {
         grid-column: 1 / -1;
-        grid-row: 1;
-        margin-right: 46px;
+        padding-right: 52px;
     }
 
     .filtros-horarios__reset {
-        grid-column: 2;
-        grid-row: 1;
-        justify-self: end;
-        width: 38px;
-        height: 38px;
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
-    .filtros-horarios .form-control,
-    .filtros-horarios .form-select {
-        min-height: 35px;
-        font-size: 12px;
+    #filtro-dias {
+        grid-column: 1 / -1;
     }
 
-    .filtros-horarios .form-select {
+    .filtros-horarios select.campo {
+        padding-left: 10px;
         padding-right: 28px;
         background-position: right 8px center;
-        text-overflow: ellipsis;
     }
 
-    /* Tarjetas: sin scroll horizontal ni scroll interno */
-    .tabla-horarios-wrap.se-desliza .tabla-horarios__aviso {
-        display: none;
-    }
-
-    .celda-horario {
-        white-space: nowrap;
-        font-size: 12.5px;
-    }
-
+    /* La tabla se vuelve tarjetas compactas */
     .tabla-horarios-wrap {
-        background: transparent;
         border: 0;
-        box-shadow: none;
-        border-radius: 0;
+        background: transparent;
         overflow: visible;
     }
+
+    .tabla-horarios-wrap .estado-red--cargando {
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: var(--bg);
+    }
+
+    .carga__fila {
+        grid-template-columns: 24px 1fr 56px;
+        grid-template-rows: auto auto auto;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .carga__celda--icono { grid-column: 1; grid-row: 1; }
+    .carga__celda--curso { grid-column: 2; grid-row: 1; width: 60%; }
+    .carga__celda--corta:nth-child(3) { grid-column: 3; grid-row: 1; width: 100%; }
+    .carga__celda--estado { grid-column: 1 / 3; grid-row: 2; width: 40%; }
+    .carga__celda--doble:nth-child(5) { grid-column: 1 / 3; grid-row: 3; width: 55%; }
+    .carga__celda--docente { grid-column: 1 / -1; grid-row: 4; width: 50%; }
+    .carga__celda--corta:nth-child(6),
+    .carga__celda--doble:nth-child(7),
+    .carga__celda--mini,
+    .carga__celda--acceso { display: none; }
 
     .tabla-horarios__scroll {
         max-height: none;
@@ -2094,29 +1689,23 @@ body {
         display: block;
     }
 
-    .tabla-horarios tbody {
-        counter-reset: horario-card;
-    }
-
     .tabla-horarios tbody tr {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 10px 12px;
+        gap: 10px 16px;
         margin-bottom: 10px;
-        padding: 14px;
-        background: #ffffff;
-        border: 1px solid var(--uss-border);
-        border-radius: 14px;
-        box-shadow: var(--uss-sombra-sm);
-        counter-increment: horario-card;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: var(--bg);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .tabla-horarios tbody td {
         display: block;
         padding: 0;
         border: 0;
-        white-space: normal;
-        font-size: 13px;
         text-align: left;
     }
 
@@ -2124,569 +1713,97 @@ body {
         background: transparent;
     }
 
-    .tabla-horarios tbody td.text-center {
-        text-align: left !important;
-    }
-
     .tabla-horarios tbody td::before {
         content: attr(data-label);
         display: block;
-        font-style: normal;
         margin-bottom: 2px;
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--uss-text-subtle);
-    }
-
-    /* Cabecera de la tarjeta: curso a la izquierda, sección a la derecha */
-    .tabla-horarios tbody .col-num {
-        display: none;
+        font-size: var(--t-xs);
+        font-weight: 600;
+        color: var(--muted);
     }
 
     .tabla-horarios tbody .col-curso,
-    .tabla-horarios tbody .col-sec {
-        padding-bottom: 10px;
-        border-bottom: 1px solid #f1f5f9;
+    .tabla-horarios tbody .col-sec,
+    .tabla-horarios tbody .col-estado {
+        align-self: center;
     }
 
     .tabla-horarios tbody .col-curso::before,
-    .tabla-horarios tbody .col-sec::before {
-        display: none;
-    }
-
-    .tabla-horarios tbody .col-curso {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
-        width: auto;
-        font-size: 15px;
-        line-height: 1.3;
-    }
-
-    .tabla-horarios tbody .col-curso::before {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 24px;
-        width: 24px;
-        height: 24px;
-        margin: 0;
-        border-radius: 50%;
-        background: var(--uss-azul);
-        color: #ffffff;
-        content: counter(horario-card);
-        font-size: 11px;
-        font-style: normal;
-        letter-spacing: 0;
-    }
-
-    .tabla-horarios tbody .col-curso strong {
-        font-weight: 800;
-    }
-
-    .tabla-horarios tbody .col-sec {
-        text-align: right;
-    }
-
-    .tabla-horarios tbody .col-sec::before {
-        display: block;
-        margin-bottom: 4px;
-        content: "Sección";
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--uss-text-subtle);
-    }
-
-    .tabla-horarios tbody tr {
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
-    }
-
-    .tabla-horarios tbody tr.seccion-seleccionada {
-        border-color: var(--uss-azul);
-        background: #eff6ff;
-        box-shadow: 0 0 0 2px rgba(7, 50, 153, 0.12), var(--uss-sombra-sm);
-    }
-
-    .tabla-horarios tbody tr:focus-visible {
-        outline: 2px solid var(--uss-azul);
-        outline-offset: 2px;
-    }
-
-    .tabla-horarios tbody .col-acceso {
-        grid-column: 1 / -1;
-        padding-top: 10px;
-        border-top: 1px solid #f1f5f9;
-    }
-
+    .tabla-horarios tbody .col-sec::before,
+    .tabla-horarios tbody .col-estado::before,
     .tabla-horarios tbody .col-acceso::before {
         display: none;
     }
 
+    .tabla-horarios tbody .col-curso {
+        grid-column: 1;
+        font-size: var(--t-base);
+    }
+
+    .col-curso--repite .badge-curso strong {
+        color: var(--ink);
+        font-weight: 700;
+    }
+
+    .tabla-horarios tbody .col-sec {
+        grid-column: 2;
+        grid-row: 1;
+        text-align: right;
+    }
+
+    .tabla-horarios tbody .col-estado {
+        grid-column: 1 / -1;
+        margin-top: -6px;
+    }
+
+    .tabla-horarios .col-centro {
+        text-align: left;
+    }
+
+    .tabla-horarios tbody .docente-asignado,
+    .tabla-horarios tbody .docente-pendiente {
+        min-width: 0;
+    }
+
+    .tabla-horarios tbody .col-acceso {
+        grid-column: 1 / -1;
+        text-align: left;
+    }
+
     .tabla-horarios tbody .col-acceso .btn-zoom {
-        display: flex;
         width: 100%;
-        min-height: 40px;
-        font-size: 13px;
+        min-height: 44px;
+    }
+
+    .tabla-horarios tbody tr.seccion-seleccionada {
+        border-color: var(--action);
+        box-shadow: inset 0 0 0 1px var(--action);
     }
 
     .tabla-horarios__vacio {
-        background: #ffffff;
-        border: 1px solid var(--uss-border);
-        border-radius: 14px;
-    }
-
-    .ayuda-horarios {
-        padding: 0;
-    }
-
-    .ayuda-horarios__summary {
-        padding: 10px 14px;
-    }
-
-    .ayuda-horarios__titulo {
-        font-size: 13.5px;
-    }
-
-    .ayuda-horarios__badge-toggle {
-        display: none;
-    }
-
-    .ayuda-horarios__cuerpo {
-        padding: 12px 14px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: var(--bg);
     }
 
     .ayuda-horarios__lista {
         grid-template-columns: minmax(0, 1fr);
-        gap: 8px;
-        padding-left: 16px;
-        font-size: 12.5px;
     }
 
-    .ayuda-horarios__whatsapp {
-        width: 100%;
-        justify-content: center;
-        min-height: 42px;
-    }
-
-    .footer-uss {
-        font-size: 11px;
-        line-height: 1.5;
-    }
-}
-
-/* ---------- Portada (index.html) en celular ---------- */
-@media (max-width: 575px) {
-    .portada-uss {
-        padding-top: 10px;
-        padding-bottom: 22px;
-    }
-
-    .hero-illustration {
-        display: none;
-    }
-
-    .portada-uss__logo img {
-        height: 24px;
-        width: auto;
-    }
-
-    .btn-portal-cinf {
-        padding: 3px 8px;
-        font-size: 11px;
-        border-radius: 6px;
-    }
-
-    .insignia-uss {
-        font-size: 9px;
-        padding: 2px 6px;
-    }
-
-    .portada-uss__titulo {
-        font-size: 1.25rem;
-        margin-top: 4px !important;
-        margin-bottom: 2px;
-    }
-
-    .portada-uss__subtitulo {
-        font-size: 11px;
-        line-height: 1.35;
-        margin-top: 2px !important;
-    }
-
-    .hoja-contenedor {
-        padding: 0 10px 16px;
-    }
-
-    .tarjeta-carrera-elevada {
-        margin-top: -14px;
-        padding: 16px 14px 18px;
-        border-radius: 14px;
-    }
-
-    /* Barra carrera seleccionada compacta */
-    .carrera-seleccionada-barra {
-        padding: 5px 8px;
-        margin-bottom: 6px !important;
-        border-radius: 8px;
-    }
-
-    .carrera-seleccionada-barra__icono {
-        font-size: 15px;
-    }
-
-    .carrera-seleccionada-barra__tag {
-        font-size: 8.5px;
-    }
-
-    .carrera-seleccionada-barra__tag-completo {
-        display: none;
-    }
-
-    .carrera-seleccionada-barra__nombre {
-        font-size: 12.5px;
-    }
-
-    .btn-cambiar-carrera {
-        min-height: 24px;
-        padding: 2px 7px;
-        font-size: 10.5px;
-        border-radius: 6px;
-    }
-
-    /* Paso títulos compactos */
-    .tarjeta-carrera__paso {
-        width: 18px;
-        height: 18px;
-        font-size: 10px;
-    }
-
-    .paso-encabezado {
-        gap: 8px !important;
-    }
-
-    .tarjeta-carrera__titulo {
-        font-size: 14px;
-        line-height: 1.3;
-    }
-
-    .tarjeta-carrera__desc {
-        font-size: 11px;
-        line-height: 1.4;
-    }
-
-    .selector-modelo-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .card-modelo-opcion {
-        min-height: 0;
-        padding: 14px;
-        border-radius: 12px;
-    }
-
-    .card-modelo-opcion__check {
-        top: 12px;
-        right: 12px;
-        width: 18px;
-        height: 18px;
-        font-size: 10px;
-        border-width: 1.5px;
-    }
-
-    .card-modelo-opcion__top {
-        gap: 6px;
-        margin-bottom: 5px;
-        padding-right: 24px;
-    }
-
-    .card-modelo-opcion__icono {
-        font-size: 16px;
-    }
-
-    .card-modelo-opcion__tag {
-        font-size: 9px;
-        padding: 2px 6px;
-    }
-
-    .card-modelo-opcion__titulo {
-        font-size: 13px;
-        line-height: 1.35;
-        margin-bottom: 2px;
-    }
-
-    .card-modelo-opcion__subtitulo {
-        font-size: 11px;
-        margin-bottom: 5px;
-    }
-
-    .card-modelo-opcion__desc {
-        font-size: 11.5px;
-        line-height: 1.45;
-    }
-
-    .carrera-combobox__input {
-        font-size: 16px;
-        /* evita el zoom automático de iOS al enfocar */
-        min-width: 0;
-        padding: 8px 10px 8px 32px;
-    }
-
-    .carrera-combobox__input::placeholder {
-        font-size: 12px;
-    }
-
-    .carrera-combobox__item {
-        padding: 10px 12px;
-        min-height: 38px;
-        font-size: 12.5px;
-    }
-
-    /* Botones de ciclo en móvil */
-    .grid-ciclos-compacto {
-        gap: 6px;
-        margin-top: 6px;
-    }
-
-    .ciclo-btn {
-        padding: 7px 9px;
-        min-height: 48px;
-        border-radius: 9px;
-    }
-
-    .ciclo-btn__mes {
-        font-size: 12.5px;
-    }
-
-    .ciclo-btn__duracion {
-        font-size: 9.5px;
-    }
-
-    .ciclo-btn__badge {
-        font-size: 9.5px;
-        padding: 2px 6px;
-    }
-
-    .ciclo-btn__accion {
-        font-size: 9.5px;
-    }
-
-    .ciclos-proximos {
-        font-size: 10px;
-        padding: 5px 8px;
-        margin-top: 6px;
-    }
-
-    .ciclos-ayuda {
-        font-size: 10px;
-        margin-top: 6px;
+    .ayuda-horarios__acciones .btn {
+        flex: 1 1 100%;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-/* ==========================================================================
-   ESTADO DE CONEXIÓN CON GOOGLE DRIVE (sin datos locales)
-   Esqueleto mientras descarga · alerta con «Reintentar conexión» si falla
-   ========================================================================== */
-.estado-red {
-    margin-top: 10px;
-    border-radius: 14px;
-    padding: 14px 16px;
-}
-
-.estado-red--cargando {
-    background: var(--uss-azul-light);
-    border: 1px solid #dbeafe;
-}
-
-.estado-red--error {
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-}
-
-.estado-red__titulo {
-    margin: 0 0 4px;
-    font-size: 14px;
-    font-weight: 800;
-    color: #9a3412;
-}
-
-.estado-red__texto {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--uss-text-muted);
-}
-
-.estado-red--cargando .estado-red__texto {
-    color: var(--uss-azul);
-}
-
-.estado-red__acciones {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.estado-red__acciones .btn {
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 700;
-}
-
-.estado-red__spinner {
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2.5px solid #bfdbfe;
-    border-top-color: var(--uss-azul);
-    animation: estadoRedGiro 0.8s linear infinite;
-}
-
-.estado-red__esqueletos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-    margin-top: 14px;
-}
-
-.estado-red__filas {
-    display: grid;
-    gap: 8px;
-    margin-top: 14px;
-}
-
-.esqueleto {
-    border-radius: 12px;
-    background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 45%, #e2e8f0 90%);
-    background-size: 200% 100%;
-    animation: estadoRedBrillo 1.3s ease-in-out infinite;
-}
-
-.esqueleto--ciclo {
-    height: 96px;
-}
-
-.esqueleto--fila {
-    height: 38px;
-    border-radius: 8px;
-}
-
-@keyframes estadoRedGiro {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes estadoRedBrillo {
-    from {
-        background-position: 100% 0;
-    }
-    to {
-        background-position: -100% 0;
-    }
-}
-
-@media (max-width: 575px) {
-    .estado-red {
-        padding: 12px;
-    }
-
-    .estado-red__esqueletos {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-    }
-
-    .esqueleto--ciclo {
-        height: 76px;
-    }
-
-    .estado-red__acciones .btn {
-        flex: 1 1 auto;
-        justify-content: center;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
+    .estado-red__spinner,
     .esqueleto,
-    .estado-red__spinner {
+    .carga__celda,
+    .carga__progreso::after {
         animation: none;
     }
-}
 
-/* ===================================================
-   Estado de la sección (columna ESTADO de la hoja de Drive)
-   =================================================== */
-.tabla-horarios .col-estado {
-    text-align: center;
-    white-space: nowrap;
-}
-
-.badge-estado {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 9px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .02em;
-    white-space: nowrap;
-    border: 1px solid transparent;
-}
-
-.badge-estado::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-}
-
-.badge-estado--abierto {
-    background: #ecfdf5;
-    color: #047857;
-    border-color: #a7f3d0;
-}
-
-.badge-estado--cerrado {
-    background: #fef2f2;
-    color: #b91c1c;
-    border-color: #fecaca;
-}
-
-.badge-estado--pendiente {
-    background: #f8fafc;
-    color: #64748b;
-    border-color: #e2e8f0;
-}
-
-/* Sección cerrada: sigue visible pero atenuada, para que no compita con las abiertas */
-.tabla-horarios tbody tr.fila-cerrada > td:not(.col-estado) {
-    opacity: .55;
-}
-
-.tabla-horarios tbody tr.fila-cerrada .badge-cupos {
-    background: #f1f5f9;
-    color: #64748b;
-    border-color: #e2e8f0;
+    .carrera-combobox__wrap.abierto .carrera-combobox__chevron .icono {
+        transform: none;
+    }
 }

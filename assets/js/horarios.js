@@ -120,10 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!badge) return;
     if (modeloActivo === 'tradicional') {
       badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--tradicional';
-      badge.textContent = '📚 Plan Tradicional';
+      badge.textContent = 'Plan Tradicional';
     } else {
       badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--protech';
-      badge.textContent = '🛡️ PROTECH XP';
+      badge.textContent = 'Modelo PROTECH XP';
     }
   }
   actualizarBadgeModelo();
@@ -262,20 +262,49 @@ document.addEventListener('DOMContentLoaded', () => {
       estadoRed.setAttribute('role', 'status');
       estadoRed.setAttribute('aria-live', 'polite');
       if (conteo) conteo.textContent = 'Cargando secciones…';
-      const aviso = document.createElement('p');
-      aviso.className = 'estado-red__texto';
+      // Cabecera: barra de progreso, spinner, qué se carga y de dónde
+      const nombreCiclo = cicloSeleccionado ? cicloSeleccionado.nombre : 'tu ciclo';
+      const progreso = document.createElement('div');
+      progreso.className = 'carga__progreso';
+      progreso.setAttribute('aria-hidden', 'true');
+      const cabecera = document.createElement('div');
+      cabecera.className = 'carga__cabecera';
       const spinner = document.createElement('span');
       spinner.className = 'estado-red__spinner';
-      aviso.append(spinner, 'Conectando con Google Drive y cargando horarios en tiempo real…');
+      spinner.setAttribute('aria-hidden', 'true');
+      const textos = document.createElement('div');
+      const titulo = document.createElement('strong');
+      titulo.className = 'carga__titulo';
+      titulo.textContent = `Cargando los horarios de ${nombreCiclo}`;
+      const detalle = document.createElement('span');
+      detalle.className = 'carga__detalle';
+      detalle.textContent = 'Leyendo la hoja oficial del Centro de Informática en Google Drive.';
+      textos.append(titulo, detalle);
+      cabecera.append(spinner, textos);
+
+      // Filas fantasma con la forma de las columnas de la tabla
       const filas = document.createElement('div');
-      filas.className = 'estado-red__filas';
+      filas.className = 'carga__filas';
       filas.setAttribute('aria-hidden', 'true');
+      const celdas = ['icono', 'curso', 'corta', 'estado', 'doble', 'corta', 'doble', 'mini', 'docente', 'acceso'];
       for (let i = 0; i < 6; i += 1) {
-        const barra = document.createElement('div');
-        barra.className = 'esqueleto esqueleto--fila';
-        filas.appendChild(barra);
+        const fila = document.createElement('div');
+        fila.className = 'carga__fila';
+        celdas.forEach((tipo) => {
+          const celda = document.createElement('span');
+          celda.className = `carga__celda carga__celda--${tipo}`;
+          fila.appendChild(celda);
+        });
+        filas.appendChild(fila);
       }
-      estadoRed.append(aviso, filas);
+      estadoRed.append(progreso, cabecera, filas);
+
+      // Si Drive tarda, se avisa en vez de dejar el mismo texto
+      setTimeout(() => {
+        if (!estadoRed.hidden && estadoRed.classList.contains('estado-red--cargando')) {
+          detalle.textContent = 'La hoja de Drive está tardando un poco más de lo normal. Seguimos esperando su respuesta.';
+        }
+      }, 5000);
       return;
     }
     estadoRed.className = 'estado-red estado-red--error';
@@ -291,15 +320,15 @@ document.addEventListener('DOMContentLoaded', () => {
     acciones.className = 'estado-red__acciones';
     const reintentar = document.createElement('button');
     reintentar.type = 'button';
-    reintentar.className = 'btn btn-sm btn-primary rounded-pill px-3';
-    reintentar.textContent = '↻ Reintentar conexión';
+    reintentar.className = 'btn btn--primary btn--sm';
+    reintentar.textContent = 'Reintentar conexión';
     reintentar.addEventListener('click', cargarDatos);
     const wsp = document.createElement('a');
-    wsp.className = 'btn btn-sm btn-outline-success rounded-pill px-3';
+    wsp.className = 'btn btn--secondary btn--sm';
     wsp.href = 'https://wa.me/51986724506';
     wsp.target = '_blank';
     wsp.rel = 'noopener noreferrer';
-    wsp.textContent = 'WhatsApp de soporte';
+    wsp.textContent = 'Escribir a soporte por WhatsApp';
     acciones.append(reintentar, wsp);
     estadoRed.append(titulo, detalle, acciones);
   }
@@ -455,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
     destino.replaceChildren(contenido.slice(0, inicio), marca, contenido.slice(inicio + texto.length));
   }
 
-  const ETIQUETAS_CELDA = ['N.°', 'Curso', 'Sección', 'Estado', 'Inicio', 'Fin', 'Turno', 'Días', 'Horario', 'Aula', 'Cupos', 'Docente', 'Acceso'];
+  const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Matriculados', 'Docente', 'Acceso'];
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   const tbodyHorarios = $('filas-horarios');
@@ -537,30 +566,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const tr = document.createElement('tr');
         tr.setAttribute('aria-selected', 'false');
 
-        // 1. Número
-        const tdNum = document.createElement('td');
-        tdNum.className = 'col-num';
-        tdNum.textContent = index + 1;
-
-        // 2. Curso Oficial con color temático institucional
+        // 1. Curso oficial: icono real + nombre (atenuado si repite el de la fila anterior)
         const tdCurso = document.createElement('td');
         tdCurso.className = 'col-curso';
-        const colorClase = obtenerClaseColorCurso(fila.curso);
+        if (index > 0 && filasVisibles[index - 1].curso === fila.curso) tdCurso.classList.add('col-curso--repite');
         const badgeCurso = document.createElement('span');
-        badgeCurso.className = `badge-curso ${colorClase}`;
+        badgeCurso.className = `badge-curso ${obtenerClaseColorCurso(fila.curso)}`;
         const iconoCurso = document.createElement('img');
         iconoCurso.className = 'badge-curso__icono';
         iconoCurso.src = `assets/img/cursos/${obtenerIconoCurso(fila.curso)}.svg`;
         iconoCurso.alt = '';
         iconoCurso.setAttribute('aria-hidden', 'true');
-        iconoCurso.width = 22;
-        iconoCurso.height = 22;
+        iconoCurso.width = 24;
+        iconoCurso.height = 24;
         const nombreCurso = document.createElement('strong');
         nombreCurso.textContent = fila.curso || 'Curso sin nombre';
         badgeCurso.append(iconoCurso, nombreCurso);
         tdCurso.appendChild(badgeCurso);
 
-        // 3. Sección
+        // 2. Sección
         const tdSec = document.createElement('td');
         tdSec.className = 'col-sec';
         const badgeSeccion = document.createElement('span');
@@ -568,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeSeccion.textContent = fila.seccion || '—';
         tdSec.appendChild(badgeSeccion);
 
-        // Estado de la sección (columna ESTADO de la hoja)
+        // 3. Estado de la sección (columna ESTADO de la hoja)
         const tdEstado = document.createElement('td');
         tdEstado.className = 'col-estado';
         const estado = fila.estado || 'Aperturado';
@@ -579,15 +603,19 @@ document.addEventListener('DOMContentLoaded', () => {
         tdEstado.appendChild(badgeEstado);
         if (tipoEstado === 'cerrado') tr.classList.add('fila-cerrada');
 
-        // 4. Inicio
-        const tdInicio = document.createElement('td');
-        tdInicio.textContent = fila.inicio || 'Por confirmar';
+        // 4. Fechas: inicio arriba, fin debajo
+        const tdFechas = document.createElement('td');
+        const fechas = document.createElement('span');
+        fechas.className = 'celda-fechas';
+        const inicio = document.createElement('span');
+        inicio.textContent = fila.inicio || 'Por confirmar';
+        const fin = document.createElement('span');
+        fin.className = 'celda-fechas__fin';
+        fin.textContent = fila.fin ? `al ${fila.fin}` : 'Fin por confirmar';
+        fechas.append(inicio, fin);
+        tdFechas.appendChild(fechas);
 
-        // 5. Fin
-        const tdFin = document.createElement('td');
-        tdFin.textContent = fila.fin || 'Por confirmar';
-
-        // 6. Turno
+        // 5. Turno
         const tdTurno = document.createElement('td');
         const turnoNormalizado = normalizar(fila.turno);
         const tipoTurno = ['manana', 'tarde', 'noche', 'madrugada'].includes(turnoNormalizado)
@@ -608,37 +636,30 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeTurno.appendChild(document.createTextNode(fila.turno || '—'));
         tdTurno.appendChild(badgeTurno);
 
-        // 7. Días
+        // 6. Días y horario en una celda
         const tdDias = document.createElement('td');
-        tdDias.className = 'fw-semibold text-secondary';
-        tdDias.textContent = fila.dias;
+        const diasHorario = document.createElement('span');
+        diasHorario.className = 'celda-dias';
+        const hora = document.createElement('span');
+        hora.className = 'celda-dias__hora';
+        hora.textContent = fila.horario || 'Horario por confirmar';
+        const dias = document.createElement('span');
+        dias.className = 'celda-dias__dias';
+        dias.textContent = fila.dias || '—';
+        diasHorario.append(hora, dias);
+        tdDias.appendChild(diasHorario);
 
-        // 8. Horario
-        const tdHorario = document.createElement('td');
-        tdHorario.className = 'celda-horario';
-        tdHorario.textContent = fila.horario;
-
-        // 9. Aula
-        const tdAula = document.createElement('td');
-        const esZoom = (fila.aula || '').toLowerCase().includes('zoom') || (fila.aula || '').toLowerCase().includes('virtual');
-        const badgeAula = document.createElement('span');
-        badgeAula.className = `badge-aula ${esZoom ? 'badge-aula--zoom' : ''}`;
-        badgeAula.textContent = `${esZoom ? '📹' : '📍'} ${fila.aula || 'No informado'}`;
-        tdAula.appendChild(badgeAula);
-
-        // 10. Cupos
+        // 8. Matriculados (columna MAT de la hoja)
         const tdCupos = document.createElement('td');
-        tdCupos.className = 'text-center';
-        const cuposTexto = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos)) ? `${Number(fila.cupos)} cupos` : 'No informado';
+        tdCupos.className = 'col-centro';
+        const cuposTexto = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos)) ? `${Number(fila.cupos)}` : '—';
         const badgeCupos = document.createElement('span');
         badgeCupos.className = 'badge-cupos';
-        badgeCupos.title = 'Cupos publicados';
-        const cuposStrong = document.createElement('strong');
-        cuposStrong.textContent = cuposTexto;
-        badgeCupos.append('👥 ', cuposStrong);
+        badgeCupos.title = 'Estudiantes matriculados en la sección';
+        badgeCupos.textContent = cuposTexto;
         tdCupos.appendChild(badgeCupos);
 
-        // 11. Docente
+        // 9. Docente
         const tdDocente = document.createElement('td');
         if (fila.docente && fila.docente !== 'Por asignar') {
           tdDocente.className = 'docente-asignado';
@@ -648,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tdDocente.textContent = 'Docente por asignar';
         }
 
-        // 12. Acceso
+        // 10. Acceso
         const tdAcceso = document.createElement('td');
         tdAcceso.className = 'col-acceso';
         let urlAula = null;
@@ -661,40 +682,29 @@ document.addEventListener('DOMContentLoaded', () => {
           enlace.href = urlAula;
           enlace.target = '_blank';
           enlace.rel = 'noopener noreferrer';
-          enlace.className = 'btn-zoom';
-          enlace.title = 'Abrir sala Zoom';
-          enlace.append(document.createTextNode('Ingresar '), document.createTextNode('↗'));
+          enlace.className = 'btn btn--primary btn--sm btn-zoom';
+          enlace.textContent = 'Entrar al aula virtual';
+          enlace.title = 'Abrir el aula virtual de esta sección';
           tdAcceso.appendChild(enlace);
         } else {
           const pendiente = document.createElement('span');
           pendiente.className = 'badge-acceso-pendiente';
-          pendiente.textContent = 'Aula Virtual';
+          pendiente.textContent = 'Enlace por publicar';
           tdAcceso.appendChild(pendiente);
         }
 
         // En celular cada fila es una tarjeta: la etiqueta de cada dato sale de data-label
-        const celdas = [tdNum, tdCurso, tdSec, tdEstado, tdInicio, tdFin, tdTurno, tdDias, tdHorario, tdAula, tdCupos, tdDocente, tdAcceso];
+        const celdas = [tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos, tdDocente, tdAcceso];
         celdas.forEach((td, i) => {
           td.dataset.label = ETIQUETAS_CELDA[i];
         });
 
-        tr.append(
-          tdNum,
-          tdCurso,
-          tdSec,
-          tdEstado,
-          tdInicio,
-          tdFin,
-          tdTurno,
-          tdDias,
-          tdHorario,
-          tdAula,
-          tdCupos,
-          tdDocente,
-          tdAcceso
-        );
+        tr.append(...celdas);
 
-        [tdCurso, tdSec, tdDias, tdDocente].forEach((td) => resaltar(td, f.texto));
+        resaltar(tdCurso, f.texto);
+        resaltar(tdSec, f.texto);
+        resaltar(dias, f.texto);
+        resaltar(tdDocente, f.texto);
 
         return tr;
       })

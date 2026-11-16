@@ -1,132 +1,118 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-type="service" data-radius="soft" data-motion>
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Programación de Horarios Oficiales | Centro de Informática USS</title>
+    <title>Horarios por carrera | Centro de Informática USS</title>
     <meta name="description"
-        content="Consulta los horarios detallados, docentes y aulas virtuales de los cursos oficiales del Centro de Informática USS." />
+        content="Secciones del Centro de Informática USS para tu carrera y ciclo: estado, fechas, turno, días, matriculados, docente y enlace al aula virtual." />
+    <meta name="page-type" content="service" />
+    <meta name="site-kind" content="other" />
     <meta name="theme-color" content="#073299" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Horarios por carrera · Centro de Informática USS" />
+    <meta property="og:description" content="Secciones abiertas con turno, días, docente y enlace al aula virtual." />
+    <meta property="og:image" content="assets/img/campus-uss.jpg" />
+    <meta property="og:locale" content="es_PE" />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <!-- Tipografía oficial USS: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/estilos.css?v=51" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=60" />
+    <link rel="stylesheet" href="assets/motion/motion.css?v=60" />
 </head>
 
 <body>
-    <!-- Header institucional limpio con botón para volver a elegir carrera -->
-    <header class="bg-white border-bottom border-slate-200 sticky-top z-3 py-1 px-3 shadow-xs">
-        <div class="container-fluid px-2 px-md-4 d-flex align-items-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-3">
-                <a href="index.html" class="btn-volver-inicio" id="btn-volver-atras"
-                    title="Volver a la selección de carrera y ciclo">
-                    <span>←</span>
-                    <span class="d-none d-sm-inline">Cambiar carrera / ciclo</span>
+    <header class="nav nav--claro">
+        <div class="wrap nav__fila">
+            <a class="skip-link" href="#contenido">Saltar al contenido</a>
+            <div class="nav__izq">
+                <a href="index.html" class="btn btn--secondary btn--sm btn-volver-inicio" id="btn-volver-atras"
+                    aria-label="Volver a elegir carrera y ciclo">
+                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+                    <span class="nav__texto-largo">Cambiar carrera o ciclo</span>
                 </a>
-                <a href="./" class="d-flex align-items-center gap-2 text-decoration-none">
-                    <img src="assets/img/logo-uss.png" alt="Logo USS" height="28" class="d-block" />
-                    <div class="border-start border-slate-200 ps-2 ms-1 d-none d-md-block">
-                        <span class="header-horarios__titulo">Centro de Informática</span>
-                        <span class="header-horarios__sub">Programación de Horarios</span>
-                    </div>
+                <a href="./" class="nav__marca" aria-label="Centro de Informática USS, volver al inicio">
+                    <img src="assets/img/logo-uss.png" alt="Universidad Señor de Sipán" width="951" height="328" />
                 </a>
             </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <a class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3"
-                    href="https://informatica-uss.vercel.app/" target="_blank" rel="noopener noreferrer">
-                    <span>Portal CINF</span>
-                    <span>↗</span>
-                </a>
-            </div>
+            <a class="btn btn--secondary btn--sm" href="https://informatica-uss.vercel.app/" target="_blank"
+                rel="noopener noreferrer">
+                <span>Ir al Portal CINF</span>
+                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+            </a>
         </div>
     </header>
 
-    <main class="hoja-contenedor-horarios">
-        <!-- Carrera y ruta seleccionadas -->
-        <section class="banner-carrera" id="banner-carrera" aria-label="Carrera seleccionada">
-            <span class="banner-carrera__icono" aria-hidden="true">🎓</span>
-            <div class="banner-carrera__datos">
-                <strong class="banner-carrera__nombre" id="txt-carrera-nombre">Psicología</strong>
-                <div class="banner-carrera__ruta">
-                    <span class="banner-carrera__badge" id="txt-ruta-badge">Ruta 2</span>
-                    <span class="banner-carrera__categoria" id="txt-ruta-nombre">(Sociales y Leyes)</span>
-                    <span class="banner-carrera__modelo-badge" id="txt-modelo-badge">🛡️ PROTECH XP</span>
-                    <span class="banner-carrera__ciclo-badge" id="txt-ciclo-badge"></span>
-                </div>
+    <main id="contenido" class="wrap hoja-contenedor-horarios">
+        <!-- Carrera, ruta, modelo y ciclo de la consulta -->
+        <section class="banner-carrera" id="banner-carrera" aria-labelledby="txt-carrera-nombre">
+            <h1 class="banner-carrera__nombre" id="txt-carrera-nombre">Psicología</h1>
+            <div class="banner-carrera__ruta">
+                <span class="banner-carrera__ciclo" id="txt-ciclo-badge"></span>
+                <span class="banner-carrera__badge" id="txt-ruta-badge">Ruta 2</span>
+                <span class="banner-carrera__categoria" id="txt-ruta-nombre">(Sociales y Leyes)</span>
+                <span class="banner-carrera__modelo-badge" id="txt-modelo-badge">Modelo PROTECH XP</span>
             </div>
-            <a href="./" class="banner-carrera__cambiar" id="btn-elegir-otra-carrera"
-                aria-label="Elegir otra carrera">
-                <span class="banner-carrera__cambiar-completo">Elegir otra carrera</span>
-                <span class="banner-carrera__cambiar-corto" aria-hidden="true">Cambiar</span>
-                <span aria-hidden="true">✕</span>
-            </a>
         </section>
 
-        <!-- Filtros para los horarios del modelo y ciclo seleccionados en el portal -->
+        <!-- Filtros -->
         <section class="cinta-horarios" aria-label="Filtros de horarios">
-            <p class="cinta-horarios__conteo" id="conteo-secciones" aria-live="polite">Cargando horarios...</p>
+            <p class="visually-hidden" id="conteo-secciones" aria-live="polite">Cargando horarios…</p>
 
             <div class="filtros-horarios">
                 <label class="filtros-horarios__buscar">
-                    <span class="visually-hidden">Buscar docente, curso o sección</span>
-                    <span class="filtros-horarios__lupa" aria-hidden="true">🔍</span>
-                    <input type="search" class="form-control" id="filtro-texto"
-                        placeholder="Buscar curso, docente o sección…" autocomplete="off" />
+                    <span class="visually-hidden">Buscar curso, docente o sección</span>
+                    <svg class="icono icono--sm filtros-horarios__lupa" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <input type="search" class="campo" id="filtro-texto" placeholder="Curso, docente o sección"
+                        autocomplete="off" />
                 </label>
-                <select class="form-select" id="filtro-curso" aria-label="Filtrar por curso">
+                <select class="campo" id="filtro-curso" aria-label="Filtrar por curso">
                     <option value="">Todos los cursos</option>
                 </select>
-                <select class="form-select" id="filtro-turno" aria-label="Filtrar por turno">
+                <select class="campo" id="filtro-turno" aria-label="Filtrar por turno">
                     <option value="">Todos los turnos</option>
                     <option value="Madrugada">Madrugada</option>
                     <option value="Mañana">Mañana</option>
                     <option value="Tarde">Tarde</option>
                     <option value="Noche">Noche</option>
                 </select>
-                <select class="form-select" id="filtro-dias" aria-label="Filtrar por días">
+                <select class="campo" id="filtro-dias" aria-label="Filtrar por días">
                     <option value="">Todos los días</option>
                 </select>
-                <select class="form-select" id="filtro-aula" aria-label="Filtrar por modalidad">
-                    <option value="">Todas las aulas</option>
-                    <option value="zoom">Virtual · Zoom</option>
-                    <option value="presencial">Presencial</option>
-                </select>
                 <button type="button" class="filtros-horarios__reset" id="btn-reset-filtros-top"
-                    title="Restablecer todos los filtros" aria-label="Restablecer todos los filtros">↺</button>
+                    aria-label="Quitar todos los filtros" title="Quitar todos los filtros">
+                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+                </button>
             </div>
         </section>
 
         <!-- Horarios: tabla en escritorio, tarjetas en celular -->
         <section class="tabla-horarios-wrap" aria-label="Secciones programadas">
-            <p class="tabla-horarios__aviso">
-                <span>👉 Desliza la tabla para ver turnos, horarios y cupos</span>
-                <span aria-hidden="true">⇄</span>
-            </p>
+            <p class="tabla-horarios__aviso">Desliza la tabla de lado para ver todas las columnas.</p>
             <div class="tabla-horarios__scroll">
-                <table class="table tabla-horarios table-hover align-middle">
+                <table class="tabla-horarios">
                     <thead>
                         <tr>
-                            <th scope="col" class="col-num">#</th>
-                            <th scope="col">Curso oficial</th>
-                            <th scope="col" class="col-sec">Sección</th>
-                            <th scope="col" class="text-center">Estado</th>
-                            <th scope="col">Inicio</th>
-                            <th scope="col">Fin</th>
+                            <th scope="col">Curso</th>
+                            <th scope="col">Sección</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Fechas</th>
                             <th scope="col">Turno</th>
-                            <th scope="col">Días</th>
-                            <th scope="col">Horario</th>
-                            <th scope="col">Aula</th>
-                            <th scope="col" class="text-center">Cupos</th>
-                            <th scope="col">Docente asignado</th>
-                            <th scope="col" class="text-center">Acceso</th>
+                            <th scope="col">Horario y días</th>
+                            <th scope="col" class="col-centro">Matriculados</th>
+                            <th scope="col">Docente</th>
+                            <th scope="col" class="col-acceso">Acceso</th>
                         </tr>
                     </thead>
                     <tbody id="filas-horarios"></tbody>
@@ -134,60 +120,55 @@
             </div>
 
             <div class="tabla-horarios__vacio" id="sin-horarios" hidden>
-                <div class="tabla-horarios__vacio-icono" aria-hidden="true">📋</div>
-                <h3>No se encontraron horarios para los filtros seleccionados</h3>
-                <p>Intenta cambiando el turno o borrando el texto de búsqueda.</p>
-                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" id="btn-reset-filtros">
-                    Restablecer filtros
+                <h2>Ninguna sección coincide con los filtros</h2>
+                <p>Prueba con otro turno o borra el texto del buscador.</p>
+                <button type="button" class="btn btn--primary btn--sm" id="btn-reset-filtros">
+                    Quitar los filtros
                 </button>
             </div>
         </section>
 
-        <!-- Ayuda desplegable: lo que el estudiante suele preguntar antes de matricularse -->
+        <!-- Lo que el estudiante suele preguntar antes de matricularse -->
         <details class="ayuda-horarios" id="seccion-ayuda">
             <summary class="ayuda-horarios__summary">
-                <div class="ayuda-horarios__summary-left">
-                    <span class="ayuda-horarios__icono" aria-hidden="true">💡</span>
-                    <h2 class="ayuda-horarios__titulo" id="titulo-ayuda">¿No encuentras tu curso o tu horario?</h2>
-                </div>
-                <div class="ayuda-horarios__summary-right">
-                    <span class="ayuda-horarios__badge-toggle">Preguntas frecuentes</span>
-                    <span class="ayuda-horarios__chevron" aria-hidden="true">▾</span>
-                </div>
+                <h2 class="ayuda-horarios__titulo" id="titulo-ayuda">¿No encuentras tu curso o tu horario?</h2>
+                <svg class="icono ayuda-horarios__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
             </summary>
             <div class="ayuda-horarios__cuerpo">
                 <ul class="ayuda-horarios__lista">
-                    <li><strong>¿Modelo PROTECH XP o Plan Tradicional?</strong> Si nunca cursaste computación en USS, te
-                        corresponde el <em>Modelo PROTECH XP</em> con los cursos por competencias de tu carrera. Si ya
-                        cursaste Computación I o II previamente, cambia a la pestaña superior <em>Plan Tradicional</em>
-                        para ver tus secciones de Computación II y III.</li>
-                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje; los
+                    <li><strong>¿PROTECH XP o Plan Tradicional?</strong> Si nunca llevaste computación en la USS, te
+                        corresponde el Modelo PROTECH XP con los cursos de tu carrera. Si ya aprobaste Computación I o II,
+                        vuelve al inicio y elige Plan Tradicional para ver Computación II y III.</li>
+                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje y los
                         cursos de otras rutas no aparecen. Si te equivocaste de carrera, usa «Elegir otra carrera».</li>
-                    <li><strong>Un mes con candado 🔒 no tiene apertura</strong> para tu carrera. Revisa el ciclo
-                        siguiente.</li>
-                    <li><strong>«Sec.» es tu sección (PEAD).</strong> Es la que eliges al matricularte en el Campus
-                        Virtual: anótala junto con el turno y los días.</li>
+                    <li><strong>Un ciclo que no aparece aún no abre</strong> para tu carrera. Al inicio lo verás en la
+                        lista de próximos ciclos.</li>
+                    <li><strong>La sección (PEAD) es la que eliges al matricularte</strong> en el Campus Virtual. Anótala
+                        junto con el turno y los días.</li>
                     <li><strong>«Docente por asignar»</strong> significa que el horario ya está confirmado y solo falta
                         publicar el nombre del docente.</li>
+                    <li><strong>«Enlace por publicar»</strong> significa que el enlace al aula virtual aún no está en la hoja
+                        oficial. Vuelve a consultar antes de tu primera clase.</li>
                 </ul>
                 <div class="ayuda-horarios__acciones">
-                    <a class="ayuda-horarios__whatsapp" href="https://wa.me/51986724506" target="_blank"
-                        rel="noopener noreferrer">Escribir al WhatsApp 986 724 506</a>
-                    <a class="ayuda-horarios__correo"
-                        href="mailto:centro.informatica@uss.edu.pe">centro.informatica@uss.edu.pe</a>
+                    <a class="btn btn--primary" href="https://wa.me/51986724506" target="_blank"
+                        rel="noopener noreferrer">Escribir por WhatsApp</a>
+                    <a class="btn btn--secondary" href="mailto:centro.informatica@uss.edu.pe">Escribir a
+                        centro.informatica@uss.edu.pe</a>
                 </div>
             </div>
         </details>
     </main>
 
     <footer class="footer-uss">
-        Universidad Señor de Sipán · Centro de Informática CINF · Acreditación PROTECH XP © 2026
+        <div class="wrap">Universidad Señor de Sipán · Centro de Informática CINF · © 2026</div>
     </footer>
 
-    <!-- Scripts de Datos y Lógica de Horarios -->
+    <!-- Datos (Google Drive) y lógica de horarios -->
     <script src="assets/js/config.js?v=48"></script>
     <script src="assets/js/datos.js?v=48"></script>
-    <script src="assets/js/horarios.js?v=48"></script>
+    <script src="assets/js/horarios.js?v=60"></script>
+    <script type="module" src="assets/motion/motion.js?v=60"></script>
 </body>
 
 </html>

@@ -261,6 +261,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Botón «Ver mis horarios»: elige la primera carrera que coincide con lo escrito;
+  // sin texto (o sin coincidencias) abre la lista para elegir.
+  $('btn-buscar-carrera')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const texto = elInput.value.trim();
+    if (texto) renderOpciones(texto);
+    if (texto && opcionesFiltradas.length > 0) {
+      seleccionarCarrera(opcionesFiltradas[0].nombre);
+      return;
+    }
+    elInput.focus();
+    abrirDropdown();
+  });
+
   // Cerrar dropdown al hacer clic fuera
   document.addEventListener('click', (e) => {
     if (!elDropdown.hidden && !$('carrera-combobox').contains(e.target)) {
@@ -308,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const gridCiclos = $('grid-ciclos');
 
   ciclos.forEach((ciclo) => {
-    const btn = crear('button', 'ciclo-btn');
+    const btn = crear('button', 'card ciclo-btn');
     btn.type = 'button';
     btn.id = `btn-ciclo-${ciclo.id}`;
 
@@ -317,15 +331,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const mes = crear('span', 'ciclo-btn__mes', ciclo.nombre);
     const duracion = crear('div', 'ciclo-btn__duracion', ciclo.duracion);
     izquierda.append(mes, duracion);
-    const icono = crear('span', 'ciclo-btn__icono', '📅');
-    header.append(izquierda, icono);
+    header.append(izquierda);
 
     const footer = crear('div', 'ciclo-btn__footer');
     const badge = crear('span', 'ciclo-btn__badge ciclo-btn__badge--disponible');
     badge.id = `badge-ciclo-${ciclo.id}`;
     badge.textContent = 'Consultar';
 
-    const accion = crear('span', 'ciclo-btn__accion', 'Ver horarios →');
+    const accion = crear('span', 'ciclo-btn__accion', 'Ver horarios');
     footer.append(badge, accion);
 
     btn.append(header, footer);
@@ -343,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
   proximos.id = 'ciclos-proximos';
   const ayuda = crear('p', 'ciclos-ayuda');
   ayuda.append('¿Dudas con tu matrícula? ');
-  const enlaceWsp = crear('a', null, 'Escríbenos al WhatsApp 986 724 506');
+  const enlaceWsp = crear('a', null, 'Escríbenos por WhatsApp');
   enlaceWsp.href = 'https://wa.me/51986724506';
   enlaceWsp.target = '_blank';
   enlaceWsp.rel = 'noopener noreferrer';
@@ -373,10 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const titulo = crear('p', 'estado-red__titulo', 'No pudimos conectar con Google Drive');
       const detalle = crear('p', 'estado-red__texto', 'Revisa tu conexión a Internet e inténtalo de nuevo. Los horarios se publican solo en línea.');
       const acciones = crear('div', 'estado-red__acciones');
-      const reintentar = crear('button', 'btn btn-sm btn-primary rounded-pill px-3', '↻ Reintentar conexión');
+      const reintentar = crear('button', 'btn btn--primary btn--sm', 'Reintentar conexión');
       reintentar.type = 'button';
       reintentar.addEventListener('click', sincronizarHorariosDrive);
-      const wsp = crear('a', 'btn btn-sm btn-outline-success rounded-pill px-3', 'WhatsApp de soporte');
+      const wsp = crear('a', 'btn btn--secondary btn--sm', 'Escribir a soporte por WhatsApp');
       wsp.href = 'https://wa.me/51986724506';
       wsp.target = '_blank';
       wsp.rel = 'noopener noreferrer';
@@ -399,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       gridCiclos.hidden = true;
       proximos.hidden = false;
-      proximos.textContent = '👆 Selecciona en el Paso 2 si cursas el Modelo PROTECH XP o el Plan Tradicional para ver los ciclos disponibles.';
+      proximos.textContent = 'Elige tu modelo de acreditación y aquí aparecen los ciclos con horarios publicados.';
       return;
     }
 

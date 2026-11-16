@@ -1,0 +1,4 @@
+[
+  { "check": "phone-number", "target": "p.ciclos-ayuda > a", "reason": "es el WhatsApp oficial del Centro de Informática USS (986 724 506), dato real del cliente que ya publicaba esta página; no es un número inventado" },
+  { "check": "moment-none", "target": "(the page)", "reason": "la portada es una herramienta de consulta de una sola pantalla (buscar carrera, modelo y ciclo); una sección extra solo para alojar un momento de scroll alejaría al estudiante de su tarea" }
+]
