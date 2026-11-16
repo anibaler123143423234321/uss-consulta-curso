@@ -35,7 +35,9 @@
             <div class="nav__izq">
                 <a href="index.html" class="btn btn--secondary btn--sm btn-volver-inicio" id="btn-volver-atras"
                     aria-label="Volver a elegir carrera y ciclo">
-                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 12H5m6-6-6 6 6 6" />
+                    </svg>
                     <span class="nav__texto-largo">Cambiar carrera o ciclo</span>
                 </a>
                 <a href="./" class="nav__marca" aria-label="Centro de Informática USS, volver al inicio">
@@ -45,7 +47,9 @@
             <a class="btn btn--secondary btn--sm" href="https://informatica-uss.vercel.app/" target="_blank"
                 rel="noopener noreferrer">
                 <span>Ir al Portal CINF</span>
-                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 17 17 7M8 7h9v9" />
+                </svg>
             </a>
         </div>
     </header>
@@ -91,7 +95,10 @@
                 </select>
                 <button type="button" class="filtros-horarios__reset" id="btn-reset-filtros-top"
                     aria-label="Quitar todos los filtros" title="Quitar todos los filtros">
-                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                        <path d="M3 3v5h5" />
+                    </svg>
                 </button>
             </div>
         </section>
@@ -131,73 +138,117 @@
         <details class="conoce-ruta" id="conoce-ruta">
             <summary class="conoce-ruta__summary">
                 <span>
-                    <h2 class="conoce-ruta__titulo" id="titulo-conoce-ruta">Conoce tu ruta</h2>
-                    <span class="conoce-ruta__texto" id="conoce-ruta-texto">Llevas 3 cursos de tu ruta en el orden que quieras y
+                    <h2 class="conoce-ruta__titulo" id="titulo-conoce-ruta" data-texto="horarios.conoceRutaTitulo">Conoce tu ruta</h2>
+                    <span class="conoce-ruta__texto" id="conoce-ruta-texto">Llevas 3 cursos de tu ruta en el orden que
+                        quieras y
                         terminas con 1 taller de certificación internacional.</span>
                 </span>
-                <svg class="icono conoce-ruta__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                <svg class="icono conoce-ruta__chevron" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
             </summary>
             <div class="conoce-ruta__cuerpo" aria-roledescription="carrusel" aria-labelledby="titulo-conoce-ruta">
                 <div class="conoce-ruta__flechas">
-                    <button type="button" class="conoce-ruta__flecha" id="conoce-ruta-anterior" aria-label="Imagen anterior">
-                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
+                    <button type="button" class="conoce-ruta__flecha" id="conoce-ruta-anterior"
+                        aria-label="Imagen anterior">
+                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m15 6-6 6 6 6" />
+                        </svg>
                     </button>
-                    <button type="button" class="conoce-ruta__flecha" id="conoce-ruta-siguiente" aria-label="Imagen siguiente">
-                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                    <button type="button" class="conoce-ruta__flecha" id="conoce-ruta-siguiente"
+                        aria-label="Imagen siguiente">
+                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m9 6 6 6-6 6" />
+                        </svg>
                     </button>
                 </div>
-            <div class="conoce-ruta__pista" id="conoce-ruta-pista" tabindex="0" aria-label="Imágenes de las rutas; usa las flechas del teclado para pasar">
-                <div class="conoce-ruta__slide" data-rutas="" role="group" aria-roledescription="diapositiva" aria-label="1 de 5: PROTECH XP">
-                    <a class="conoce-ruta__abrir" href="assets/img/rutas/protech-xp.jpg" target="_blank" rel="noopener" tabindex="-1">
-                        <img src="assets/img/rutas/protech-xp.jpg?v=1" alt="Acreditación en Computación PROTECH XP: 3 cursos de tu ruta de aprendizaje más 1 taller de certificación internacional, o 4 talleres de certificación. Al terminar obtienes la certificación Microsoft Office Specialist." width="1600" height="905" loading="lazy" decoding="async" />
-                    </a>
+                <div class="conoce-ruta__pista" id="conoce-ruta-pista" tabindex="0"
+                    aria-label="Imágenes de las rutas; usa las flechas del teclado para pasar">
+                    <div class="conoce-ruta__slide" data-rutas="" role="group" aria-roledescription="diapositiva"
+                        aria-label="1 de 5: PROTECH XP">
+                        <a class="conoce-ruta__abrir" href="assets/img/rutas/protech-xp.jpg" target="_blank"
+                            rel="noopener" tabindex="-1">
+                            <img src="assets/img/rutas/protech-xp.jpg?v=1"
+                                alt="Acreditación en Computación PROTECH XP: 3 cursos de tu ruta de aprendizaje más 1 taller de certificación internacional, o 4 talleres de certificación. Al terminar obtienes la certificación Microsoft Office Specialist."
+                                width="1600" height="905" loading="lazy" decoding="async" />
+                        </a>
+                    </div>
+                    <div class="conoce-ruta__slide" data-rutas="1,2" role="group" aria-roledescription="diapositiva"
+                        aria-label="2 de 5: Rutas 1 y 2">
+                        <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-1-2.jpg" target="_blank"
+                            rel="noopener" tabindex="-1">
+                            <img src="assets/img/rutas/rutas-1-2.jpg?v=1"
+                                alt="Agrupaciones 1 y 2. Salud: Word 365, Excel 365, Canva, Excel Asociado, SPSS y Base de datos científicos. Derecho, Psicología y Trabajo Social: Word 365, Excel 365, Canva, Word Asociado, Excel Asociado y SPSS. Ambas cierran con el Taller de Certificación Internacional."
+                                width="1600" height="887" loading="lazy" decoding="async" />
+                        </a>
+                    </div>
+                    <div class="conoce-ruta__slide" data-rutas="3,7" role="group" aria-roledescription="diapositiva"
+                        aria-label="3 de 5: Rutas 3 y 7">
+                        <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-3-7.jpg" target="_blank"
+                            rel="noopener" tabindex="-1">
+                            <img src="assets/img/rutas/rutas-3-7.jpg?v=1"
+                                alt="Agrupaciones 3 y 7. Empresariales: Word 365, Excel 365, Canva, Excel Asociado, Microsoft Project y Power BI. Diseño, Comunicación, Sistemas y Software: Word 365, Excel 365, Canva, Word Asociado, Excel Asociado y Diseño Web. Ambas cierran con el Taller de Certificación Internacional."
+                                width="1600" height="912" loading="lazy" decoding="async" />
+                        </a>
+                    </div>
+                    <div class="conoce-ruta__slide" data-rutas="4,5" role="group" aria-roledescription="diapositiva"
+                        aria-label="4 de 5: Rutas 4 y 5">
+                        <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-4-5.jpg" target="_blank"
+                            rel="noopener" tabindex="-1">
+                            <img src="assets/img/rutas/rutas-4-5.jpg?v=1"
+                                alt="Agrupaciones 4 y 5. Arquitectura, Civil y Diseño de Interiores: Excel Asociado, AutoCAD 2D y 3D, Sketchup, Microsoft Project y Revit. Sistemas, Software e Industrial: Excel Asociado, AutoCAD 2D y 3D, Bizagi, Diseño Web y Power BI. Ambas cierran con el Taller de Certificación Internacional."
+                                width="1600" height="888" loading="lazy" decoding="async" />
+                        </a>
+                    </div>
+                    <div class="conoce-ruta__slide" data-rutas="6" role="group" aria-roledescription="diapositiva"
+                        aria-label="5 de 5: Ruta 6">
+                        <a class="conoce-ruta__abrir" href="assets/img/rutas/ruta-6.jpg" target="_blank" rel="noopener"
+                            tabindex="-1">
+                            <img src="assets/img/rutas/ruta-6.jpg?v=1"
+                                alt="Agrupación 6. Mecánica Eléctrica, Civil y Arquitectura: Excel Asociado, AutoCAD 2D y 3D, SolidWorks, MatLab y Diseño Mecánico con AutoCAD 3D, más el Taller de Certificación Internacional."
+                                width="1600" height="594" loading="lazy" decoding="async" />
+                        </a>
+                    </div>
                 </div>
-                <div class="conoce-ruta__slide" data-rutas="1,2" role="group" aria-roledescription="diapositiva" aria-label="2 de 5: Rutas 1 y 2">
-                    <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-1-2.jpg" target="_blank" rel="noopener" tabindex="-1">
-                        <img src="assets/img/rutas/rutas-1-2.jpg?v=1" alt="Agrupaciones 1 y 2. Salud: Word 365, Excel 365, Canva, Excel Asociado, SPSS y Base de datos científicos. Derecho, Psicología y Trabajo Social: Word 365, Excel 365, Canva, Word Asociado, Excel Asociado y SPSS. Ambas cierran con el Taller de Certificación Internacional." width="1600" height="887" loading="lazy" decoding="async" />
-                    </a>
+                <div class="conoce-ruta__puntos" id="conoce-ruta-puntos">
+                    <button type="button" class="conoce-ruta__punto" data-indice="0" data-rutas=""
+                        aria-label="Ver PROTECH XP">PROTECH XP</button>
+                    <button type="button" class="conoce-ruta__punto" data-indice="1" data-rutas="1,2"
+                        aria-label="Ver Rutas 1 y 2">Rutas 1 y 2</button>
+                    <button type="button" class="conoce-ruta__punto" data-indice="2" data-rutas="3,7"
+                        aria-label="Ver Rutas 3 y 7">Rutas 3 y 7</button>
+                    <button type="button" class="conoce-ruta__punto" data-indice="3" data-rutas="4,5"
+                        aria-label="Ver Rutas 4 y 5">Rutas 4 y 5</button>
+                    <button type="button" class="conoce-ruta__punto" data-indice="4" data-rutas="6"
+                        aria-label="Ver Ruta 6">Ruta 6</button>
                 </div>
-                <div class="conoce-ruta__slide" data-rutas="3,7" role="group" aria-roledescription="diapositiva" aria-label="3 de 5: Rutas 3 y 7">
-                    <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-3-7.jpg" target="_blank" rel="noopener" tabindex="-1">
-                        <img src="assets/img/rutas/rutas-3-7.jpg?v=1" alt="Agrupaciones 3 y 7. Empresariales: Word 365, Excel 365, Canva, Excel Asociado, Microsoft Project y Power BI. Diseño, Comunicación, Sistemas y Software: Word 365, Excel 365, Canva, Word Asociado, Excel Asociado y Diseño Web. Ambas cierran con el Taller de Certificación Internacional." width="1600" height="912" loading="lazy" decoding="async" />
-                    </a>
-                </div>
-                <div class="conoce-ruta__slide" data-rutas="4,5" role="group" aria-roledescription="diapositiva" aria-label="4 de 5: Rutas 4 y 5">
-                    <a class="conoce-ruta__abrir" href="assets/img/rutas/rutas-4-5.jpg" target="_blank" rel="noopener" tabindex="-1">
-                        <img src="assets/img/rutas/rutas-4-5.jpg?v=1" alt="Agrupaciones 4 y 5. Arquitectura, Civil y Diseño de Interiores: Excel Asociado, AutoCAD 2D y 3D, Sketchup, Microsoft Project y Revit. Sistemas, Software e Industrial: Excel Asociado, AutoCAD 2D y 3D, Bizagi, Diseño Web y Power BI. Ambas cierran con el Taller de Certificación Internacional." width="1600" height="888" loading="lazy" decoding="async" />
-                    </a>
-                </div>
-                <div class="conoce-ruta__slide" data-rutas="6" role="group" aria-roledescription="diapositiva" aria-label="5 de 5: Ruta 6">
-                    <a class="conoce-ruta__abrir" href="assets/img/rutas/ruta-6.jpg" target="_blank" rel="noopener" tabindex="-1">
-                        <img src="assets/img/rutas/ruta-6.jpg?v=1" alt="Agrupación 6. Mecánica Eléctrica, Civil y Arquitectura: Excel Asociado, AutoCAD 2D y 3D, SolidWorks, MatLab y Diseño Mecánico con AutoCAD 3D, más el Taller de Certificación Internacional." width="1600" height="594" loading="lazy" decoding="async" />
-                    </a>
-                </div>
-            </div>
-            <div class="conoce-ruta__puntos" id="conoce-ruta-puntos">
-                <button type="button" class="conoce-ruta__punto" data-indice="0" data-rutas="" aria-label="Ver PROTECH XP">PROTECH XP</button>
-                <button type="button" class="conoce-ruta__punto" data-indice="1" data-rutas="1,2" aria-label="Ver Rutas 1 y 2">Rutas 1 y 2</button>
-                <button type="button" class="conoce-ruta__punto" data-indice="2" data-rutas="3,7" aria-label="Ver Rutas 3 y 7">Rutas 3 y 7</button>
-                <button type="button" class="conoce-ruta__punto" data-indice="3" data-rutas="4,5" aria-label="Ver Rutas 4 y 5">Rutas 4 y 5</button>
-                <button type="button" class="conoce-ruta__punto" data-indice="4" data-rutas="6" aria-label="Ver Ruta 6">Ruta 6</button>
-            </div>
             </div>
         </details>
+
 
         <!-- Lo que el estudiante suele preguntar antes de matricularse -->
         <details class="ayuda-horarios" id="seccion-ayuda">
             <summary class="ayuda-horarios__summary">
-                <h2 class="ayuda-horarios__titulo" id="titulo-ayuda">¿No encuentras tu curso o tu horario?</h2>
-                <svg class="icono ayuda-horarios__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                <h2 class="ayuda-horarios__titulo" id="titulo-ayuda" data-texto="horarios.ayudaTitulo">¿No encuentras tu
+                    curso o tu horario?</h2>
+                <svg class="icono ayuda-horarios__chevron" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
             </summary>
             <div class="ayuda-horarios__cuerpo">
                 <ul class="ayuda-horarios__lista">
-                    <li><strong>¿Modelo Tradicional o PROTECH XP?</strong> Si llevas el modelo tradicional (cursos C2 o C3),
-                        elige Modelo Tradicional. Si nunca llevaste computación en la USS, te corresponde el Modelo PROTECH XP con los cursos de tu carrera.</li>
-                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje (algunas,
-                        como Sistemas o Arquitectura, tienen dos y ven los cursos de ambas). Si te equivocaste de carrera, usa «Cambiar carrera o ciclo» arriba.</li>
+                    <li><strong>¿Modelo Tradicional o PROTECH XP?</strong> Si llevas el modelo tradicional (cursos C2 o
+                        C3),
+                        elige Modelo Tradicional. Si nunca llevaste computación en la USS, te corresponde el Modelo
+                        PROTECH XP con los cursos de tu carrera.</li>
+                    <li><strong>Solo ves los cursos de tu ruta.</strong> Cada carrera tiene su ruta de aprendizaje
+                        (algunas,
+                        como Sistemas o Arquitectura, tienen dos y ven los cursos de ambas). Si te equivocaste de
+                        carrera, usa «Cambiar carrera o ciclo» arriba.</li>
                     <li><strong>Un ciclo que no aparece aún no abre</strong> para tu carrera. Al inicio lo verás en la
                         lista de próximos ciclos.</li>
-                    <li><strong>La sección (PEAD) es la que eliges al matricularte</strong> en el Campus Virtual. Anótala
+                    <li><strong>La sección (PEAD) es la que eliges al matricularte</strong> en el Campus Virtual.
+                        Anótala
                         junto con el turno y los días.</li>
                 </ul>
                 <div class="ayuda-horarios__acciones">
@@ -217,7 +268,8 @@
     <!-- Datos (Google Drive) y lógica de horarios -->
     <script src="assets/js/config.js?v=49"></script>
     <script src="assets/js/datos.js?v=54"></script>
-    <script src="assets/js/horarios.js?v=70"></script>
+    <script src="assets/js/textos.js?v=2"></script>
+    <script src="assets/js/horarios.js?v=72"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.

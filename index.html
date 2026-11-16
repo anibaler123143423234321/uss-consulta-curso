@@ -59,9 +59,9 @@
             <div class="wrap">
                 <div class="hero-text hero__grid">
                     <div class="hero__texto">
-                        <p class="hero__eyebrow">Centro de Informática • USS</p>
-                        <h1 id="hero-h">Acreditación en Computación <span class="hero__resalte">Horarios</span></h1>
-                        <p class="hero__lead">27 carreras en 7 rutas de aprendizaje. Elige tu modelo y tu carrera, y ve
+                        <p class="hero__eyebrow" data-texto="portada.eyebrow">Centro de Informática • USS</p>
+                        <h1 id="hero-h" data-texto="portada.titulo">Acreditación en Computación <span class="hero__resalte" data-texto="portada.palabraDestacada">Horarios</span></h1>
+                        <p class="hero__lead" data-texto="portada.descripcion">27 carreras en 7 rutas de aprendizaje. Elige tu modelo y tu carrera, y ve
                             cada sección abierta con su turno, días y matriculados.</p>
 
                         <!-- La herramienta: los tres pasos viven en este panel -->
@@ -71,7 +71,7 @@
                             <div class="paso paso-modelo" id="paso-modelo">
                                 <p class="paso__titulo" id="titulo-modelo">
                                     <span class="paso__num" aria-hidden="true">1</span>
-                                    ¿Qué modelo de acreditación llevas?
+                                    <span data-texto="portada.pregunta">¿Qué modelo de acreditación llevas?</span>
                                 </p>
                                 <div class="selector-modelo-grid" role="radiogroup" aria-labelledby="titulo-modelo">
                                     <div class="card card-modelo-opcion" id="opcion-modelo-tradicional"
@@ -84,8 +84,8 @@
                                             <img src="assets/img/cursos/computacion-iii.svg?v=2" alt="C3" width="40"
                                                 height="40" />
                                         </span>
-                                        <strong class="card-modelo-opcion__titulo">Modelo Tradicional</strong>
-                                        <span class="card-modelo-opcion__desc">Cursos C2 y C3 (Computación II y III).</span>
+                                        <strong class="card-modelo-opcion__titulo" data-texto="tradicional.titulo">Modelo Tradicional</strong>
+                                        <span class="card-modelo-opcion__desc" data-texto="tradicional.descripcion">Cursos C2 y C3 (Computación II y III).</span>
                                     </div>
 
                                     <div class="card card-modelo-opcion" id="opcion-modelo-protech"
@@ -108,8 +108,8 @@
                                             <img src="assets/img/cursos/diseno-web.svg" alt="" width="24" height="24" />
                                             <img src="assets/img/cursos/taller.svg" alt="" width="24" height="24" />
                                         </span>
-                                        <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
-                                        <span class="card-modelo-opcion__desc">3 cursos + 1 taller de
+                                        <strong class="card-modelo-opcion__titulo" data-texto="protech.titulo">Modelo PROTECH XP</strong>
+                                        <span class="card-modelo-opcion__desc" data-texto="protech.descripcion">3 cursos + 1 taller de
                                             certificación.</span>
                                     </div>
                                 </div>
@@ -179,16 +179,16 @@
 
                         <dl class="hero__datos">
                             <div>
-                                <dt>1 a 3 meses</dt>
-                                <dd>dura cada ciclo</dd>
+                                <dt data-texto="datos.0.valor">1 a 3 meses</dt>
+                                <dd data-texto="datos.0.texto">dura cada ciclo</dd>
                             </div>
                             <div>
-                                <dt>Modelo Tradicional</dt>
-                                <dd>o PROTECH XP</dd>
+                                <dt data-texto="datos.1.valor">Modelo Tradicional</dt>
+                                <dd data-texto="datos.1.texto">o PROTECH XP</dd>
                             </div>
                             <div>
-                                <dt>Virtual</dt>
-                                <dd>o presencial, según la sección</dd>
+                                <dt data-texto="datos.2.valor">Virtual</dt>
+                                <dd data-texto="datos.2.texto">o presencial, según la sección</dd>
                             </div>
                         </dl>
                     </div>
@@ -209,7 +209,8 @@
     <!-- Datos (Google Drive) y lógica de selección -->
     <script src="assets/js/config.js?v=49"></script>
     <script src="assets/js/datos.js?v=54"></script>
-    <script src="assets/js/index.js?v=66"></script>
+    <script src="assets/js/textos.js?v=2"></script>
+    <script src="assets/js/index.js?v=68"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.

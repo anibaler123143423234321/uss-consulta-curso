@@ -199,15 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function actualizarBadgeModelo() {
     const badge = $('txt-modelo-badge');
     if (!badge) return;
+    const cfg = window.PORTAL_HORARIOS_CONFIG;
     if (modeloActivo === 'tradicional') {
       badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--tradicional';
-      badge.textContent = 'Modelo Tradicional (C2 / C3)';
+      badge.textContent = cfg?.tradicional?.badge || 'Modelo Tradicional (C2 / C3)';
     } else {
       badge.className = 'banner-carrera__modelo-badge banner-carrera__modelo-badge--protech';
-      badge.textContent = 'Modelo PROTECH XP';
+      badge.textContent = cfg?.protech?.badge || 'Modelo PROTECH XP';
     }
   }
   actualizarBadgeModelo();
+  window.addEventListener('portal_horarios_config_loaded', actualizarBadgeModelo);
 
   // 4. Fuente de datos: solo en línea (Google Drive y, de respaldo, la API REST)
   let horariosCargados = [];
