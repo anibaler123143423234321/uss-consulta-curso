@@ -211,8 +211,14 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
  * «PAC <carrera>» con una carrera sin sigla propia, solo a esa carrera (soloCarreras).
  */
 window.CONSULTA_CURSOS.filaVisible = (fila, carrera) => {
-  if (Array.isArray(fila.soloCarreras) && !fila.soloCarreras.includes(carrera)) return false;
-  return window.CONSULTA_CURSOS.seccionVisible(fila.seccion, carrera);
+  if (Array.isArray(fila.soloCarreras)) return fila.soloCarreras.includes(carrera);
+  const especialidades = window.CONSULTA_CURSOS.especialidades;
+  const grupoSeccion = especialidades.find((e) => e.patron.test(fila.seccion || ''));
+  if (grupoSeccion) return grupoSeccion.carreras.includes(carrera);
+  // Sección general (PEAD a, b…): en Plan Tradicional, las carreras con grupo propio
+  // (Arquitectura, Civil, Sistemas/Software, Mecánica) llevan solo sus secciones (PEAD ARQ, CIV, SIST, MEC).
+  if (fila.modelo === 'tradicional' && especialidades.some((e) => e.carreras.includes(carrera))) return false;
+  return true;
 };
 
 /** Talleres de certificación (TALLER EXCEL 2019, TALLER WORD 2019…): PROTECH XP, para toda carrera. */
