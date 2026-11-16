@@ -1332,125 +1332,189 @@ select.campo.filtro-activo {
     margin-top: 8px;
 }
 
-/* --- Carga de horarios: imita la tabla mientras llega la hoja de Drive --- */
-.tabla-horarios-wrap .estado-red--cargando {
+/* --- Sincronización en vivo (Taste-Skill / Anti-Slop Loading) --- */
+.sincronizacion-activa {
     position: relative;
-    padding: 0;
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border-radius: var(--r);
+    border: 1px solid var(--line);
+    background: var(--bg);
     overflow: hidden;
+    box-shadow: 0 1px 3px rgb(0 0 0 / .03);
 }
 
-.carga__progreso {
+.sincronizacion-activa__progreso {
     position: absolute;
     inset: 0 0 auto 0;
     height: 2px;
-    overflow: hidden;
     background: var(--uss-azul-50);
+    overflow: hidden;
 }
 
-.carga__progreso::after {
+.sincronizacion-activa__progreso::after {
     content: "";
     position: absolute;
     inset: 0 auto 0 0;
-    width: 30%;
-    background: var(--uss-azul);
-    animation: avance 1.4s var(--ease) infinite;
+    width: 28%;
+    background: linear-gradient(90deg, #073299, #0d6efd);
+    border-radius: 999px;
+    animation: avance-sincronizacion 1.4s var(--ease) infinite;
 }
 
-@keyframes avance {
+@keyframes avance-sincronizacion {
     from {
         transform: translateX(-100%);
     }
-
     to {
-        transform: translateX(340%);
+        transform: translateX(380%);
     }
 }
 
-.carga__cabecera {
+.sincronizacion-activa__cuerpo {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 18px 16px;
-    border-bottom: 1px solid var(--line);
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
-.carga__cabecera .estado-red__spinner {
-    width: 20px;
-    height: 20px;
+.sincronizacion-activa__info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.carga__cabecera > div {
+.sincronizacion-activa__pulso {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    flex: none;
+}
+
+.sincronizacion-activa__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--uss-azul);
+    animation: pulso-dot 1.6s ease-in-out infinite;
+}
+
+.sincronizacion-activa__onda {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--uss-azul);
+    opacity: .75;
+    animation: pulso-onda 1.6s cubic-bezier(0, .2, .8, 1) infinite;
+}
+
+@keyframes pulso-dot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(0.85);
+        opacity: 0.7;
+    }
+}
+
+@keyframes pulso-onda {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+.sincronizacion-activa__textos {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
-.carga__titulo {
-    font-size: var(--t-base);
-    font-weight: 700;
-}
-
-.carga__detalle {
+.sincronizacion-activa__titulo {
     font-size: var(--t-sm);
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.sincronizacion-activa__detalle {
+    font-size: var(--t-xs);
     color: var(--muted);
 }
 
-.carga__fila {
-    display: grid;
-    grid-template-columns: 24px 1.5fr .6fr .8fr .8fr .6fr 1fr .5fr;
+.sincronizacion-activa__meta {
+    display: flex;
     align-items: center;
-    gap: 20px;
-    min-height: 60px;
-    padding: 10px 16px;
-    border-bottom: 1px solid #eef1f6;
+    gap: 8px;
 }
 
-.carga__fila:last-child {
-    border-bottom: 0;
+.sincronizacion-activa__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--uss-azul-50);
+    color: var(--uss-azul);
+    font-size: var(--t-xs);
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-/* Un solo brillo que cruza todas las barras a la vez */
-.carga__celda {
-    display: block;
-    height: 12px;
-    border-radius: 6px;
-    background: linear-gradient(100deg, #eceff5 40%, #f7f8fb 50%, #eceff5 60%) fixed;
-    background-size: 200vw 100%;
-    animation: brillo-carga 1.6s linear infinite;
+/* --- Filas sincronizando (cursos reales + placeholders vivos) --- */
+.fila-sincronizando {
+    opacity: 0.88;
+    cursor: default !important;
 }
 
-@keyframes brillo-carga {
+.fila-sincronizando .col-curso {
+    opacity: 1 !important;
+}
+
+.badge-seccion--sincronizando,
+.badge-estado--sincronizando,
+.celda-fechas--sincronizando,
+.badge-turno--sincronizando,
+.celda-dias--sincronizando,
+.badge-cupos--sincronizando {
+    opacity: 0.65;
+    background: #f1f4f9 !important;
+    color: var(--muted) !important;
+    border-color: #e2e8f0 !important;
+    animation: tenue-brillo 1.8s ease-in-out infinite;
+}
+
+@keyframes tenue-brillo {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.9;
+    }
+}
+
+.tabla-horarios tbody tr:not(.fila-sincronizando) {
+    animation: fadeInTr 0.22s var(--ease) both;
+}
+
+@keyframes fadeInTr {
     from {
-        background-position: 100vw 0;
+        opacity: 0;
+        transform: translateY(2px);
     }
-
     to {
-        background-position: -100vw 0;
+        opacity: 1;
+        transform: translateY(0);
     }
 }
-
-.carga__celda--icono {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-}
-
-.carga__celda--curso { width: 80%; height: 14px; }
-.carga__celda--corta { width: 70%; }
-.carga__celda--estado { width: 85%; }
-.carga__celda--mini { width: 28px; justify-self: center; }
-.carga__celda--docente { width: 75%; }
-.carga__celda--acceso { width: 90%; }
-
-.carga__celda--doble {
-    height: 30px;
-    background-size: 200vw 100%;
-    -webkit-mask: linear-gradient(#000 0 12px, transparent 12px 18px, #000 18px 30px) top / 100% 100% no-repeat;
-    mask: linear-gradient(#000 0 12px, transparent 12px 18px, #000 18px 30px) top / 100% 100% no-repeat;
-}
-
-.carga__fila:nth-child(2n) .carga__celda--curso { width: 62%; }
-.carga__fila:nth-child(3n) .carga__celda--docente { width: 58%; }
 
 /* --- Preguntas frecuentes: desplegable, cerrado por defecto --- */
 .ayuda-horarios {
@@ -1672,30 +1736,6 @@ select.campo.filtro-activo {
         background: transparent;
         overflow: visible;
     }
-
-    .tabla-horarios-wrap .estado-red--cargando {
-        border: 1px solid var(--line);
-        border-radius: var(--r);
-        background: var(--bg);
-    }
-
-    .carga__fila {
-        grid-template-columns: 24px 1fr 56px;
-        grid-template-rows: auto auto auto;
-        gap: 12px;
-        padding: 16px;
-    }
-
-    .carga__celda--icono { grid-column: 1; grid-row: 1; }
-    .carga__celda--curso { grid-column: 2; grid-row: 1; width: 60%; }
-    .carga__celda--corta:nth-child(3) { grid-column: 3; grid-row: 1; width: 100%; }
-    .carga__celda--estado { grid-column: 1 / 3; grid-row: 2; width: 40%; }
-    .carga__celda--doble:nth-child(5) { grid-column: 1 / 3; grid-row: 3; width: 55%; }
-    .carga__celda--docente { grid-column: 1 / -1; grid-row: 4; width: 50%; }
-    .carga__celda--corta:nth-child(6),
-    .carga__celda--doble:nth-child(7),
-    .carga__celda--mini,
-    .carga__celda--acceso { display: none; }
 
     .tabla-horarios__scroll {
         max-height: none;

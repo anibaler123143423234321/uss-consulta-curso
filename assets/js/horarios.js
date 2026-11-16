@@ -332,79 +332,227 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Caja de estado de red (esqueleto mientras descarga / alerta con reintento si falla)
+  // Caja de estado de red (sincronización en vivo / alerta con reintento si falla)
   const cajaTablaScroll = document.querySelector('.tabla-horarios__scroll');
   const estadoRed = document.createElement('div');
   estadoRed.id = 'estado-red-horarios';
   estadoRed.hidden = true;
   cajaTablaScroll?.before(estadoRed);
 
+  const CLAVE_CACHE_HORARIOS = 'cinf_horarios_cache_v2';
+  const TTL_CACHE_HORARIOS_MS = 8 * 60 * 1000; // 8 minutos
+
+  function leerCacheHorarios() {
+    try {
+      const crudo = sessionStorage.getItem(CLAVE_CACHE_HORARIOS);
+      if (!crudo) return null;
+      const datos = JSON.parse(crudo);
+      if (!datos || !Array.isArray(datos.filas) || !datos.tiempo) return null;
+      if (Date.now() - datos.tiempo > TTL_CACHE_HORARIOS_MS) return null;
+      return datos.filas;
+    } catch {
+      return null;
+    }
+  }
+
+  function guardarCacheHorarios(filas) {
+    try {
+      if (Array.isArray(filas) && filas.length > 0) {
+        sessionStorage.setItem(
+          CLAVE_CACHE_HORARIOS,
+          JSON.stringify({ filas, tiempo: Date.now() })
+        );
+      }
+    } catch {
+      // Ignorar quota en sessionStorage
+    }
+  }
+
+  // Pre-renderizado inmediato con los cursos reales de la carrera (cero barras grises anónimas)
+  function pintarEsqueletoCursosReales() {
+    const tbody = $('filas-horarios');
+    if (!tbody) return;
+    const cursosLista = Array.from(cursosPermitidosActivos());
+    if (cursosLista.length === 0) return;
+
+    tbody.replaceChildren(
+      ...cursosLista.map((cursoNombre) => {
+        const tr = document.createElement('tr');
+        tr.className = 'fila-sincronizando';
+        tr.setAttribute('aria-disabled', 'true');
+
+        // 1. Curso con su ícono oficial y color temático
+        const tdCurso = document.createElement('td');
+        tdCurso.className = 'col-curso';
+        tdCurso.setAttribute('data-label', 'Curso');
+        const badgeCurso = document.createElement('span');
+        badgeCurso.className = `badge-curso ${obtenerClaseColorCurso(cursoNombre)}`;
+        const iconoCurso = document.createElement('img');
+        iconoCurso.className = 'badge-curso__icono';
+        iconoCurso.src = `assets/img/cursos/${obtenerIconoCurso(cursoNombre)}.svg`;
+        iconoCurso.alt = '';
+        iconoCurso.setAttribute('aria-hidden', 'true');
+        iconoCurso.width = 24;
+        iconoCurso.height = 24;
+        const fuerte = document.createElement('strong');
+        fuerte.textContent = cursoNombre;
+        badgeCurso.append(iconoCurso, fuerte);
+        tdCurso.appendChild(badgeCurso);
+
+        // 2. Sección (placeholder vivo)
+        const tdSec = document.createElement('td');
+        tdSec.className = 'col-sec';
+        tdSec.setAttribute('data-label', 'Sección');
+        const badgeSec = document.createElement('span');
+        badgeSec.className = 'badge-seccion badge-seccion--sincronizando';
+        badgeSec.textContent = 'En vivo';
+        tdSec.appendChild(badgeSec);
+
+        // 3. Estado
+        const tdEstado = document.createElement('td');
+        tdEstado.className = 'col-estado';
+        tdEstado.setAttribute('data-label', 'Estado');
+        const badgeEstado = document.createElement('span');
+        badgeEstado.className = 'badge-estado badge-estado--sincronizando';
+        badgeEstado.textContent = 'Aperturado';
+        tdEstado.appendChild(badgeEstado);
+
+        // 4. Fechas
+        const tdFechas = document.createElement('td');
+        tdFechas.setAttribute('data-label', 'Fechas');
+        const fechas = document.createElement('span');
+        fechas.className = 'celda-fechas celda-fechas--sincronizando';
+        const f1 = document.createElement('span');
+        f1.textContent = 'Programación';
+        const f2 = document.createElement('span');
+        f2.className = 'celda-fechas__fin';
+        f2.textContent = cicloSeleccionado ? cicloSeleccionado.nombre : 'Ciclo oficial';
+        fechas.append(f1, f2);
+        tdFechas.appendChild(fechas);
+
+        // 5. Turno
+        const tdTurno = document.createElement('td');
+        tdTurno.setAttribute('data-label', 'Turno');
+        const badgeTurno = document.createElement('span');
+        badgeTurno.className = 'badge-turno badge-turno--sincronizando';
+        badgeTurno.textContent = 'Consultando turnos…';
+        tdTurno.appendChild(badgeTurno);
+
+        // 6. Horario y días
+        const tdDias = document.createElement('td');
+        tdDias.setAttribute('data-label', 'Horario y días');
+        const diasWrap = document.createElement('span');
+        diasWrap.className = 'celda-dias celda-dias--sincronizando';
+        const dHora = document.createElement('span');
+        dHora.className = 'celda-dias__hora';
+        dHora.textContent = 'Horarios del ciclo';
+        const dDias = document.createElement('span');
+        dDias.className = 'celda-dias__dias';
+        dDias.textContent = 'Días de apertura';
+        diasWrap.append(dHora, dDias);
+        tdDias.appendChild(diasWrap);
+
+        // 7. Matriculados
+        const tdCupos = document.createElement('td');
+        tdCupos.className = 'col-centro';
+        tdCupos.setAttribute('data-label', 'Matriculados');
+        const badgeCupos = document.createElement('span');
+        badgeCupos.className = 'badge-cupos badge-cupos--sincronizando';
+        badgeCupos.textContent = 'Vacantes';
+        tdCupos.appendChild(badgeCupos);
+
+        tr.append(tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos);
+        return tr;
+      })
+    );
+  }
+
   function mostrarEstadoRed(estado) {
     const conteo = $('conteo-secciones');
     $('sin-horarios').hidden = true;
-    if (cajaTablaScroll) cajaTablaScroll.hidden = true;
-    estadoRed.hidden = false;
     estadoRed.replaceChildren();
+
     if (estado === 'cargando') {
-      estadoRed.className = 'estado-red estado-red--cargando';
+      if (cajaTablaScroll) cajaTablaScroll.hidden = false;
+      pintarEsqueletoCursosReales();
+
+      estadoRed.hidden = false;
+      estadoRed.className = 'sincronizacion-activa';
       estadoRed.setAttribute('role', 'status');
       estadoRed.setAttribute('aria-live', 'polite');
-      if (conteo) conteo.textContent = 'Cargando secciones…';
-      // Cabecera: barra de progreso, spinner, qué se carga y de dónde
+      if (conteo) conteo.textContent = 'Conectando secciones en tiempo real…';
+
       const nombreCiclo = cicloSeleccionado ? cicloSeleccionado.nombre : 'tu ciclo';
-      const progreso = document.createElement('div');
-      progreso.className = 'carga__progreso';
-      progreso.setAttribute('aria-hidden', 'true');
-      const cabecera = document.createElement('div');
-      cabecera.className = 'carga__cabecera';
-      const spinner = document.createElement('span');
-      spinner.className = 'estado-red__spinner';
-      spinner.setAttribute('aria-hidden', 'true');
+      const metaModelo = modeloActivo === 'tradicional' ? 'Modelo Tradicional (C2 / C3)' : 'Modelo PROTECH XP';
+
+      // Micro-barra de progreso superior
+      const barraProgreso = document.createElement('div');
+      barraProgreso.className = 'sincronizacion-activa__progreso';
+      barraProgreso.setAttribute('aria-hidden', 'true');
+
+      // Contenedor principal
+      const cuerpo = document.createElement('div');
+      cuerpo.className = 'sincronizacion-activa__cuerpo';
+
+      // Lado izquierdo: indicador de pulso en vivo y copy editorial
+      const info = document.createElement('div');
+      info.className = 'sincronizacion-activa__info';
+
+      const pulso = document.createElement('span');
+      pulso.className = 'sincronizacion-activa__pulso';
+      pulso.setAttribute('aria-hidden', 'true');
+      const dot = document.createElement('span');
+      dot.className = 'sincronizacion-activa__dot';
+      const onda = document.createElement('span');
+      onda.className = 'sincronizacion-activa__onda';
+      pulso.append(dot, onda);
+
       const textos = document.createElement('div');
+      textos.className = 'sincronizacion-activa__textos';
+
       const titulo = document.createElement('strong');
-      titulo.className = 'carga__titulo';
-      titulo.textContent = `Cargando los horarios de ${nombreCiclo}`;
+      titulo.className = 'sincronizacion-activa__titulo';
+      titulo.textContent = `Sincronizando secciones abiertas de ${nombreCiclo}`;
+
       const detalle = document.createElement('span');
-      detalle.className = 'carga__detalle';
-      detalle.textContent = 'Leyendo la hoja oficial del Centro de Informática en Google Drive.';
+      detalle.className = 'sincronizacion-activa__detalle';
+      detalle.textContent = `Verificando turnos y vacantes en vivo para ${carrera}`;
+
       textos.append(titulo, detalle);
-      cabecera.append(spinner, textos);
+      info.append(pulso, textos);
 
-      // Filas fantasma con la forma de las columnas de la tabla
-      const filas = document.createElement('div');
-      filas.className = 'carga__filas';
-      filas.setAttribute('aria-hidden', 'true');
-      const celdas = ['icono', 'curso', 'corta', 'estado', 'doble', 'corta', 'doble', 'mini'];
-      if (MOSTRAR_DOCENTE) celdas.push('docente');
-      for (let i = 0; i < 6; i += 1) {
-        const fila = document.createElement('div');
-        fila.className = 'carga__fila';
-        celdas.forEach((tipo) => {
-          const celda = document.createElement('span');
-          celda.className = `carga__celda carga__celda--${tipo}`;
-          fila.appendChild(celda);
-        });
-        filas.appendChild(fila);
-      }
-      estadoRed.append(progreso, cabecera, filas);
+      // Lado derecho: chip identificador del modelo
+      const meta = document.createElement('div');
+      meta.className = 'sincronizacion-activa__meta';
+      const chip = document.createElement('span');
+      chip.className = 'sincronizacion-activa__chip';
+      chip.textContent = metaModelo;
+      meta.appendChild(chip);
 
-      // Si Drive tarda, se avisa en vez de dejar el mismo texto
+      cuerpo.append(info, meta);
+      estadoRed.append(barraProgreso, cuerpo);
+
+      // Si la conexión tarda más de 5 s, actualizar el mensaje sin alarma
       setTimeout(() => {
-        if (!estadoRed.hidden && estadoRed.classList.contains('estado-red--cargando')) {
-          detalle.textContent = 'La hoja de Drive está tardando un poco más de lo normal. Seguimos esperando su respuesta.';
+        if (!estadoRed.hidden && estadoRed.classList.contains('sincronizacion-activa')) {
+          detalle.textContent = `Actualizando programación oficial de ${carrera}. Un instante más…`;
         }
       }, 5000);
       return;
     }
+
+    // Estado error de red
+    if (cajaTablaScroll) cajaTablaScroll.hidden = true;
+    estadoRed.hidden = false;
     estadoRed.className = 'estado-red estado-red--error';
     estadoRed.setAttribute('role', 'alert');
-    if (conteo) conteo.textContent = 'Sin conexión con Google Drive';
+    if (conteo) conteo.textContent = 'Sin conexión con el catálogo oficial';
     const titulo = document.createElement('p');
     titulo.className = 'estado-red__titulo';
-    titulo.textContent = 'No pudimos conectar con Google Drive';
+    titulo.textContent = 'No pudimos conectar con los horarios en línea';
     const detalle = document.createElement('p');
     detalle.className = 'estado-red__texto';
-    detalle.textContent = 'Revisa tu conexión a Internet e inténtalo de nuevo. Los horarios se publican solo en línea.';
+    detalle.textContent = 'Revisa tu conexión a Internet e inténtalo de nuevo. Los horarios se actualizan solo en vivo.';
     const acciones = document.createElement('div');
     acciones.className = 'estado-red__acciones';
     const reintentar = document.createElement('button');
@@ -422,26 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
     estadoRed.append(titulo, detalle, acciones);
   }
 
-  async function cargarDatos() {
-    mostrarEstadoRed('cargando');
-    horariosCargados = [];
-    try {
-      horariosCargados = await window.CONSULTA_CURSOS.cargarHorariosRemotos();
-      fuenteEnVivo = true;
-    } catch (eDrive) {
-      console.warn('Google Drive no disponible, probando API…', eDrive);
-      try {
-        horariosCargados = await cargarDesdeApi();
-        fuenteEnVivo = true;
-      } catch (eApi) {
-        console.error('Sin conexión con las fuentes en línea:', eApi);
-        fuenteEnVivo = false;
-        mostrarEstadoRed('error');
-        return;
-      }
-    }
-    estadoRed.hidden = true;
-
+  function aplicarDatosCargados() {
     const filasCicloSeleccionado = horariosCargados.filter(
       (fila) => (fila.ciclo || '').toLowerCase() === cicloActivo && esDeLaCarrera(fila)
     );
@@ -458,6 +587,55 @@ document.addEventListener('DOMContentLoaded', () => {
     leerFiltrosDeUrl();
     poblarFiltrosDinamicos();
     pintarTabla();
+  }
+
+  async function cargarDatos() {
+    // 1. Verificación en caché de sesión (SWR - 0 ms de espera en visitas recurrentes o cambio de ciclo)
+    const cache = leerCacheHorarios();
+    if (cache && cache.length > 0) {
+      horariosCargados = cache;
+      fuenteEnVivo = true;
+      estadoRed.hidden = true;
+      if (cajaTablaScroll) cajaTablaScroll.hidden = false;
+      aplicarDatosCargados();
+
+      // Revalidación silenciosa en segundo plano
+      window.CONSULTA_CURSOS.cargarHorariosRemotos()
+        .then((nuevos) => {
+          if (nuevos && nuevos.length > 0) {
+            horariosCargados = nuevos;
+            guardarCacheHorarios(nuevos);
+            aplicarDatosCargados();
+          }
+        })
+        .catch(() => {
+          // Revalidación en background silenciosa sin molestar al alumno
+        });
+      return;
+    }
+
+    // 2. Primera carga: muestra el esqueleto con cursos reales e íconos oficiales
+    mostrarEstadoRed('cargando');
+    horariosCargados = [];
+    try {
+      horariosCargados = await window.CONSULTA_CURSOS.cargarHorariosRemotos();
+      fuenteEnVivo = true;
+      guardarCacheHorarios(horariosCargados);
+    } catch (eDrive) {
+      console.warn('Google Drive no disponible, probando API…', eDrive);
+      try {
+        horariosCargados = await cargarDesdeApi();
+        fuenteEnVivo = true;
+        guardarCacheHorarios(horariosCargados);
+      } catch (eApi) {
+        console.error('Sin conexión con las fuentes en línea:', eApi);
+        fuenteEnVivo = false;
+        mostrarEstadoRed('error');
+        return;
+      }
+    }
+    estadoRed.hidden = true;
+    aplicarDatosCargados();
   }
 
   // 5. Filtros inteligentes
