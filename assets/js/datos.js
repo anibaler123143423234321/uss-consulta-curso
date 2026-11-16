@@ -485,12 +485,19 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
     return filas;
   };
 
+  // Respaldo de URLs oficiales por si config.js no carga por proxy/red
+  const URL_HOJA_DEFAULT =
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSz3Ap9uS8wQ9sEgccZNblL2vcDGGWsVf2V3GQYshhQaDvG2Jrcy7QQcvzHxz6Jcw/pub?gid=41443645&single=true&output=csv';
+  const URL_INDICE_DEFAULT =
+    'https://script.google.com/macros/s/AKfycby9ol55gNSq7AnH_zeuDYZi0_rOfzwVjybsyiOGEfObpVFaXst2ConIDHWhQGAT82wv/exec';
+
   /** Hojas fijas declaradas en config.js (una por ciclo), sin duplicados. */
   catalogo.urlsHojasDrive = () => {
     const lista = [
       ...(Array.isArray(window.GOOGLE_SHEETS_URLS) ? window.GOOGLE_SHEETS_URLS : []),
       window.GOOGLE_SHEETS_URL,
       window.GOOGLE_SHEETS_CSV_URL,
+      URL_HOJA_DEFAULT,
     ];
     return [...new Set(lista.map((url) => String(url || '').trim()).filter(Boolean))];
   };
@@ -513,7 +520,7 @@ window.CONSULTA_CURSOS.seccionVisible = (seccion, carrera) => {
    * Si el índice no está configurado o falla, se sigue solo con las hojas fijas.
    */
   catalogo.urlsHojasIndice = async (tiempoMaximoMs = 15000) => {
-    const indice = String(window.CINF_DRIVE_INDICE_URL || '').trim();
+    const indice = String(window.CINF_DRIVE_INDICE_URL || URL_INDICE_DEFAULT).trim();
     if (!indice) return [];
     try {
       const separador = indice.includes('?') ? '&' : '?';
