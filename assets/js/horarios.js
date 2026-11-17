@@ -512,16 +512,25 @@ document.addEventListener('DOMContentLoaded', () => {
         diasWrap.append(dHora, dDias);
         tdDias.appendChild(diasWrap);
 
-        // 7. Matriculados
+        // 7. Cupos
         const tdCupos = document.createElement('td');
         tdCupos.className = 'col-centro';
-        tdCupos.setAttribute('data-label', 'Matriculados');
+        tdCupos.setAttribute('data-label', 'Cupos');
         const badgeCupos = document.createElement('span');
         badgeCupos.className = 'badge-cupos badge-cupos--sincronizando';
-        badgeCupos.textContent = 'Vacantes';
+        badgeCupos.textContent = '—';
         tdCupos.appendChild(badgeCupos);
 
-        tr.append(tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos);
+        // 8. Registro
+        const tdRegistro = document.createElement('td');
+        tdRegistro.className = 'col-centro col-registro';
+        tdRegistro.setAttribute('data-label', 'Registro');
+        const btnRegSkeleton = document.createElement('span');
+        btnRegSkeleton.className = 'btn-registrar btn-registrar--sincronizando';
+        btnRegSkeleton.textContent = 'Registrar';
+        tdRegistro.appendChild(btnRegSkeleton);
+
+        tr.append(tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos, tdRegistro);
         return tr;
       })
     );
@@ -806,7 +815,15 @@ document.addEventListener('DOMContentLoaded', () => {
     destino.replaceChildren(contenido.slice(0, inicio), marca, contenido.slice(inicio + texto.length));
   }
 
-  const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Matriculados', 'Docente'];
+  const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Cupos', 'Registro', 'Docente'];
+
+  function manejarClickRegistrar(fila) {
+    const cicloNombre = cicloSeleccionado ? cicloSeleccionado.nombre : (cicloActivo || '');
+    const carreraNombre = carrera || '';
+    const textoMsg = `Hola Centro de Informática USS, deseo registrarme en el curso ${fila.curso}, sección ${fila.seccion} (${fila.turno || 'Turno por confirmar'}), ciclo ${cicloNombre} de la carrera ${carreraNombre}.`;
+    const urlWa = `https://wa.me/51986724506?text=${encodeURIComponent(textoMsg)}`;
+    window.open(urlWa, '_blank', 'noopener,noreferrer');
+  }
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   const tbodyHorarios = $('filas-horarios');
@@ -971,15 +988,42 @@ document.addEventListener('DOMContentLoaded', () => {
         diasHorario.append(hora, dias);
         tdDias.appendChild(diasHorario);
 
-        // 8. Matriculados (columna MAT de la hoja)
+        // 7. Cupos (columna MAT de la hoja)
         const tdCupos = document.createElement('td');
         tdCupos.className = 'col-centro';
         const cuposTexto = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos)) ? `${Number(fila.cupos)}` : '—';
         const badgeCupos = document.createElement('span');
         badgeCupos.className = 'badge-cupos';
-        badgeCupos.title = 'Estudiantes matriculados en la sección';
+        badgeCupos.title = 'Cupos disponibles en la sección';
         badgeCupos.textContent = cuposTexto;
         tdCupos.appendChild(badgeCupos);
+
+        // 8. Botón Registrar
+        const tdRegistro = document.createElement('td');
+        tdRegistro.className = 'col-centro col-registro';
+        const btnRegistrar = document.createElement('button');
+        btnRegistrar.type = 'button';
+        const esCerrada = (fila.estado || '').toLowerCase() === 'cerrado';
+        if (esCerrada) {
+          btnRegistrar.className = 'btn-registrar btn-registrar--cerrado';
+          btnRegistrar.disabled = true;
+          btnRegistrar.textContent = 'Cerrado';
+          btnRegistrar.title = 'Esta sección se encuentra cerrada para nuevas inscripciones';
+        } else {
+          btnRegistrar.className = 'btn-registrar btn-registrar--activo';
+          btnRegistrar.textContent = 'Registrar';
+          btnRegistrar.title = `Registrarme en ${fila.curso} - Sección ${fila.seccion}`;
+          btnRegistrar.dataset.curso = fila.curso;
+          btnRegistrar.dataset.seccion = fila.seccion;
+          btnRegistrar.dataset.turno = fila.turno || '';
+          btnRegistrar.dataset.horario = fila.horario || '';
+          btnRegistrar.dataset.dias = fila.dias || '';
+          btnRegistrar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            manejarClickRegistrar(fila);
+          });
+        }
+        tdRegistro.appendChild(btnRegistrar);
 
         // 9. Docente: oculto por ahora (MOSTRAR_DOCENTE). Si la hoja no trae nombre, no se inventa uno.
         const tdDocente = document.createElement('td');
@@ -992,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // En celular cada fila es una tarjeta: la etiqueta de cada dato sale de data-label
-        const celdas = [tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos];
+        const celdas = [tdCurso, tdSec, tdEstado, tdFechas, tdTurno, tdDias, tdCupos, tdRegistro];
         if (MOSTRAR_DOCENTE) celdas.push(tdDocente);
         celdas.forEach((td, i) => {
           td.dataset.label = ETIQUETAS_CELDA[i];

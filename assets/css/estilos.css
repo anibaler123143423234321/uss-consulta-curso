@@ -1388,6 +1388,71 @@ select.campo.filtro-activo {
     font-variant-numeric: tabular-nums;
 }
 
+/* Columna Registro y Botón Registrar */
+.col-registro {
+    text-align: center;
+    white-space: nowrap;
+    min-width: 110px;
+}
+
+.btn-registrar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 16px;
+    border-radius: var(--r-btn);
+    font-size: var(--t-xs);
+    font-weight: 700;
+    line-height: 1;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 140ms var(--ease), border-color 140ms var(--ease), transform 90ms var(--ease), box-shadow 140ms var(--ease);
+    text-decoration: none;
+    user-select: none;
+}
+
+.btn-registrar--activo {
+    background: var(--uss-azul);
+    color: #ffffff;
+    box-shadow: 0 1px 2px rgb(7 50 153 / .2);
+}
+
+.btn-registrar--activo:hover {
+    background: var(--uss-azul-700);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgb(7 50 153 / .3);
+}
+
+.btn-registrar--activo:active {
+    transform: translateY(1px);
+}
+
+.btn-registrar--cerrado {
+    background: var(--surface);
+    color: var(--muted);
+    border-color: var(--line);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-registrar--sincronizando {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 16px;
+    border-radius: var(--r-btn);
+    font-size: var(--t-xs);
+    font-weight: 700;
+    background: #f1f4f9;
+    color: var(--muted);
+    opacity: 0.65;
+    animation: tenue-brillo 1.8s ease-in-out infinite;
+}
+
 .docente-asignado {
     font-weight: 600;
     min-width: 140px;
@@ -1908,7 +1973,8 @@ select.campo.filtro-activo {
     .tabla-horarios tbody .col-curso::before,
     .tabla-horarios tbody .col-sec::before,
     .tabla-horarios tbody .col-estado::before,
-    .tabla-horarios tbody .col-acceso::before {
+    .tabla-horarios tbody .col-acceso::before,
+    .tabla-horarios tbody .col-registro::before {
         display: none;
     }
 
@@ -1950,6 +2016,21 @@ select.campo.filtro-activo {
     .tabla-horarios tbody .col-acceso .btn-zoom {
         width: 100%;
         min-height: 44px;
+    }
+
+    .tabla-horarios tbody .col-registro {
+        grid-column: 1 / -1;
+        text-align: left;
+        margin-top: 4px;
+        padding-top: 8px;
+        border-top: 1px dashed var(--line);
+    }
+
+    .tabla-horarios tbody .col-registro .btn-registrar {
+        width: 100%;
+        min-height: 42px;
+        height: 42px;
+        font-size: var(--t-sm);
     }
 
     .tabla-horarios tbody tr.seccion-seleccionada {
