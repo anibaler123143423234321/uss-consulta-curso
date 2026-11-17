@@ -361,10 +361,14 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.type = 'button';
     btn.id = `btn-ciclo-${ciclo.id}`;
 
+    // Badge de duración en meses superpuesto en el lado superior derecho
+    const duracionBadge = crear('span', 'ciclo-btn__meses-badge', ciclo.duracion);
+    duracionBadge.setAttribute('aria-label', `Duración: ${ciclo.duracion}`);
+
     const header = crear('div', 'ciclo-btn__header');
     const izquierda = document.createElement('div');
     const mes = crear('span', 'ciclo-btn__mes', ciclo.nombre);
-    const duracion = crear('div', 'ciclo-btn__duracion', ciclo.duracion);
+    const duracion = crear('div', 'ciclo-btn__duracion', 'Fechas por confirmar');
     izquierda.append(mes, duracion);
     header.append(izquierda);
 
@@ -376,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const accion = crear('span', 'ciclo-btn__accion', 'Ver horarios');
     footer.append(badge, accion);
 
-    btn.append(header, footer);
+    btn.append(duracionBadge, header, footer);
 
     // Clic en el ciclo -> Redirige a horarios.html con carrera, ciclo y modelo
     btn.addEventListener('click', () => {
@@ -497,8 +501,10 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.querySelector('.ciclo-btn__mes').textContent = `${ciclo.nombre} ${anio}`.trim();
       const conFechas = filas.find((h) => h.inicio && h.fin);
       btn.querySelector('.ciclo-btn__duracion').textContent = conFechas
-        ? `Clases del ${conFechas.inicio} al ${conFechas.fin} · ${ciclo.duracion}`
-        : `Fechas por confirmar · ${ciclo.duracion}`;
+        ? `Clases del ${conFechas.inicio} al ${conFechas.fin}`
+        : 'Fechas por confirmar';
+      const duracionBadge = btn.querySelector('.ciclo-btn__meses-badge');
+      if (duracionBadge) duracionBadge.textContent = ciclo.duracion;
       badge.className = 'ciclo-btn__badge ciclo-btn__badge--disponible';
       const cerradas = filas.filter((h) => h.estado === 'Cerrado').length;
       badge.textContent =
