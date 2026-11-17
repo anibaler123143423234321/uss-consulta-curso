@@ -2720,10 +2720,55 @@ body:has(.hero[data-enter]) {
     scroll-margin-top: 24px;
 }
 
+.seccion-registro[hidden] {
+    display: none !important;
+}
+
+.seccion-registro:not([hidden]) {
+    animation: aparecer-registro 280ms var(--ease) forwards;
+}
+
+@keyframes aparecer-registro {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .seccion-registro__encabezado {
     text-align: center;
     max-width: 640px;
     margin: 0 auto 32px;
+}
+
+.seccion-registro__top-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.btn-cerrar-registro {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 140ms var(--ease);
+}
+
+.btn-cerrar-registro:hover {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
 }
 
 .badge-etiqueta {

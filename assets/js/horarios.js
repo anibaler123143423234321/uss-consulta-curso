@@ -818,18 +818,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Cupos', 'Registro', 'Docente'];
 
   function manejarClickRegistrar(fila) {
-    // 1. Mostrar qué sección seleccionó en la guía de registro
-    const contenedorAviso = $('registro-seleccion');
-    const textoAviso = $('registro-seleccion-texto');
-    if (contenedorAviso && textoAviso) {
-      contenedorAviso.hidden = false;
-      const turnoTexto = fila.turno ? ` · Turno ${fila.turno}` : '';
-      textoAviso.textContent = `${fila.curso} · Sección ${fila.seccion}${turnoTexto}`;
-    }
-
-    // 2. Desplazar suavemente hasta #registro con ID en la URL
     const destino = document.getElementById('registro');
     if (destino) {
+      // 1. Hace visible la sección de registro (oculta por defecto hasta que se pulse Registrar)
+      destino.hidden = false;
+
+      // 2. Mostrar qué sección seleccionó en la guía de registro
+      const contenedorAviso = $('registro-seleccion');
+      const textoAviso = $('registro-seleccion-texto');
+      if (contenedorAviso && textoAviso) {
+        contenedorAviso.hidden = false;
+        const turnoTexto = fila.turno ? ` · Turno ${fila.turno}` : '';
+        textoAviso.textContent = `${fila.curso} · Sección ${fila.seccion}${turnoTexto}`;
+      }
+
+      // 3. Desplazar suavemente hasta #registro con ID en la URL
       destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (history.pushState) {
         history.pushState(null, '', '#registro');
@@ -838,6 +841,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  // Cerrar guía de registro si el estudiante lo desea
+  $('btn-cerrar-registro')?.addEventListener('click', () => {
+    const destino = document.getElementById('registro');
+    if (destino) {
+      destino.hidden = true;
+      if (history.pushState) {
+        history.pushState(null, '', window.location.pathname + window.location.search);
+      }
+    }
+  });
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales
   const tbodyHorarios = $('filas-horarios');

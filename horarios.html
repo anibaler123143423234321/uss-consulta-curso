@@ -25,7 +25,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/estilos.css?v=76" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=77" />
 </head>
 
 <body>
@@ -114,10 +114,13 @@
             </div>
         </section>
 
-        <!-- Pasos de Registro: Guía visual para matricularse -->
-        <section class="seccion-registro" id="registro" aria-labelledby="titulo-registro">
+        <!-- Pasos de Registro: Guía visual para matricularse (aparece solo al hacer clic en Registrar) -->
+        <section class="seccion-registro" id="registro" aria-labelledby="titulo-registro" hidden>
             <div class="seccion-registro__encabezado">
-                <span class="badge-etiqueta">Proceso de matrícula</span>
+                <div class="seccion-registro__top-barra">
+                    <span class="badge-etiqueta">Proceso de matrícula</span>
+                    <button type="button" class="btn-cerrar-registro" id="btn-cerrar-registro" aria-label="Cerrar guía de registro">✕ Cerrar</button>
+                </div>
                 <h2 class="seccion-registro__titulo" id="titulo-registro">¿Cómo registrarte en tu curso?</h2>
                 <p class="seccion-registro__subtitulo">Sigue estos sencillos pasos para asegurar tu vacante en el ciclo seleccionado.</p>
                 <div class="seccion-registro__seleccion" id="registro-seleccion" hidden>
@@ -310,7 +313,7 @@
     <script src="assets/js/config.js?v=49"></script>
     <script src="assets/js/datos.js?v=57"></script>
     <script src="assets/js/textos.js?v=2"></script>
-    <script src="assets/js/horarios.js?v=78"></script>
+    <script src="assets/js/horarios.js?v=79"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.
