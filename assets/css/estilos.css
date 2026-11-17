@@ -1388,6 +1388,11 @@ select.campo.filtro-activo {
     font-variant-numeric: tabular-nums;
 }
 
+.badge-cupos--agotado {
+    color: var(--muted);
+    opacity: 0.65;
+}
+
 /* Columna Registro y Botón Registrar */
 .col-registro {
     text-align: center;

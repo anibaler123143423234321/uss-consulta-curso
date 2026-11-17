@@ -386,10 +386,23 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
       cursosTrad.some((nombre) => normalizarCabecera(nombre) === normalizarCabecera(cursoNormalizado)) ||
       /computacion\s*(i|ii|iii|1|2|3)/i.test(normalizarCabecera(cursoNormalizado));
     const ciclo = normalizarCiclo(obtener(registro, ['Ciclo', 'Mes', 'Periodo']));
-    // Matriculados (columna MAT): vacío = sin dato. 0 es un dato real y se muestra.
-    const cuposRaw = obtener(registro, ['Cupos', 'Vacantes', 'Capacidad', 'MAT']);
-    const cuposNumero = cuposRaw === '' ? NaN : Number(cuposRaw.replace(/[^\d.-]/g, ''));
-    const cupos = Number.isFinite(cuposNumero) && cuposNumero >= 0 ? cuposNumero : null;
+
+    // Cupos: se lee directamente de la columna «Cupos» calculada en la hoja de Drive
+    const cuposRaw = obtener(registro, ['Cupos', 'Cupo', 'Vacantes', 'Cupos Disponibles', 'MAT']);
+    const nRaw = obtener(registro, ['N°', 'Nº', 'N', 'Nro', 'No', 'Capacidad', 'Meta', 'Total Vacantes']);
+    const matRaw = obtener(registro, ['Tot_Mat', 'Tot Mat', 'MAT', 'Matriculados', 'Mat', 'Matricula']);
+    const prematRaw = obtener(registro, ['Pre_Mat', 'Pre Mat', 'PREMAT', 'Prematriculados', 'Premat']);
+
+    const parsearNum = (val) => {
+      if (val === '' || val === null || val === undefined) return null;
+      const num = Number(String(val).replace(/[^\d.-]/g, ''));
+      return Number.isFinite(num) && num >= 0 ? num : null;
+    };
+
+    const cupos = parsearNum(cuposRaw);
+    const cuposTotal = parsearNum(nRaw);
+    const matriculados = parsearNum(matRaw);
+    const prematriculados = parsearNum(prematRaw);
 
     const plan = obtener(registro, ['Plan de Estudio', 'Plan', 'Programa', 'Modelo']);
     const planNorm = normalizarCabecera(plan);
@@ -469,8 +482,10 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
       horario: horario || '',
       aula: aula || '',
       cupos,
-      cuposDisponibles: null,
-      cuposTotal: cupos,
+      cuposDisponibles: cupos,
+      cuposTotal,
+      matriculados,
+      prematriculados,
       docente: obtener(registro, ['Docente', 'Docente asignado']),
       linkAula: obtener(registro, ['Link Aula', 'Enlace', 'URL Aula']) || null,
       soloCarreras,
@@ -483,8 +498,16 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
     if (typeof datos === 'string') {
       const filas = parsearCSV(datos);
       if (filas.length < 2) return [];
-      const cabeceras = filas[0];
-      registros = filas.slice(1).map((fila) =>
+      // Detecta la fila de cabeceras (por si la fila 1 es un título o fila vacía en la hoja)
+      const indiceCabecera = filas.findIndex((fila) =>
+        fila.some((celda) => {
+          const norm = normalizarCabecera(celda);
+          return norm === 'curso' || norm === 'curso oficial' || norm === 'seccion' || norm === 'asignatura';
+        })
+      );
+      const idx = indiceCabecera >= 0 ? indiceCabecera : 0;
+      const cabeceras = filas[idx];
+      registros = filas.slice(idx + 1).map((fila) =>
         Object.fromEntries(cabeceras.map((cabecera, indice) => [cabecera, fila[indice] || '']))
       );
     } else if (!Array.isArray(datos)) {
@@ -494,8 +517,16 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
         registros = listaObjetos;
       } else if (Array.isArray(datos?.values) && datos.values.length > 1) {
         if (Array.isArray(datos.values[0])) {
-          registros = datos.values.slice(1).map((fila) =>
-            Object.fromEntries(datos.values[0].map((cabecera, indice) => [cabecera, fila[indice] || '']))
+          const indiceCabecera = datos.values.findIndex((fila) =>
+            Array.isArray(fila) && fila.some((celda) => {
+              const norm = normalizarCabecera(celda);
+              return norm === 'curso' || norm === 'curso oficial' || norm === 'seccion' || norm === 'asignatura';
+            })
+          );
+          const idx = indiceCabecera >= 0 ? indiceCabecera : 0;
+          const cabeceras = datos.values[idx];
+          registros = datos.values.slice(idx + 1).map((fila) =>
+            Object.fromEntries(cabeceras.map((cabecera, indice) => [cabecera, fila[indice] || '']))
           );
         } else {
           registros = datos.values;

@@ -988,13 +988,24 @@ document.addEventListener('DOMContentLoaded', () => {
         diasHorario.append(hora, dias);
         tdDias.appendChild(diasHorario);
 
-        // 7. Cupos (columna MAT de la hoja)
+        // 7. Cupos (columna Cupos de la hoja)
         const tdCupos = document.createElement('td');
         tdCupos.className = 'col-centro';
         const cuposTexto = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos)) ? `${Number(fila.cupos)}` : '—';
         const badgeCupos = document.createElement('span');
         badgeCupos.className = 'badge-cupos';
-        badgeCupos.title = 'Cupos disponibles en la sección';
+        if (fila.cupos === 0) {
+          badgeCupos.classList.add('badge-cupos--agotado');
+        }
+        if (fila.cuposTotal !== null && Number.isFinite(fila.cuposTotal) && fila.cupos !== null) {
+          const mat = fila.matriculados ?? 0;
+          const pre = fila.prematriculados ?? 0;
+          badgeCupos.title = `${fila.cupos} cupos disponibles (Capacidad: ${fila.cuposTotal} · Matriculados: ${mat} · Prematriculados: ${pre})`;
+        } else if (fila.cupos !== null) {
+          badgeCupos.title = `${fila.cupos} cupos disponibles en la sección`;
+        } else {
+          badgeCupos.title = 'Cupos por confirmar';
+        }
         badgeCupos.textContent = cuposTexto;
         tdCupos.appendChild(badgeCupos);
 
