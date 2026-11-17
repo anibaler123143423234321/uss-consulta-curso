@@ -379,6 +379,9 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
     const cursoRaw = obtener(registro, ['Curso Oficial', 'Curso', 'Asignatura']);
     const seccionRaw = obtener(registro, ['Sección', 'Seccion', 'Grupo']);
     if (!cursoRaw || !seccionRaw || cursoRaw.toUpperCase().includes('CURSO')) return null;
+    // Filas de resumen al pie de la hoja («META | 400», «2026-02 NOVIEMBRE»): una sección
+    // siempre tiene letras («PEAD-a», «PEAD-ARQ»), nunca es solo un número.
+    if (!/[a-z]/i.test(seccionRaw)) return null;
 
     const cursoNormalizado = normalizarNombreCurso(cursoRaw);
     const cursosTrad = catalogo.cursosTradicionales || [];
@@ -399,8 +402,11 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
       return Number.isFinite(num) && num >= 0 ? num : null;
     };
 
-    const cupos = parsearNum(cuposRaw);
     const cuposTotal = parsearNum(nRaw);
+    // «Cupos» es una fórmula (N° − matriculados). Mientras N° (capacidad) esté vacío da 0, y eso
+    // no es «agotado» sino «aún sin capacidad definida»: se muestra «—», no la sección llena.
+    const cuposLeidos = parsearNum(cuposRaw);
+    const cupos = cuposLeidos === 0 && cuposTotal === null ? null : cuposLeidos;
     const matriculados = parsearNum(matRaw);
     const prematriculados = parsearNum(prematRaw);
 
@@ -625,7 +631,13 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
    * - Si fallan todas, lanza un error: la interfaz muestra «Reintentar conexión», nunca datos locales.
    */
   catalogo.cargarHorariosRemotos = async ({ tiempoMaximoMs = 20000 } = {}) => {
-    const urls = [...new Set([...catalogo.urlsHojasDrive(), ...(await catalogo.urlsHojasIndice())])];
+    // Primero las hojas del índice: son los archivos de cada mes («CINF 202700 ENERO»…) con las
+    // columnas vigentes (N°, Tot_Mat, Pre_Mat, Cupos, DOCENTE). Las de config.js (libro base
+    // «CINF 20270») pueden traer cabeceras antiguas (MAT, PREMAT): solo cubren los ciclos que el
+    // índice no trae, para que un ciclo no mezcle dos versiones de la misma sección.
+    const urlsIndice = await catalogo.urlsHojasIndice();
+    const urlsFijas = catalogo.urlsHojasDrive().filter((url) => !urlsIndice.includes(url));
+    const urls = [...new Set([...urlsIndice, ...urlsFijas])];
     if (!urls.length) throw new Error('No hay hojas de Google Drive configuradas en config.js.');
 
     const descargar = async (url) => {
@@ -641,10 +653,21 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
       throw new Error('No se pudo conectar con Google Drive.');
     }
 
+    const cicloDe = (h) => `${h.anio}-${h.ciclo}`;
+    const ciclosDelIndice = new Set(
+      resultados
+        .slice(0, urlsIndice.length)
+        .filter((r) => r.status === 'fulfilled')
+        .flatMap((r) => r.value.map(cicloDe))
+    );
+
     const vistas = new Set();
     return resultados
-      .filter((r) => r.status === 'fulfilled')
-      .flatMap((r) => r.value)
+      .flatMap((r, i) => {
+        if (r.status !== 'fulfilled') return [];
+        const esFija = i >= urlsIndice.length;
+        return esFija ? r.value.filter((h) => !ciclosDelIndice.has(cicloDe(h))) : r.value;
+      })
       .filter((h) => {
         const clave = claveSeccion(h);
         if (vistas.has(clave)) return false;
