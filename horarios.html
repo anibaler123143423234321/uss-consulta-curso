@@ -29,30 +29,9 @@
 </head>
 
 <body>
-    <header class="nav nav--claro">
-        <div class="wrap nav__fila">
-            <a class="skip-link" href="#contenido">Saltar al contenido</a>
-            <div class="nav__izq">
-                <a href="index.html" class="btn btn--secondary btn--sm btn-volver-inicio" id="btn-volver-atras"
-                    aria-label="Volver a elegir carrera y ciclo">
-                    <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M19 12H5m6-6-6 6 6 6" />
-                    </svg>
-                    <span class="nav__texto-largo">Cambiar carrera o ciclo</span>
-                </a>
-                <a href="./" class="nav__marca" aria-label="Centro de Informática USS, volver al inicio">
-                    <img src="assets/img/logo-uss.png?v=61" alt="Universidad Señor de Sipán" width="851" height="293" />
-                </a>
-            </div>
-            <a class="btn btn--secondary btn--sm" href="https://informatica-uss.vercel.app/" target="_blank"
-                rel="noopener noreferrer">
-                <span>Ir al Portal CINF</span>
-                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M7 17 17 7M8 7h9v9" />
-                </svg>
-            </a>
-        </div>
-    </header>
+    <!-- Header institucional modular -->
+    <header id="cinf-header" data-variant="claro" data-portal-url="https://informatica-uss.vercel.app/" data-back-url="index.html" data-back-text="Cambiar carrera o ciclo" data-logo-url="assets/img/logo-uss.png?v=61"></header>
+    <script src="assets/js/nav-header.js"></script>
 
     <main id="contenido" class="wrap hoja-contenedor-horarios">
         <!-- Carrera, ruta, modelo y ciclo de la consulta -->
@@ -262,9 +241,9 @@
         </details>
     </main>
 
-    <footer class="footer-uss">
-        <div class="wrap">Universidad Señor de Sipán · Centro de Informática CINF · © 2026</div>
-    </footer>
+    <!-- Footer institucional modular -->
+    <footer id="cinf-footer"></footer>
+    <script src="assets/js/nav-footer.js"></script>
 
     <!-- Datos (Google Drive) y lógica de horarios -->
     <script src="assets/js/config.js?v=49"></script>

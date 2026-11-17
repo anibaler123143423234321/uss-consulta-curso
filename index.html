@@ -37,22 +37,9 @@
       Hero: la herramienta de 3 pasos + foto real del campus (assets/img/campus-uss.jpg).
       Fondo azul institucional plano, sin efectos. Movimiento: assets/motion (Taste-Skill 2.5).
     -->
-    <header class="nav nav--sobre-azul">
-        <div class="wrap nav__fila">
-            <a class="skip-link" href="#contenido">Saltar al contenido</a>
-            <a class="nav__marca" href="./" aria-label="Centro de Informática USS, volver al inicio">
-                <img src="assets/img/logo-uss.png?v=61" alt="Universidad Señor de Sipán" width="851" height="293" />
-            </a>
-            <a class="btn btn--blanco" href="https://informatica-uss.vercel.app/" target="_blank"
-                rel="noopener noreferrer">
-                <span class="nav__texto-largo">Ir al Portal CINF</span>
-                <span class="nav__texto-corto">Portal</span>
-                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M7 17 17 7M8 7h9v9" />
-                </svg>
-            </a>
-        </div>
-    </header>
+    <!-- Header institucional modular -->
+    <header id="cinf-header" data-variant="hero" data-portal-url="https://informatica-uss.vercel.app/" data-logo-url="assets/img/logo-uss.png?v=61"></header>
+    <script src="assets/js/nav-header.js"></script>
 
     <main id="contenido">
         <section class="hero" data-enter aria-labelledby="hero-h">
