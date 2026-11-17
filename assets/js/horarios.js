@@ -988,20 +988,29 @@ document.addEventListener('DOMContentLoaded', () => {
         diasHorario.append(hora, dias);
         tdDias.appendChild(diasHorario);
 
-        // 7. Cupos (columna Cupos de la hoja)
+        // 7. Cupos (CUPOS/N°, ej. 24/30)
         const tdCupos = document.createElement('td');
         tdCupos.className = 'col-centro';
-        const cuposTexto = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos)) ? `${Number(fila.cupos)}` : '—';
+        const tieneCupos = fila.cupos !== null && fila.cupos !== undefined && fila.cupos !== '' && Number.isFinite(Number(fila.cupos));
+        const tieneTotal = fila.cuposTotal !== null && fila.cuposTotal !== undefined && fila.cuposTotal !== '' && Number.isFinite(Number(fila.cuposTotal)) && Number(fila.cuposTotal) > 0;
+
+        let cuposTexto = '—';
+        if (tieneCupos && tieneTotal) {
+          cuposTexto = `${Number(fila.cupos)}/${Number(fila.cuposTotal)}`;
+        } else if (tieneCupos) {
+          cuposTexto = `${Number(fila.cupos)}`;
+        }
+
         const badgeCupos = document.createElement('span');
         badgeCupos.className = 'badge-cupos';
         if (fila.cupos === 0) {
           badgeCupos.classList.add('badge-cupos--agotado');
         }
-        if (fila.cuposTotal !== null && Number.isFinite(fila.cuposTotal) && fila.cupos !== null) {
+        if (tieneTotal && tieneCupos) {
           const mat = fila.matriculados ?? 0;
           const pre = fila.prematriculados ?? 0;
-          badgeCupos.title = `${fila.cupos} cupos disponibles (Capacidad: ${fila.cuposTotal} · Matriculados: ${mat} · Prematriculados: ${pre})`;
-        } else if (fila.cupos !== null) {
+          badgeCupos.title = `${fila.cupos} de ${fila.cuposTotal} cupos disponibles (Matriculados: ${mat} · Prematriculados: ${pre})`;
+        } else if (tieneCupos) {
           badgeCupos.title = `${fila.cupos} cupos disponibles en la sección`;
         } else {
           badgeCupos.title = 'Cupos por confirmar';
