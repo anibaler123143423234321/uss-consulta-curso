@@ -11,7 +11,7 @@ window.CONSULTA_CURSOS = {
   // Ciclos oficiales de apertura CINF y su duración académica
   ciclos: [
     { id: 'noviembre', nombre: 'Noviembre', duracion: '2 meses', semanas: 6 },
-    { id: 'enero', nombre: 'Enero', duracion: '2 meses', semanas: 6 },
+    { id: 'enero', nombre: 'Enero', duracion: '2 meses', semanas: 8 },
     { id: 'febrero', nombre: 'Febrero', duracion: '2 meses', semanas: 8 },
     { id: 'abril', nombre: 'Abril', duracion: '3 meses', semanas: 12 },
     { id: 'mayo', nombre: 'Mayo', duracion: '2 meses', semanas: 8 },
@@ -186,7 +186,7 @@ window.CONSULTA_CURSOS = {
   // Clave: '<año>-<ciclo>'. Si un ciclo no figura aquí ni en la hoja, se muestra «Por confirmar».
   calendarioCiclos: {
     '2026-noviembre': { inicio: '09/11/2026', fin: '19/12/2026' },
-    '2027-enero': { inicio: '11/01/2027', fin: '20/02/2027' },
+    '2027-enero': { inicio: '04/01/2027', fin: '27/02/2027' },
   },
 
   // Vacío a propósito: el 100% de las secciones llega por Internet desde las hojas
@@ -442,8 +442,8 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
 
     let horario = obtener(registro, ['Horario']);
     if (!horario) {
-      const hIni = obtener(registro, ['Hora Inicio', 'Inicio']);
-      const hFin = obtener(registro, ['Hora Fin', 'Fin']);
+      const hIni = obtener(registro, ['Hora Inicio', 'Hora de Inicio', 'H_Inicio']);
+      const hFin = obtener(registro, ['Hora Fin', 'Hora de Fin', 'H_Fin']);
       if (hIni && hFin) horario = `${hIni} – ${hFin}`;
     }
 
@@ -459,16 +459,15 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
     if (normalizarCabecera(aula).includes('virtual')) aula = 'Virtual · Zoom';
     else if (normalizarCabecera(aula).includes('presencial')) aula = 'Presencial · Elías Aguirre 933';
 
-    // Fechas: 1) columnas FECHA INICIO / FECHA FIN de la hoja; 2) calendario oficial del ciclo
+    // Fechas: 1) columnas FECHA INICIO / FECHA FIN (o INICIO / FIN) de la hoja; 2) calendario oficial del ciclo
     // (el mismo que muestran las tarjetas de ciclo en la portada); 3) vacío → «Por confirmar».
-    // La hoja actual no trae columnas de fecha, por eso rige el calendario del ciclo.
     const anio = anioDeRegistro(registro, ciclo);
     const calendario = (catalogo.calendarioCiclos || {})[`${anio}-${ciclo}`] || {};
     const inicio =
-      normalizarFecha(obtener(registro, ['Fecha Inicio', 'Fecha de Inicio', 'Inicio de clases'])) ||
+      normalizarFecha(obtener(registro, ['Fecha Inicio', 'Fecha de Inicio', 'Inicio de clases', 'Inicio'])) ||
       calendario.inicio || '';
     const fin =
-      normalizarFecha(obtener(registro, ['Fecha Fin', 'Fecha de Fin', 'Fin de clases'])) ||
+      normalizarFecha(obtener(registro, ['Fecha Fin', 'Fecha de Fin', 'Fin de clases', 'Fin'])) ||
       calendario.fin || '';
 
     return {
