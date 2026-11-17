@@ -860,7 +860,9 @@ a {
 
 .ciclo-btn__duracion {
     font-size: var(--t-sm);
-    color: var(--muted);
+    font-weight: 700;
+    color: var(--uss-azul-700);
+    letter-spacing: -0.01em;
 }
 
 .ciclo-btn__footer {

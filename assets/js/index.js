@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.querySelector('.ciclo-btn__mes').textContent = `${ciclo.nombre} ${anio}`.trim();
       const conFechas = filas.find((h) => h.inicio && h.fin);
       btn.querySelector('.ciclo-btn__duracion').textContent = conFechas
-        ? `Clases del ${conFechas.inicio} al ${conFechas.fin}`
+        ? `${conFechas.inicio} al ${conFechas.fin}`
         : 'Fechas por confirmar';
       const duracionBadge = btn.querySelector('.ciclo-btn__meses-badge');
       if (duracionBadge) duracionBadge.textContent = ciclo.duracion;
