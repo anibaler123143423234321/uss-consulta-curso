@@ -818,11 +818,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const ETIQUETAS_CELDA = ['Curso', 'Sección', 'Estado', 'Fechas', 'Turno', 'Horario y días', 'Cupos', 'Registro', 'Docente'];
 
   function manejarClickRegistrar(fila) {
-    const cicloNombre = cicloSeleccionado ? cicloSeleccionado.nombre : (cicloActivo || '');
-    const carreraNombre = carrera || '';
-    const textoMsg = `Hola Centro de Informática USS, deseo registrarme en el curso ${fila.curso}, sección ${fila.seccion} (${fila.turno || 'Turno por confirmar'}), ciclo ${cicloNombre} de la carrera ${carreraNombre}.`;
-    const urlWa = `https://wa.me/51986724506?text=${encodeURIComponent(textoMsg)}`;
-    window.open(urlWa, '_blank', 'noopener,noreferrer');
+    // 1. Mostrar qué sección seleccionó en la guía de registro
+    const contenedorAviso = $('registro-seleccion');
+    const textoAviso = $('registro-seleccion-texto');
+    if (contenedorAviso && textoAviso) {
+      contenedorAviso.hidden = false;
+      const turnoTexto = fila.turno ? ` · Turno ${fila.turno}` : '';
+      textoAviso.textContent = `${fila.curso} · Sección ${fila.seccion}${turnoTexto}`;
+    }
+
+    // 2. Desplazar suavemente hasta #registro con ID en la URL
+    const destino = document.getElementById('registro');
+    if (destino) {
+      destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (history.pushState) {
+        history.pushState(null, '', '#registro');
+      } else {
+        location.hash = 'registro';
+      }
+    }
   }
 
   // 6. Renderizado de Filas de la Tabla con Filtros Multidimensionales

@@ -25,7 +25,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/estilos.css?v=75" />
+    <link rel="stylesheet" href="assets/css/estilos.css?v=76" />
 </head>
 
 <body>
@@ -111,6 +111,66 @@
                 <button type="button" class="btn btn--primary btn--sm" id="btn-reset-filtros">
                     Quitar los filtros
                 </button>
+            </div>
+        </section>
+
+        <!-- Pasos de Registro: Guía visual para matricularse -->
+        <section class="seccion-registro" id="registro" aria-labelledby="titulo-registro">
+            <div class="seccion-registro__encabezado">
+                <span class="badge-etiqueta">Proceso de matrícula</span>
+                <h2 class="seccion-registro__titulo" id="titulo-registro">¿Cómo registrarte en tu curso?</h2>
+                <p class="seccion-registro__subtitulo">Sigue estos sencillos pasos para asegurar tu vacante en el ciclo seleccionado.</p>
+                <div class="seccion-registro__seleccion" id="registro-seleccion" hidden>
+                    <span>Sección seleccionada:</span>
+                    <strong id="registro-seleccion-texto"></strong>
+                </div>
+            </div>
+
+            <div class="registro-cards">
+                <!-- Card 1 -->
+                <article class="registro-card" data-paso="1">
+                    <div class="registro-card__media">
+                        <div class="registro-card__placeholder">
+                            <span class="registro-card__num">01</span>
+                            <span class="registro-card__media-tag">Paso 1</span>
+                        </div>
+                    </div>
+                    <div class="registro-card__cuerpo">
+                        <span class="registro-card__paso">Paso 1</span>
+                        <h3 class="registro-card__titulo">Ingresa a tu Campus Virtual</h3>
+                        <p class="registro-card__texto">Accede con tu cuenta institucional USS y dirígete al módulo de Matrícula del Centro de Informática.</p>
+                    </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="registro-card" data-paso="2">
+                    <div class="registro-card__media">
+                        <div class="registro-card__placeholder">
+                            <span class="registro-card__num">02</span>
+                            <span class="registro-card__media-tag">Paso 2</span>
+                        </div>
+                    </div>
+                    <div class="registro-card__cuerpo">
+                        <span class="registro-card__paso">Paso 2</span>
+                        <h3 class="registro-card__titulo">Ubica tu curso y sección</h3>
+                        <p class="registro-card__texto">Selecciona el código del curso y la sección PEAD que consultaste con cupos disponibles.</p>
+                    </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="registro-card" data-paso="3">
+                    <div class="registro-card__media">
+                        <div class="registro-card__placeholder">
+                            <span class="registro-card__num">03</span>
+                            <span class="registro-card__media-tag">Paso 3</span>
+                        </div>
+                    </div>
+                    <div class="registro-card__cuerpo">
+                        <span class="registro-card__paso">Paso 3</span>
+                        <h3 class="registro-card__titulo">Confirma tu inscripción</h3>
+                        <p class="registro-card__texto">Verifica tu turno, finaliza el registro y descarga tu constancia de matrícula oficial.</p>
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -250,7 +310,7 @@
     <script src="assets/js/config.js?v=49"></script>
     <script src="assets/js/datos.js?v=57"></script>
     <script src="assets/js/textos.js?v=2"></script>
-    <script src="assets/js/horarios.js?v=77"></script>
+    <script src="assets/js/horarios.js?v=78"></script>
     <script type="module">
         // En el portal (informatica-uss.vercel.app) el proxy no reenvía /assets/motion/;
         // ahí la capa de movimiento se pide directo al deploy de esta app.

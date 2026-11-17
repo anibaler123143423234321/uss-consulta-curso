@@ -2709,3 +2709,196 @@ body:has(.hero[data-enter]) {
         display: inline;
     }
 }
+
+/* ==========================================================================
+   Sección de Registro y Guía de 3 Pasos
+   ========================================================================== */
+.seccion-registro {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 24px;
+}
+
+.seccion-registro__encabezado {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 32px;
+}
+
+.badge-etiqueta {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--uss-azul-700);
+    background: #eef2ff;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: 10px;
+}
+
+.seccion-registro__titulo {
+    font-size: clamp(22px, 2.5vw, 28px);
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+    line-height: 1.25;
+}
+
+.seccion-registro__subtitulo {
+    font-size: var(--t-sm);
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.seccion-registro__seleccion {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 8px 18px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 9999px;
+    font-size: 13px;
+    color: #065f46;
+    animation: tenue-brillo 2s ease-in-out;
+}
+
+.seccion-registro__seleccion strong {
+    color: #047857;
+    font-weight: 700;
+}
+
+/* Grilla de 3 cards en desktop */
+.registro-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.registro-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card, 16px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.registro-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -4px rgba(7, 50, 153, 0.08);
+    border-color: #cbd5e1;
+}
+
+.registro-card__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #f1f5f9;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--line);
+}
+
+.registro-card__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2f6 100%);
+}
+
+.registro-card__num {
+    font-size: 36px;
+    font-weight: 800;
+    color: #94a3b8;
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+.registro-card__media-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 3px 10px;
+    border-radius: 9999px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    letter-spacing: 0.02em;
+}
+
+.registro-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 200ms ease;
+}
+
+.registro-card:hover .registro-card__img {
+    transform: scale(1.02);
+}
+
+.registro-card__cuerpo {
+    padding: 20px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.registro-card__paso {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--uss-azul);
+}
+
+.registro-card__titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+}
+
+.registro-card__texto {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* En mobile: una sola columna */
+@media (max-width: 768px) {
+    .registro-cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .seccion-registro__encabezado {
+        text-align: left;
+        margin-bottom: 22px;
+    }
+
+    .registro-card__cuerpo {
+        padding: 16px 18px 20px;
+    }
+}
