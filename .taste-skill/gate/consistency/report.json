@@ -1,7 +1,7 @@
 {
  "page": "/Users/dagnerchumanlluen/Documents/USS/uss-consulta-curso/index.html",
  "url": "http://127.0.0.1:5200/index.html",
- "at": "2026-11-16T14:21:07.205Z",
+ "at": "2026-11-18T20:39:18.439Z",
  "out": "/Users/dagnerchumanlluen/Documents/USS/uss-consulta-curso/.taste-skill/gate/consistency",
  "widths": [
   {
@@ -22,22 +22,12 @@
     {
      "check": "copy-buttons",
      "sev": "WARN",
-     "sel": "header.nav.nav--sobre-azul > div.wrap.nav__fila > a.btn.btn--claro",
+     "sel": "header#cinf-header > div.wrap.nav__fila > a.btn.btn--blanco",
      "text": "Ir al Portal CINF",
-     "msg": "\"Ir al Portal CINF\" does not start with a verb (book, buy, try, start, get, see...)",
+     "msg": "\"Ir al Portal CINF\" does not start with a verb (book, buy, try, start, get, see...) (and 1 more like it: \"Preguntar al asistente\")",
      "stop": 0,
      "crop": "1440-01-copy-buttons.jpg",
      "fix": "label buttons with a verb and what the visitor gets (\"Book a room\", \"Start free trial\")"
-    },
-    {
-     "check": "hole",
-     "sev": "WARN",
-     "sel": "main#contenido > section.hero",
-     "text": "Horarios del Centro de Informática USS",
-     "msg": "an empty hole 832x286px inside the section (32% of the screen's height), with content above and below it",
-     "stop": 0,
-     "crop": "1440-02-hole.jpg",
-     "fix": "close the empty space: move the content together, or give the space the visual it lacks"
     },
     {
      "check": "moment-none",
@@ -57,7 +47,18 @@
    "screens": 1,
    "held": 0,
    "errors": [],
-   "findings": [],
+   "findings": [
+    {
+     "check": "no-visual",
+     "sev": "WARN",
+     "sel": "main#contenido > section.hero",
+     "text": "Acreditación en Computación: Horarios",
+     "msg": "pictures, effects and mocks cover 15% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 0,
+     "crop": "390-01-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    }
+   ],
    "glAsked": 0
   }
  ],
@@ -92,11 +93,22 @@
   "width": 320,
   "height": 640,
   "errors": [],
-  "findings": []
+  "findings": [
+   {
+    "check": "fold-cut",
+    "sev": "WARN",
+    "sel": "div#opcion-modelo-protech > span.card-modelo-opcion__desc",
+    "text": "3 cursos + 1 taller de certificación.",
+    "msg": "a line of the hero text is sliced by the bottom of the first screen",
+    "crop": "narrow-320-01-fold-cut.jpg",
+    "width": 320,
+    "fix": "size the hero so the heading ends above the fold, or starts below it"
+   }
+  ]
  },
  "counts": {
   "FAIL": 1,
-  "WARN": 3
+  "WARN": 4
  },
  "checks": {
   "assets": "PASS",
@@ -120,7 +132,7 @@
   "tap-size": "PASS",
   "row-gap": "PASS",
   "cut-text": "PASS",
-  "fold-cut": "PASS",
+  "fold-cut": "WARN",
   "marquee": "PASS",
   "scroll-linked": "not checked",
   "scroll-reveal": "not checked",
@@ -129,7 +141,7 @@
   "reduced-motion": "not checked",
   "hidden-content": "PASS",
   "webgl": "PASS",
-  "no-visual": "PASS",
+  "no-visual": "WARN",
   "text-only": "PASS",
   "card-visual": "PASS",
   "hidden-visual": "not checked",
@@ -165,7 +177,7 @@
   "busy-ground": "PASS",
   "section-gaps": "PASS",
   "proximity": "PASS",
-  "hole": "WARN",
+  "hole": "PASS",
   "links": "PASS",
   "forms": "not checked",
   "photo-upscale": "PASS",

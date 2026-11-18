@@ -181,12 +181,21 @@ window.CONSULTA_CURSOS = {
     { patron: /\bARQ\b|Arquitectura/i, etiqueta: 'Arquitectura', carreras: ['Arquitectura', 'Arquitectura y Diseño de Interiores'] },
   ],
 
-  // Calendario oficial de clases por ciclo (metadato estructural, NO son horarios).
-  // Se usa solo si la hoja de Drive no trae las columnas FECHA INICIO / FECHA FIN.
-  // Clave: '<año>-<ciclo>'. Si un ciclo no figura aquí ni en la hoja, se muestra «Por confirmar».
-  calendarioCiclos: {
-    '2026-noviembre': { inicio: '09/11/2026', fin: '19/12/2026' },
-    '2027-enero': { inicio: '04/01/2027', fin: '27/02/2027' },
+  // Fechas, duración y estado de cada ciclo: SOLO los del Panel Admin (Menú y contenido › Portal de
+  // Horarios › Ciclos del Paso 3), guardados en la base y leídos de /api/portal-horarios/config
+  // (textos.js). Las hojas de Drive no traen fechas de clase, solo HORA INICIO / HORA FIN.
+  // Clave: '<año>-<ciclo>'. Mientras no llega, o si el panel no tiene ese ciclo: «Por confirmar».
+  calendarioCiclos: {},
+
+  // Estado de gestión de un ciclo (mismo catálogo que el panel, src/lib/ciclosPortal.ts).
+  // FINALIZADO ≠ CERRADO: un ciclo puede terminar sus clases y aún faltarle notas o informes.
+  estadosCiclo: {
+    ACTIVO: { etiqueta: 'Activo', detalle: 'En desarrollo' },
+    PROGRAMADO: { etiqueta: 'Programado', detalle: 'Por iniciar' },
+    PENDIENTE: { etiqueta: 'Pendiente', detalle: 'Por gestionar' },
+    FINALIZADO: { etiqueta: 'Finalizado', detalle: 'Clases culminadas' },
+    PENDIENTE_CIERRE: { etiqueta: 'Pendiente de cierre', detalle: 'Falta consolidar' },
+    CERRADO: { etiqueta: 'Cerrado', detalle: 'Gestión completada' },
   },
 
   // Vacío a propósito: el 100% de las secciones llega por Internet desde las hojas
@@ -198,6 +207,27 @@ window.CONSULTA_CURSOS = {
 window.CONSULTA_CURSOS.esCursoDeModelo = (curso, modelo) => {
   const esTrad = window.CONSULTA_CURSOS.cursosTradicionales.includes(curso);
   return modelo === 'tradicional' ? esTrad : !esTrad;
+};
+
+/** Fechas, duración y estado del ciclo de ese año (o null si nadie los definió). */
+window.CONSULTA_CURSOS.calendarioDe = (cicloId, anio) =>
+  (window.CONSULTA_CURSOS.calendarioCiclos || {})[`${anio}-${String(cicloId || '').toLowerCase()}`] || null;
+
+/** Pinta la pastilla de estado de un ciclo; sin estado (o uno desconocido) queda oculta. */
+window.CONSULTA_CURSOS.pintarEstadoCiclo = (el, estado) => {
+  if (!el) return;
+  const id = String(estado || '').trim().toUpperCase();
+  const info = window.CONSULTA_CURSOS.estadosCiclo[id];
+  el.hidden = !info;
+  if (!info) {
+    el.textContent = '';
+    el.removeAttribute('data-estado');
+    el.removeAttribute('title');
+    return;
+  }
+  el.dataset.estado = id;
+  el.textContent = info.etiqueta;
+  el.title = `Estado del ciclo: ${info.etiqueta} (${info.detalle.toLowerCase()})`;
 };
 
 /** Una sección de especialidad (PEAD CIV, PEAD SIST, PEAD MEC, PEAD ARQ) solo se muestra a su carrera. */
@@ -459,16 +489,11 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
     if (normalizarCabecera(aula).includes('virtual')) aula = 'Virtual · Zoom';
     else if (normalizarCabecera(aula).includes('presencial')) aula = 'Presencial · Elías Aguirre 933';
 
-    // Fechas: 1) columnas FECHA INICIO / FECHA FIN (o INICIO / FIN) de la hoja; 2) calendario oficial del ciclo
-    // (el mismo que muestran las tarjetas de ciclo en la portada); 3) vacío → «Por confirmar».
+    // Fechas de la hoja, si algún día trae FECHA INICIO / FECHA FIN. Las del Panel Admin se leen al
+    // pintar (calendarioDe), porque la configuración puede llegar después que las hojas.
     const anio = anioDeRegistro(registro, ciclo);
-    const calendario = (catalogo.calendarioCiclos || {})[`${anio}-${ciclo}`] || {};
-    const inicio =
-      normalizarFecha(obtener(registro, ['Fecha Inicio', 'Fecha de Inicio', 'Inicio de clases', 'Inicio'])) ||
-      calendario.inicio || '';
-    const fin =
-      normalizarFecha(obtener(registro, ['Fecha Fin', 'Fecha de Fin', 'Fin de clases', 'Fin'])) ||
-      calendario.fin || '';
+    const inicio = normalizarFecha(obtener(registro, ['Fecha Inicio', 'Fecha de Inicio', 'Inicio de clases', 'Inicio'])) || '';
+    const fin = normalizarFecha(obtener(registro, ['Fecha Fin', 'Fecha de Fin', 'Fin de clases', 'Fin'])) || '';
 
     return {
       id: obtener(registro, ['ID', 'Id']) || `sheets-${ciclo}-${indice + 1}`,

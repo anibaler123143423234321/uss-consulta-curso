@@ -1,74 +1,35 @@
 {
- "start": "2026-11-16T14:09:40.546Z",
- "round": 1,
+ "start": "2026-11-18T20:02:26.551Z",
+ "round": 2,
  "idle": 0,
  "errors": 0,
  "status": "pass",
  "history": [
   {
-   "at": "2026-11-16T14:19:42.887Z",
+   "at": "2026-11-18T20:03:26.846Z",
+   "mode": "manual",
+   "status": "fail",
+   "fails": 9,
+   "round": 1,
+   "reused": false,
+   "stopHookActive": false
+  },
+  {
+   "at": "2026-11-18T20:34:24.630Z",
    "mode": "manual",
    "status": "fail",
    "fails": 3,
-   "round": 1,
+   "round": 2,
    "reused": false,
    "stopHookActive": false
   },
   {
-   "at": "2026-11-16T14:22:04.517Z",
+   "at": "2026-11-18T20:40:16.428Z",
    "mode": "manual",
    "status": "pass",
    "fails": 0,
-   "round": 1,
+   "round": 2,
    "reused": false,
-   "stopHookActive": false
-  },
-  {
-   "at": "2026-11-16T14:24:25.099Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
-   "stopHookActive": false
-  },
-  {
-   "at": "2026-11-16T14:25:41.651Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
-   "stopHookActive": false
-  },
-  {
-   "at": "2026-11-16T14:29:46.637Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
-   "stopHookActive": false
-  },
-  {
-   "at": "2026-11-16T14:32:55.428Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
-   "stopHookActive": false
-  },
-  {
-   "at": "2026-11-16T14:33:47.347Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
-   "stopHookActive": false
-  },
-  {
-   "at": "2026-11-16T14:38:06.033Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
    "stopHookActive": false
   }
  ],
@@ -81,15 +42,15 @@
   "category": "horarios de cursos del Centro de Informática USS",
   "primary": "Consultar horarios",
   "rounds": 3,
-  "start": "2026-11-16T14:09:40.546Z",
+  "start": "2026-11-18T20:02:26.551Z",
   "by": "gate.mjs --start"
  },
  "manual": true,
- "roundKey": "245068a7aaafaaad:7d1cba65",
+ "roundKey": "23acf7482f8f8e9f:fdacea66",
  "roundFree": false,
  "idleFree": false,
  "blockKey": null,
- "fp": "cf3be9a44d51e167",
+ "fp": "ef6fc3c4ef596434",
  "page": "index.html",
  "found": {
   "fails": [
@@ -129,8 +90,8 @@
   "warns": [
    {
     "check": "copy-buttons",
-    "where": "header.nav.nav--sobre-azul > div.wrap.nav__fila > a.btn.btn--claro \"Ir al Portal CINF\"",
-    "msg": "\"Ir al Portal CINF\" does not start with a verb (book, buy, try, start, get, see...)",
+    "where": "header#cinf-header > div.wrap.nav__fila > a.btn.btn--blanco \"Ir al Portal CINF\"",
+    "msg": "\"Ir al Portal CINF\" does not start with a verb (book, buy, try, start, get, see...) (and 1 more like it: \"Preguntar al asistente\")",
     "fix": "label buttons with a verb and what the visitor gets (\"Book a room\", \"Start free trial\")",
     "widths": [
      1440
@@ -138,12 +99,22 @@
     "from": "consistency"
    },
    {
-    "check": "hole",
-    "where": "main#contenido > section.hero \"Horarios del Centro de Informática USS\"",
-    "msg": "an empty hole 832x286px inside the section (32% of the screen's height), with content above and below it",
-    "fix": "close the empty space: move the content together, or give the space the visual it lacks",
+    "check": "no-visual",
+    "where": "main#contenido > section.hero \"Acreditación en Computación: Horarios\"",
+    "msg": "pictures, effects and mocks cover 15% of this section; a feature section needs a visual (about 25% or more)",
+    "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits",
     "widths": [
-     1440
+     390
+    ],
+    "from": "consistency"
+   },
+   {
+    "check": "fold-cut",
+    "where": "div#opcion-modelo-protech > span.card-modelo-opcion__desc \"3 cursos + 1 taller de certificación.\"",
+    "msg": "a line of the hero text is sliced by the bottom of the first screen",
+    "fix": "size the hero so the heading ends above the fold, or starts below it",
+    "widths": [
+     320
     ],
     "from": "consistency"
    }
@@ -191,6 +162,6 @@
    "reason": "la portada es una herramienta de consulta de una sola pantalla (buscar carrera, modelo y ciclo); una sección extra solo para alojar un momento de scroll alejaría al estudiante de su tarea"
   }
  ],
- "warnCount": 2,
- "at": "2026-11-16T14:22:04.518Z"
+ "warnCount": 3,
+ "at": "2026-11-18T20:40:16.429Z"
 }

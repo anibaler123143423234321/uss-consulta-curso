@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Horarios del Centro de Informática USS | Consulta de cursos</title>
-    <meta name="description" content="Elige tu carrera de la Universidad Señor de Sipán y consulta las secciones abiertas del Centro de Informática: turno, días, docente y enlace al aula virtual.">
+    <meta name="description" content="Elige tu carrera de la Universidad Señor de Sipán y consulta las secciones abiertas del Centro de Informática: turno, días y cupos disponibles.">
     <meta name="page-type" content="service">
     <meta name="site-kind" content="other">
     <meta name="theme-color" content="#073299">
@@ -22,9 +22,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="assets/css/estilos.css?v=60">
-    <link rel="stylesheet" href="assets/motion/motion.css?v=60">
-    <script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+    <link rel="stylesheet" href="assets/css/estilos.css?v=80">
+    <!-- Capa de movimiento (Taste-Skill 2.5): el proxy del portal reenvía /assets/motion/ a esta app -->
+    <link rel="stylesheet" href="assets/motion/motion.css?v=62">
+    <script>document.documentElement.classList.add('m-enter'); setTimeout(() => document.documentElement.classList.add('m-enter-done'), 700)</script>
 </head>
 
 <body>
@@ -33,132 +34,176 @@
       Hero: la herramienta de 3 pasos + foto real del campus (assets/img/campus-uss.jpg).
       Fondo azul institucional plano, sin efectos. Movimiento: assets/motion (Taste-Skill 2.5).
     -->
-    <header class="nav nav--sobre-azul">
+    <!-- Header institucional modular -->
+    <header id="cinf-header" data-variant="hero" data-portal-url="https://informatica-uss.vercel.app/" data-logo-url="assets/img/logo-uss.png?v=61" class="nav nav--sobre-azul">
         <div class="wrap nav__fila">
             <a class="skip-link" href="#contenido">Saltar al contenido</a>
             <a class="nav__marca" href="./" aria-label="Centro de Informática USS, volver al inicio">
-                <img src="assets/img/logo-uss.png" alt="Universidad Señor de Sipán" width="951" height="328">
+                <img src="assets/img/logo-uss.png?v=61" alt="Universidad Señor de Sipán" width="851" height="293">
             </a>
-            <a class="btn btn--claro" href="https://informatica-uss.vercel.app/" target="_blank" rel="noopener noreferrer">
-                <span>Ir al Portal CINF</span>
-                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+            <a class="btn btn--blanco" href="https://informatica-uss.vercel.app/" target="_blank" rel="noopener noreferrer">
+                <span class="nav__texto-largo">Ir al Portal CINF</span>
+                <span class="nav__texto-corto">Portal</span>
+                <svg class="icono icono--sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 17 17 7M8 7h9v9"></path>
+                </svg>
             </a>
-        </div>
-    </header>
+        </div></header>
+    <script src="assets/js/nav-header.js"></script>
 
     <main id="contenido">
         <section class="hero is-still is-entered" data-enter="" aria-labelledby="hero-h">
-            <div class="wrap"><div class="hero-text hero__grid">
-                <div class="hero__texto">
-                    <h1 id="hero-h">Horarios del Centro de Informática USS</h1>
-                    <p class="hero__lead">27 carreras en 7 rutas de aprendizaje. Elige la tuya y ve cada sección
-                        abierta con su turno, días, docente y enlace al aula virtual.</p>
+            <div class="wrap">
+                <div class="hero-text hero__grid">
+                    <div class="hero__texto">
+                        <!-- HeroIntro modular (desacoplado, dimensiones idénticas a GEX) -->
+                        <div id="hero-intro" data-eyebrow="Centro de Informática • USS" data-title-prefix="Acreditación en Computación" data-highlight="Horarios" data-lead="27 carreras en 7 rutas de aprendizaje. Elige tu modelo y tu carrera, y ve cada sección abierta con su turno, días y cupos disponibles." class="hero-intro">
+      <p class="hero__eyebrow" data-texto="portada.eyebrow">Centro de Informática • USS</p>
+      <h1 id="hero-h" data-texto="portada.titulo">Acreditación en Computación: <span class="hero__resalte" data-texto="portada.palabraDestacada">Horarios</span></h1>
+      <p class="hero__lead" data-texto="portada.descripcion">Consulta  cursos y horarios disponibles</p>
+    </div>
+                        <script src="assets/js/hero-intro.js?v=2"></script>
 
-                    <!-- La herramienta: los tres pasos viven en este panel -->
-                    <div class="herramienta" id="tarjeta-carrera">
+                        <!-- La herramienta: los tres pasos viven en este panel -->
+                        <div class="herramienta" id="tarjeta-carrera">
 
-                        <!-- PASO 1: Carrera -->
-                        <div id="vista-carrera">
-                            <label class="campo__etiqueta" for="input-carrera-principal">Tu carrera profesional</label>
-                            <div class="buscador-fila">
-                            <div class="carrera-combobox" id="carrera-combobox">
-                                <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
-                                    <svg class="icono carrera-combobox__icono" viewBox="0 0 24 24" aria-hidden="true">
-                                        <circle cx="11" cy="11" r="7"></circle>
-                                        <path d="m20 20-3.5-3.5"></path>
-                                    </svg>
-                                    <input type="text" class="carrera-combobox__input" id="input-carrera-principal" placeholder="Psicología, Derecho, Sistemas…" autocomplete="off" spellcheck="false" aria-controls="lista-opciones-carreras" aria-autocomplete="list">
-                                    <button type="button" class="carrera-combobox__chevron" id="btn-toggle-carrera" aria-label="Ver todas las carreras">
-                                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
-                                    </button>
-                                </div>
-                                <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden="">
-                                    <div class="carrera-combobox__options" id="lista-opciones-carreras" role="listbox" aria-label="Carreras"></div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn--primary btn--lg" id="btn-buscar-carrera">Ver mis
-                                horarios</button>
-                            </div>
-                            <p class="campo__ayuda">Después eliges tu modelo de acreditación y el ciclo.</p>
-                        </div>
-
-                        <!-- PASOS 2 y 3: aparecen en el mismo panel al elegir la carrera -->
-                        <div id="vista-ciclos" hidden="">
-                            <div class="carrera-seleccionada-barra">
-                                <div>
-                                    <span class="carrera-seleccionada-barra__tag">Tu carrera</span>
-                                    <strong class="carrera-seleccionada-barra__nombre" id="carrera-elegida-badge">Derecho</strong>
-                                </div>
-                                <button type="button" class="btn btn--claro btn--sm" id="btn-cambiar-carrera">
-                                    Cambiar carrera
-                                </button>
-                            </div>
-
-                            <!-- PASO 2: Modelo de acreditación -->
-                            <div class="paso paso-modelo">
+                            <!-- PASO 1: Modelo de acreditación (va primero: define qué cursos se muestran) -->
+                            <div class="paso paso-modelo" id="paso-modelo">
                                 <p class="paso__titulo" id="titulo-modelo">
-                                    <span class="paso__num" aria-hidden="true">2</span>
-                                    ¿Qué modelo de acreditación llevas?
+                                    <span class="paso__num" aria-hidden="true">1</span>
+                                    <span data-texto="portada.pregunta">Selecciona tu Modelo de Acreditación</span>
                                 </p>
                                 <div class="selector-modelo-grid" role="radiogroup" aria-labelledby="titulo-modelo">
+                                    <div class="card card-modelo-opcion" id="opcion-modelo-tradicional" data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
+                                        <span class="card-modelo-opcion__check" aria-hidden="true"></span>
+                                        <span class="card-modelo-opcion__iconos card-modelo-opcion__iconos--grandes" aria-hidden="true">
+                                            <img src="assets/img/cursos/computacion-ii.svg?v=2" alt="C2" width="40" height="40">
+                                            <img src="assets/img/cursos/computacion-iii.svg?v=2" alt="C3" width="40" height="40">
+                                        </span>
+                                        <strong class="card-modelo-opcion__titulo" data-texto="tradicional.titulo">Modelo Tradicional</strong>
+                                        <span class="card-modelo-opcion__desc" data-texto="tradicional.descripcion">Computación II y III</span>
+                                    </div>
+
                                     <div class="card card-modelo-opcion" id="opcion-modelo-protech" data-modelo="protech" role="radio" aria-checked="false" tabindex="0">
                                         <span class="card-modelo-opcion__check" aria-hidden="true"></span>
                                         <span class="card-modelo-opcion__iconos" aria-hidden="true">
-                                            <img src="assets/img/cursos/word.svg" alt="" width="28" height="28">
-                                            <img src="assets/img/cursos/excel.svg" alt="" width="28" height="28">
-                                            <img src="assets/img/cursos/canva.svg" alt="" width="28" height="28">
+                                            <img src="assets/img/cursos/word.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/excel.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/canva.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/power-bi.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/project.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/bizagi.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/base-datos.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/spss.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/matlab.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/autocad.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/sketchup.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/revit.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/solidworks.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/diseno-web.svg" alt="" width="24" height="24">
+                                            <img src="assets/img/cursos/taller.svg" alt="" width="24" height="24">
                                         </span>
-                                        <strong class="card-modelo-opcion__titulo">Modelo PROTECH XP</strong>
-                                        <span class="card-modelo-opcion__desc">Nunca llevaste cursos de computación en
-                                            la USS o sigues la ruta de tu carrera.</span>
-                                    </div>
-
-                                    <div class="card card-modelo-opcion" id="opcion-modelo-tradicional" data-modelo="tradicional" role="radio" aria-checked="false" tabindex="0">
-                                        <span class="card-modelo-opcion__check" aria-hidden="true"></span>
-                                        <span class="card-modelo-opcion__iconos" aria-hidden="true">
-                                            <img src="assets/img/cursos/computacion.svg" alt="" width="28" height="28">
-                                            <img src="assets/img/cursos/taller.svg" alt="" width="28" height="28">
-                                        </span>
-                                        <strong class="card-modelo-opcion__titulo">Plan Tradicional</strong>
-                                        <span class="card-modelo-opcion__desc">Ya aprobaste Computación I o II y te
-                                            falta Computación II o III.</span>
+                                        <strong class="card-modelo-opcion__titulo" data-texto="protech.titulo">Modelo PROTECH XP</strong>
+                                        <span class="card-modelo-opcion__desc" data-texto="protech.descripcion">3 cursos + 1 taller de certificación.</span>
                                     </div>
                                 </div>
+                                <!-- Quien no sabe su modelo no puede seguir: el asistente del CINF lo resuelve con su código -->
+                                <p class="ayuda-modelo">
+                                    <span>¿No sabes tu modelo?</span>
+                                    <a class="btn btn--claro" href="https://informatica-uss.vercel.app/chatbot" target="_blank" rel="noopener">Preguntar al asistente</a>
+                                </p>
                             </div>
 
-                            <!-- PASO 3: Ciclo de apertura -->
-                            <div class="paso paso-ciclos">
+                            <!-- PASO 2: Carrera (aparece al elegir el modelo) -->
+                            <div class="paso" id="vista-carrera" hidden="">
                                 <p class="paso__titulo">
-                                    <span class="paso__num" aria-hidden="true">3</span>
-                                    Elige el ciclo y abre sus horarios
+                                    <span class="paso__num" aria-hidden="true">2</span>
+                                    <label for="input-carrera-principal">¿Cuál es tu carrera?</label>
                                 </p>
-                                <div class="estado-red" id="estado-red-ciclos" role="status" aria-live="polite" hidden=""></div><div class="grid-ciclos-compacto" id="grid-ciclos"><button class="card ciclo-btn" type="button" id="btn-ciclo-noviembre"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Noviembre</span><div class="ciclo-btn__duracion">2 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-noviembre">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-enero"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Enero</span><div class="ciclo-btn__duracion">2 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-enero">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-febrero"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Febrero</span><div class="ciclo-btn__duracion">2 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-febrero">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-abril"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Abril</span><div class="ciclo-btn__duracion">3 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-abril">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-mayo"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Mayo</span><div class="ciclo-btn__duracion">2 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-mayo">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-agosto"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Agosto</span><div class="ciclo-btn__duracion">1 mes</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-agosto">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-setiembre"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Setiembre</span><div class="ciclo-btn__duracion">3 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-setiembre">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-octubre"><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Octubre</span><div class="ciclo-btn__duracion">2 meses</div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-octubre">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button></div><p class="ciclos-proximos" id="ciclos-proximos"></p><p class="ciclos-ayuda">¿Dudas con tu matrícula? <a href="https://wa.me/51986724506" target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a></p>
+                                <div class="buscador-fila">
+                                    <div class="carrera-combobox" id="carrera-combobox">
+                                        <div class="carrera-combobox__wrap" id="carrera-combobox-wrap">
+                                            <svg class="icono carrera-combobox__icono" viewBox="0 0 24 24" aria-hidden="true">
+                                                <circle cx="11" cy="11" r="7"></circle>
+                                                <path d="m20 20-3.5-3.5"></path>
+                                            </svg>
+                                            <input type="text" class="carrera-combobox__input" id="input-carrera-principal" placeholder="Psicología, Derecho, Sistemas…" autocomplete="off" spellcheck="false" aria-controls="lista-opciones-carreras" aria-autocomplete="list">
+                                            <button type="button" class="carrera-combobox__chevron" id="btn-toggle-carrera" aria-label="Ver todas las carreras">
+                                                <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="m6 9 6 6 6-6"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="carrera-combobox__dropdown" id="dropdown-carreras" hidden="">
+                                            <div class="carrera-combobox__options" id="lista-opciones-carreras" role="listbox" aria-label="Carreras"></div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn--primary btn--lg" id="btn-buscar-carrera">Ver
+                                        mis
+                                        horarios</button>
+                                </div>
+                                <p class="campo__ayuda">Después eliges el ciclo y ves sus horarios.</p>
+                            </div>
+
+                            <!-- PASO 3: aparece en el mismo panel al elegir la carrera -->
+                            <div class="paso" id="vista-ciclos" hidden="">
+                                <div class="carrera-seleccionada-barra">
+                                    <div>
+                                        <span class="carrera-seleccionada-barra__tag">Tu carrera</span>
+                                        <strong class="carrera-seleccionada-barra__nombre" id="carrera-elegida-badge">Derecho</strong>
+                                    </div>
+                                    <button type="button" class="btn btn--claro btn--sm" id="btn-cambiar-carrera">
+                                        Cambiar carrera
+                                    </button>
+                                </div>
+
+                                <!-- PASO 3: Ciclo de apertura -->
+                                <div class="paso paso-ciclos">
+                                    <p class="paso__titulo">
+                                        <span class="paso__num" aria-hidden="true">3</span>
+                                        Elige el ciclo y abre sus horarios
+                                    </p>
+                                    <div class="estado-red" id="estado-red-ciclos" role="status" aria-live="polite" hidden=""></div><div class="grid-ciclos-compacto" id="grid-ciclos"><button class="card ciclo-btn" type="button" id="btn-ciclo-noviembre"><span class="ciclo-btn__meses-badge" aria-label="Duración: 2 meses">2 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Noviembre</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-noviembre">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-enero"><span class="ciclo-btn__meses-badge" aria-label="Duración: 2 meses">2 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Enero</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-enero">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-febrero"><span class="ciclo-btn__meses-badge" aria-label="Duración: 2 meses">2 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Febrero</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-febrero">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-abril"><span class="ciclo-btn__meses-badge" aria-label="Duración: 3 meses">3 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Abril</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-abril">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-mayo"><span class="ciclo-btn__meses-badge" aria-label="Duración: 2 meses">2 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Mayo</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-mayo">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-agosto"><span class="ciclo-btn__meses-badge" aria-label="Duración: 1 mes">1 mes</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Agosto</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-agosto">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-setiembre"><span class="ciclo-btn__meses-badge" aria-label="Duración: 3 meses">3 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Setiembre</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-setiembre">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button><button class="card ciclo-btn" type="button" id="btn-ciclo-octubre"><span class="ciclo-btn__meses-badge" aria-label="Duración: 2 meses">2 meses</span><div class="ciclo-btn__header"><div><span class="ciclo-btn__mes">Octubre</span><div class="ciclo-btn__fechas"><span class="ciclo-btn__duracion">Fechas por confirmar</span><span class="ciclo-estado" hidden=""></span></div></div></div><div class="ciclo-btn__footer"><span class="ciclo-btn__badge ciclo-btn__badge--disponible" id="badge-ciclo-octubre">Consultar</span><span class="ciclo-btn__accion">Ver horarios</span></div></button></div><p class="ciclos-proximos" id="ciclos-proximos"></p><p class="ciclos-ayuda">¿Dudas con tu matrícula? <a href="https://wa.me/51986724506" target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a></p>
+                                </div>
                             </div>
                         </div>
+
+                        <dl class="hero__datos">
+                            <div>
+                                <dt data-texto="datos.0.valor">1 a 3 meses</dt>
+                                <dd data-texto="datos.0.texto">dura cada curso</dd>
+                            </div>
+                            <div>
+                                <dt data-texto="datos.1.valor">Modelo Tradicional</dt>
+                                <dd data-texto="datos.1.texto">o PROTECH XP</dd>
+                            </div>
+                            <div>
+                                <dt data-texto="datos.2.valor">Virtual</dt>
+                                <dd data-texto="datos.2.texto">o presencial, según la sección</dd>
+                            </div>
+                        </dl>
                     </div>
 
-                    <dl class="hero__datos">
-                        <div><dt>1 a 3 meses</dt><dd>dura cada ciclo</dd></div>
-                        <div><dt>PROTECH XP</dt><dd>o Plan Tradicional</dd></div>
-                        <div><dt>Virtual</dt><dd>o presencial, según la sección</dd></div>
-                    </dl>
+                    <div class="hero__frame">
+                        <img class="hero__media" src="assets/img/campus-uss.jpg" srcset="assets/img/campus-uss-800.jpg 800w, assets/img/campus-uss.jpg 1280w" sizes="(max-width: 991px) 100vw, 1200px" fetchpriority="high" alt="Campus de la Universidad Señor de Sipán en Chiclayo, con el letrero USS en los jardines" width="1280" height="784">
+                    </div>
                 </div>
-
-                <div class="hero__frame">
-                    <img class="hero__media" src="assets/img/campus-uss.jpg" srcset="assets/img/campus-uss-800.jpg 800w, assets/img/campus-uss.jpg 1280w" sizes="(max-width: 991px) 100vw, 1200px" fetchpriority="high" alt="Campus de la Universidad Señor de Sipán en Chiclayo, con el letrero USS en los jardines" width="1280" height="784">
-                </div>
-            </div>
-            <p class="hero__pie">Universidad Señor de Sipán · Centro de Informática CINF · © 2026</p>
+                <p class="hero__pie">Universidad Señor de Sipán · Centro de Informática CINF · © 2026</p>
             </div>
         </section>
     </main>
 
     <!-- Datos (Google Drive) y lógica de selección -->
-    <script src="assets/js/config.js?v=48"></script>
-    <script src="assets/js/datos.js?v=48"></script>
-    <script src="assets/js/index.js?v=60"></script>
-    <script type="module" src="assets/motion/motion.js?v=60"></script>
-
+    <script src="assets/js/config.js?v=49"></script>
+    <script src="assets/js/datos.js?v=60"></script>
+    <script src="assets/js/textos.js?v=4"></script>
+    <script src="assets/js/index.js?v=71"></script>
+    <script type="module">
+        // En el portal (informatica-uss.vercel.app) motion.js se pide directo al deploy de esta app,
+        // así el import del módulo no depende de la ruta (/consulta-cursos o /consulta-cursos/).
+        const raiz = location.hostname === 'informatica-uss.vercel.app' ? 'https://uss-consulta-curso.vercel.app/' : './';
+        import(`${raiz}assets/motion/motion.js?v=61`);
+    </script>
 
 
 </body></html>

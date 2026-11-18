@@ -254,9 +254,17 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeDuracion.hidden = true;
       }
     }
+    // Estado del ciclo (Panel Admin) junto a sus badges; sin año todavía no se sabe cuál es
+    const calendario = anioActivo ? window.CONSULTA_CURSOS.calendarioDe(cicloActivo, anioActivo) : null;
+    window.CONSULTA_CURSOS.pintarEstadoCiclo($('txt-estado-ciclo'), calendario?.estado);
   }
 
   actualizarBadgesCiclo();
+  window.addEventListener('portal_horarios_config_loaded', () => {
+    actualizarBadgesCiclo();
+    // Las fechas de la tabla salen del panel: si la configuración llegó después que las hojas, repinta
+    if ($('filas-horarios')?.children.length) pintarTabla();
+  });
 
   function actualizarBadgeModelo() {
     const badge = $('txt-modelo-badge');
@@ -974,11 +982,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const tdFechas = document.createElement('td');
         const fechas = document.createElement('span');
         fechas.className = 'celda-fechas';
+        // La hoja no trae fechas: valen las del ciclo en el Panel Admin (base de datos)
+        const cal = window.CONSULTA_CURSOS.calendarioDe(fila.ciclo, fila.anio) || {};
+        const fInicio = fila.inicio || cal.inicio;
+        const fFin = fila.fin || cal.fin;
         const inicio = document.createElement('span');
-        inicio.textContent = fila.inicio || 'Por confirmar';
+        inicio.textContent = fInicio || 'Por confirmar';
         const fin = document.createElement('span');
         fin.className = 'celda-fechas__fin';
-        fin.textContent = fila.fin ? `al ${fila.fin}` : 'Fin por confirmar';
+        fin.textContent = fFin ? `al ${fFin}` : 'Fin por confirmar';
         fechas.append(inicio, fin);
         tdFechas.appendChild(fechas);
 

@@ -45,7 +45,10 @@
       if (cfg.portada.palabraDestacada !== undefined) {
         span.textContent = cfg.portada.palabraDestacada;
       }
-      h1.textContent = cfg.portada.titulo + (cfg.portada.palabraDestacada ? ' ' : '');
+      // Mismo enlace que hero-intro.js: «Título: Resalte» (el resalte va en otra línea y otro color)
+      const titulo = cfg.portada.titulo.trim();
+      const union = /[.!?:;,…–—)»"”’]$/.test(titulo) ? ' ' : ': ';
+      h1.textContent = titulo + (cfg.portada.palabraDestacada ? union : '');
       if (cfg.portada.palabraDestacada) {
         h1.appendChild(span);
       }
@@ -76,6 +79,22 @@
       });
     }
 
+    // Ciclos del Paso 3 (Panel Admin): la lista del panel manda sobre el respaldo de datos.js.
+    // index.js y horarios.js leen calendarioCiclos al pintar y repintan con el evento de abajo.
+    if (Array.isArray(cfg.ciclos) && window.CONSULTA_CURSOS) {
+      const calendario = {};
+      cfg.ciclos.forEach((c) => {
+        if (!c || !c.ciclo || !c.anio) return;
+        calendario[`${c.anio}-${String(c.ciclo).toLowerCase()}`] = {
+          inicio: typeof c.inicio === 'string' ? c.inicio : '',
+          fin: typeof c.fin === 'string' ? c.fin : '',
+          duracion: typeof c.duracion === 'string' ? c.duracion : '',
+          estado: typeof c.estado === 'string' ? c.estado : '',
+        };
+      });
+      window.CONSULTA_CURSOS.calendarioCiclos = calendario;
+    }
+
     // Actualizar badge en horarios.html si ya existe en el DOM
     const badge = document.getElementById('txt-modelo-badge');
     if (badge) {
@@ -86,6 +105,19 @@
       } else {
         if (cfg.protech?.badge) badge.textContent = cfg.protech.badge;
       }
+    }
+
+    // Actualizar botón volver y título en horarios.html si está configurado
+    if (cfg.horarios?.textoVolver) {
+      const btnVolver = document.getElementById('btn-volver-atras');
+      if (btnVolver) {
+        const span = btnVolver.querySelector('.nav__texto-largo');
+        if (span) span.textContent = cfg.horarios.textoVolver;
+        btnVolver.setAttribute('aria-label', cfg.horarios.textoVolver);
+      }
+    }
+    if (cfg.horarios?.tituloPagina && location.pathname.includes('horarios.html')) {
+      document.title = `${cfg.horarios.tituloPagina} | Centro de Informática USS`;
     }
 
     window.dispatchEvent(new CustomEvent('portal_horarios_config_loaded', { detail: cfg }));

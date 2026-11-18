@@ -6,6 +6,6 @@
  "category": "horarios de cursos del Centro de Informática USS",
  "primary": "Consultar horarios",
  "rounds": 3,
- "start": "2026-11-16T14:09:40.546Z",
+ "start": "2026-11-18T20:02:26.551Z",
  "by": "gate.mjs --start"
 }

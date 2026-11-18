@@ -368,8 +368,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = crear('div', 'ciclo-btn__header');
     const izquierda = document.createElement('div');
     const mes = crear('span', 'ciclo-btn__mes', ciclo.nombre);
-    const duracion = crear('div', 'ciclo-btn__duracion', 'Fechas por confirmar');
-    izquierda.append(mes, duracion);
+    // Fechas y, a su lado, el estado del ciclo que define el Panel Admin
+    const fechas = crear('div', 'ciclo-btn__fechas');
+    const duracion = crear('span', 'ciclo-btn__duracion', 'Fechas por confirmar');
+    const estado = crear('span', 'ciclo-estado');
+    estado.hidden = true;
+    fechas.append(duracion, estado);
+    izquierda.append(mes, fechas);
     header.append(izquierda);
 
     const footer = crear('div', 'ciclo-btn__footer');
@@ -499,12 +504,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.dataset.anio = anio;
       btn.classList.add('ciclo-btn--destacado');
       btn.querySelector('.ciclo-btn__mes').textContent = `${ciclo.nombre} ${anio}`.trim();
+      // Fechas, duración y estado: primero lo que define el Panel Admin, si no, las del Excel
+      const calendario = window.CONSULTA_CURSOS.calendarioDe(ciclo.id, anio) || {};
       const conFechas = filas.find((h) => h.inicio && h.fin);
-      btn.querySelector('.ciclo-btn__duracion').textContent = conFechas
-        ? `${conFechas.inicio} al ${conFechas.fin}`
-        : 'Fechas por confirmar';
+      const inicio = calendario.inicio || conFechas?.inicio;
+      const fin = calendario.fin || conFechas?.fin;
+      btn.querySelector('.ciclo-btn__duracion').textContent =
+        inicio && fin ? `${inicio} al ${fin}` : 'Fechas por confirmar';
+      window.CONSULTA_CURSOS.pintarEstadoCiclo(btn.querySelector('.ciclo-estado'), calendario.estado);
       const duracionBadge = btn.querySelector('.ciclo-btn__meses-badge');
-      if (duracionBadge) duracionBadge.textContent = ciclo.duracion;
+      if (duracionBadge) duracionBadge.textContent = calendario.duracion || ciclo.duracion;
       badge.className = 'ciclo-btn__badge ciclo-btn__badge--disponible';
       const cerradas = filas.filter((h) => h.estado === 'Cerrado').length;
       badge.textContent =
@@ -552,6 +561,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (carreraSeleccionada) actualizarContadoresCiclos();
   }
   sincronizarHorariosDrive();
+
+  // Fechas y estados del Panel Admin (textos.js): si llegan después que Drive, se repintan las tarjetas
+  window.addEventListener('portal_horarios_config_loaded', () => {
+    if (carreraSeleccionada) actualizarContadoresCiclos();
+  });
 
   // Comprobar parámetros de URL (si regresan desde horarios.html).
   // Se restaura la carrera, nunca el modelo: el estudiante debe elegirlo de nuevo.
