@@ -407,35 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
   estadoRed.hidden = true;
   cajaTablaScroll?.before(estadoRed);
 
-  const CLAVE_CACHE_HORARIOS = 'cinf_horarios_cache_v2';
-  const TTL_CACHE_HORARIOS_MS = 8 * 60 * 1000; // 8 minutos
-
-  function leerCacheHorarios() {
-    try {
-      const crudo = sessionStorage.getItem(CLAVE_CACHE_HORARIOS);
-      if (!crudo) return null;
-      const datos = JSON.parse(crudo);
-      if (!datos || !Array.isArray(datos.filas) || !datos.tiempo) return null;
-      if (Date.now() - datos.tiempo > TTL_CACHE_HORARIOS_MS) return null;
-      return datos.filas;
-    } catch {
-      return null;
-    }
-  }
-
-  function guardarCacheHorarios(filas) {
-    try {
-      if (Array.isArray(filas) && filas.length > 0) {
-        sessionStorage.setItem(
-          CLAVE_CACHE_HORARIOS,
-          JSON.stringify({ filas, tiempo: Date.now() })
-        );
-      }
-    } catch {
-      // Ignorar quota en sessionStorage
-    }
-  }
-
   // Pre-renderizado inmediato con los cursos reales de la carrera (cero barras grises anónimas)
   function pintarEsqueletoCursosReales() {
     const tbody = $('filas-horarios');
@@ -661,44 +632,44 @@ document.addEventListener('DOMContentLoaded', () => {
     pintarTabla();
   }
 
+  // Drive trajo valores distintos a los de la pantalla: se repinta conservando los filtros (van en la URL)
+  const alCambiarHorarios = (nuevos) => {
+    horariosCargados = nuevos;
+    fuenteEnVivo = true;
+    aplicarDatosCargados();
+  };
+  window.CONSULTA_CURSOS.alCambiarHorarios(alCambiarHorarios);
+
   async function cargarDatos() {
-    // 1. Verificación en caché de sesión (SWR - 0 ms de espera en visitas recurrentes o cambio de ciclo)
-    const cache = leerCacheHorarios();
-    if (cache && cache.length > 0) {
-      horariosCargados = cache;
+    // 1. La copia de la portada o de la última visita se pinta al instante (0 ms) y Drive se
+    // revisa en segundo plano: la tabla solo se repinta si algún valor cambió.
+    const copia = window.CONSULTA_CURSOS.copiaHorarios();
+    if (copia) {
+      horariosCargados = copia;
       fuenteEnVivo = true;
       estadoRed.hidden = true;
       if (cajaTablaScroll) cajaTablaScroll.hidden = false;
       aplicarDatosCargados();
 
-      // Revalidación silenciosa en segundo plano
-      window.CONSULTA_CURSOS.cargarHorariosRemotos()
-        .then((nuevos) => {
-          if (nuevos && nuevos.length > 0) {
-            horariosCargados = nuevos;
-            guardarCacheHorarios(nuevos);
-            aplicarDatosCargados();
-          }
-        })
+      window.CONSULTA_CURSOS.revalidarHorarios()
+        .then((nuevos) => nuevos && alCambiarHorarios(nuevos))
         .catch(() => {
-          // Revalidación en background silenciosa sin molestar al alumno
+          // Sin red se queda la copia que ya está en pantalla
         });
       return;
     }
 
-    // 2. Primera carga: muestra el esqueleto con cursos reales e íconos oficiales
+    // 2. Primera visita: muestra el esqueleto con cursos reales e íconos oficiales
     mostrarEstadoRed('cargando');
     horariosCargados = [];
     try {
-      horariosCargados = await window.CONSULTA_CURSOS.cargarHorariosRemotos();
+      horariosCargados = (await window.CONSULTA_CURSOS.revalidarHorarios({ forzar: true })) || [];
       fuenteEnVivo = true;
-      guardarCacheHorarios(horariosCargados);
     } catch (eDrive) {
       console.warn('Google Drive no disponible, probando API…', eDrive);
       try {
         horariosCargados = await cargarDesdeApi();
         fuenteEnVivo = true;
-        guardarCacheHorarios(horariosCargados);
       } catch (eApi) {
         console.error('Sin conexión con las fuentes en línea:', eApi);
         fuenteEnVivo = false;

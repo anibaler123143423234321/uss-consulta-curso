@@ -655,22 +655,41 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
    * - Si fallan todas, lanza un error: la interfaz muestra «Reintentar conexión», nunca datos locales.
    */
   catalogo.cargarHorariosRemotos = async ({ tiempoMaximoMs = 20000 } = {}) => {
-    // Primero las hojas del índice: son los archivos de cada mes («CINF 202700 ENERO»…) con las
-    // columnas vigentes (N°, Tot_Mat, Pre_Mat, Cupos, DOCENTE). Las de config.js (libro base
-    // «CINF 20270») pueden traer cabeceras antiguas (MAT, PREMAT): solo cubren los ciclos que el
-    // índice no trae, para que un ciclo no mezcle dos versiones de la misma sección.
-    const urlsIndice = await catalogo.urlsHojasIndice();
-    const urlsFijas = catalogo.urlsHojasDrive().filter((url) => !urlsIndice.includes(url));
-    const urls = [...new Set([...urlsIndice, ...urlsFijas])];
-    if (!urls.length) throw new Error('No hay hojas de Google Drive configuradas en config.js.');
-
     const descargar = async (url) => {
       const contenido = await conTiempoMaximo(url, tiempoMaximoMs);
       const datos = /^[\s]*[\[{]/.test(contenido) ? JSON.parse(contenido) : contenido;
       return convertirDatosSheets(datos);
     };
+    const enCurso = new Map();
+    const bajar = (url) => {
+      if (!enCurso.has(url)) {
+        const promesa = descargar(url);
+        promesa.catch(() => {}); // una hoja que ya no está en el índice se descarta sin ruido
+        enCurso.set(url, promesa);
+      }
+      return enCurso.get(url);
+    };
 
-    const resultados = await Promise.allSettled(urls.map(descargar));
+    // Las hojas ya conocidas salen de inmediato, junto con el índice, sin esperar sus 2–3 s
+    const indiceGuardado = leerIndice();
+    indiceGuardado?.urls.forEach(bajar);
+    catalogo.urlsHojasDrive().forEach(bajar);
+
+    // Primero las hojas del índice: son los archivos de cada mes («CINF 202700 ENERO»…) con las
+    // columnas vigentes (N°, Tot_Mat, Pre_Mat, Cupos, DOCENTE). Las de config.js (libro base
+    // «CINF 20270») pueden traer cabeceras antiguas (MAT, PREMAT): solo cubren los ciclos que el
+    // índice no trae, para que un ciclo no mezcle dos versiones de la misma sección.
+    let urlsIndice = indiceGuardado && Date.now() - indiceGuardado.tiempo < INDICE_FRESCO_MS ? indiceGuardado.urls : null;
+    if (!urlsIndice) {
+      const frescas = await catalogo.urlsHojasIndice();
+      if (frescas.length) guardarIndice(frescas);
+      urlsIndice = frescas.length ? frescas : indiceGuardado?.urls || [];
+    }
+    const urlsFijas = catalogo.urlsHojasDrive().filter((url) => !urlsIndice.includes(url));
+    const urls = [...new Set([...urlsIndice, ...urlsFijas])];
+    if (!urls.length) throw new Error('No hay hojas de Google Drive configuradas en config.js.');
+
+    const resultados = await Promise.allSettled(urls.map(bajar));
     const fallidas = resultados.filter((r) => r.status === 'rejected');
     fallidas.forEach((r) => console.warn('Una hoja de Google Drive no respondió:', r.reason));
     if (fallidas.length === resultados.length) {
@@ -698,5 +717,95 @@ window.CONSULTA_CURSOS.esTallerCertificacion = (curso) => /^taller\b/i.test(Stri
         vistas.add(clave);
         return true;
       });
+  };
+
+  /*
+   * Copia local de las secciones, compartida por la portada y la tabla.
+   * Cada página pinta al instante la última copia y la compara con Drive en segundo plano:
+   * solo se repinta si cambió algún valor (cupos, docente, sección…). Las hojas publicadas de
+   * Google ya llevan hasta 5 min de retraso, así que consultar Drive más de una vez por minuto
+   * no trae datos nuevos: ir de la portada a la tabla dentro de ese minuto no descarga nada.
+   */
+  const CLAVE_COPIA = 'cinf_horarios_copia_v1';
+  const CLAVE_INDICE = 'cinf_horarios_indice_v1';
+  const COPIA_FRESCA_MS = 60 * 1000;
+  const COPIA_MAXIMA_MS = 12 * 60 * 60 * 1000; // una copia de ayer no se muestra: se espera a Drive
+  const INDICE_FRESCO_MS = 3 * 60 * 1000;
+  const INDICE_MAXIMO_MS = 7 * 24 * 60 * 60 * 1000;
+
+  // localStorage puede no existir (modo privado, bloqueado): entonces todo va directo a Drive
+  const leerLocal = (clave, maximoMs) => {
+    try {
+      const guardado = JSON.parse(localStorage.getItem(clave) || 'null');
+      return guardado && Date.now() - guardado.tiempo < maximoMs ? guardado : null;
+    } catch {
+      return null;
+    }
+  };
+  const guardarLocal = (clave, json) => {
+    try {
+      localStorage.setItem(clave, json);
+    } catch {
+      // Sin espacio o sin permiso: la próxima visita vuelve a descargar
+    }
+  };
+
+  function leerIndice() {
+    const guardado = leerLocal(CLAVE_INDICE, INDICE_MAXIMO_MS);
+    return Array.isArray(guardado?.urls) && guardado.urls.length ? guardado : null;
+  }
+  function guardarIndice(urls) {
+    guardarLocal(CLAVE_INDICE, JSON.stringify({ tiempo: Date.now(), urls }));
+  }
+
+  let firmaMostrada = null; // las filas que tiene la página en pantalla, como texto
+  let tiempoCopia = 0;
+  let revalidacion = null;
+
+  /** Las secciones de la última visita (de menos de 12 h), o null si hay que esperar a Drive. */
+  catalogo.copiaHorarios = () => {
+    const copia = leerLocal(CLAVE_COPIA, COPIA_MAXIMA_MS);
+    if (!Array.isArray(copia?.filas) || !copia.filas.length) return null;
+    firmaMostrada = JSON.stringify(copia.filas);
+    tiempoCopia = copia.tiempo;
+    return copia.filas;
+  };
+
+  /**
+   * Consulta Drive y actualiza la copia. Resuelve con las filas nuevas solo si difieren de las que
+   * la página muestra; con null si no cambió nada o si la copia tiene menos de un minuto.
+   * `forzar` consulta Drive aunque la copia sea reciente.
+   */
+  catalogo.revalidarHorarios = ({ forzar = false } = {}) => {
+    if (!forzar && firmaMostrada && Date.now() - tiempoCopia < COPIA_FRESCA_MS) return Promise.resolve(null);
+    if (!revalidacion) {
+      revalidacion = catalogo
+        .cargarHorariosRemotos()
+        .then((filas) => {
+          const firma = JSON.stringify(filas);
+          tiempoCopia = Date.now();
+          if (filas.length) guardarLocal(CLAVE_COPIA, `{"tiempo":${tiempoCopia},"filas":${firma}}`);
+          if (firma === firmaMostrada) return null;
+          firmaMostrada = firma;
+          return filas;
+        })
+        .finally(() => {
+          revalidacion = null;
+        });
+    }
+    return revalidacion;
+  };
+
+  /** Al volver a la pestaña tras más de un minuto, revisa Drive y avisa solo si algo cambió. */
+  catalogo.alCambiarHorarios = (alCambiar) => {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible' || !firmaMostrada) return;
+      catalogo
+        .revalidarHorarios()
+        .then((filas) => filas && alCambiar(filas))
+        .catch(() => {
+          // Sin red se queda lo que ya está en pantalla
+        });
+    });
   };
 })();

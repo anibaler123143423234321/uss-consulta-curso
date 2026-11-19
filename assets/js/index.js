@@ -545,13 +545,30 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = url;
   }
 
-  // Ciclos y secciones 100% desde Google Drive (todas las hojas de config.js).
-  // Si Drive no responde se muestra «Reintentar conexión»; nunca se usan datos locales.
+  // Ciclos y secciones desde Google Drive. La copia de la visita anterior pinta las tarjetas al
+  // instante y Drive se revisa en segundo plano: solo se repinta si algún valor cambió. Sin copia
+  // y sin Drive se muestra «Reintentar conexión».
+  const alCambiarHorarios = (nuevos) => {
+    horariosDisponibles = nuevos;
+    estadoCarga = 'listo';
+    if (carreraSeleccionada) actualizarContadoresCiclos();
+  };
+  window.CONSULTA_CURSOS.alCambiarHorarios(alCambiarHorarios);
+
   async function sincronizarHorariosDrive() {
+    const copia = window.CONSULTA_CURSOS.copiaHorarios();
+    if (copia) {
+      alCambiarHorarios(copia);
+      window.CONSULTA_CURSOS.revalidarHorarios()
+        .then((nuevos) => nuevos && alCambiarHorarios(nuevos))
+        .catch((error) => console.warn('Google Drive no respondió; se mantiene la última copia:', error));
+      return;
+    }
+
     estadoCarga = 'cargando';
     if (carreraSeleccionada) actualizarContadoresCiclos();
     try {
-      horariosDisponibles = await window.CONSULTA_CURSOS.cargarHorariosRemotos();
+      horariosDisponibles = (await window.CONSULTA_CURSOS.revalidarHorarios({ forzar: true })) || [];
       estadoCarga = 'listo';
     } catch (error) {
       console.error('Google Drive no disponible:', error);
